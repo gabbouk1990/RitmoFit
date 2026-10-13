@@ -1,0 +1,64 @@
+/* Ritmo Fit - impaginazione dedicata alla turnistica (mobile e desktop) */
+.shifts-page{min-width:0}
+.shifts-page .shift-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:18px 0 17px}
+.shifts-page .shift-toolbar .inline-actions{min-width:0}
+.shifts-page .shift-import{min-height:42px}
+.shifts-page .shift-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);align-items:stretch;gap:16px}
+.shifts-page .shift-grid>.card{min-width:0}
+.shifts-page .shift-calendar-panel{display:flex;flex-direction:column}
+.shifts-page .calendar-header{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:10px;margin-bottom:15px}
+.shifts-page .calendar-header h3{margin:0;text-align:center;text-transform:capitalize;font-size:16px;white-space:normal;line-height:1.35}
+.shifts-page .shift-month-control{width:44px;height:44px;padding:0;font-size:19px}
+.shifts-page .calendar-week,.shifts-page .calendar-days{grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;min-width:0}
+.shifts-page .calendar-week span{min-width:0;text-align:center}
+.shifts-page .calendar-day{min-width:0;min-height:67px;position:relative;align-items:center;justify-content:flex-start;gap:7px;padding:7px 2px;cursor:pointer;font-weight:600;font-size:12px}
+.shifts-page .calendar-day.empty-day{min-height:67px;pointer-events:none}
+.shifts-page .calendar-date{display:block;width:100%;text-align:center}
+.shifts-page .calendar-day .calendar-tag{display:inline-grid;place-items:center;min-width:25px;height:23px;max-width:calc(100% - 2px);padding:2px 5px;font-size:10px;line-height:1.1;overflow:visible;text-overflow:clip}
+.shifts-page .calendar-day.selected{background:#e9f6e0;border:2px solid #8eba68;padding:6px 1px}
+.shifts-page .calendar-day:focus-visible,.shifts-page .shift-month-control:focus-visible{outline:3px solid #2c7b49;outline-offset:2px}
+.shifts-page .shift-legend{display:flex;flex-wrap:wrap;gap:8px 13px;margin-top:16px;padding-top:13px;border-top:1px solid #edf1f3}
+.shifts-page .shift-legend-item{display:inline-flex;align-items:center;gap:5px;color:#637788;font-size:11px;white-space:nowrap}
+.shifts-page .shift-legend-item .calendar-tag{display:inline-grid;place-items:center;border-radius:6px;min-width:22px;height:22px;padding:3px 4px;font-size:10px;font-weight:800}
+.shifts-page .shift-detail{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.shifts-page .shift-detail h3{margin:0;font-size:21px;line-height:1.22;text-transform:capitalize;overflow-wrap:anywhere}
+.shifts-page .shift-current-status{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+.shifts-page .shift-detail .shift-time{margin:0;color:#556b7a;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.shifts-page .shift-detail .shift-info{width:100%;margin:2px 0 0}
+.shifts-page .shift-suggestion{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:9px;width:100%;margin-top:auto;padding-top:14px;border-top:1px solid #edf1f3;font-size:12px}
+.shifts-page .shift-suggestion .pill{max-width:100%;white-space:normal;line-height:1.4;text-align:center}
+.shifts-page .shift-setup>.card{min-width:0}
+.shifts-page .shift-pattern-fields{margin:15px 0 14px}
+.shifts-page .shift-pattern-fields>*{min-width:0}
+.shifts-page .shift-pattern-fields input,.shifts-page .shift-pattern-fields select{min-width:0;max-width:100%}
+.shifts-page .shift-save-pattern{min-height:42px}
+@media(max-width:1090px){.shifts-page .shift-grid{grid-template-columns:1fr}.shifts-page .shift-detail{gap:10px}}
+@media(max-width:720px){
+ .shifts-page .headline{font-size:25px;line-height:1.12;overflow-wrap:anywhere}
+ .shifts-page .shift-toolbar{align-items:stretch;flex-direction:column;margin:17px 0 14px;gap:10px}
+ .shifts-page .shift-import{width:100%;min-height:46px}
+ .shifts-page .shift-grid{gap:12px}
+ .shifts-page .shift-grid>.card,.shifts-page .shift-setup>.card{padding:15px;border-radius:16px}
+ .shifts-page .calendar-header{grid-template-columns:40px minmax(0,1fr) 40px;margin-bottom:8px;gap:6px}
+ .shifts-page .shift-month-control{width:40px;height:40px}
+ .shifts-page .calendar-header h3{font-size:15px}
+ .shifts-page .calendar-week,.shifts-page .calendar-days{gap:3px}
+ .shifts-page .calendar-week span{font-size:9px;padding:8px 0 6px}
+ .shifts-page .calendar-day,.shifts-page .calendar-day.empty-day{min-height:52px;border-radius:9px;padding:5px 1px;gap:4px;font-size:11px}
+ .shifts-page .calendar-day.selected{padding:4px 0}
+ .shifts-page .calendar-day .calendar-tag{height:21px;min-width:21px;padding:2px 3px;font-size:9px}
+ .shifts-page .shift-legend{gap:7px 11px;margin-top:13px;padding-top:12px}
+ .shifts-page .shift-legend-item{font-size:10px}
+ .shifts-page .shift-detail h3{font-size:20px}
+ .shifts-page .shift-pattern-fields{grid-template-columns:minmax(0,1fr);gap:13px}
+ .shifts-page .shift-save-pattern{width:100%}
+ .shifts-page .shift-setup{gap:12px}
+ .shifts-page .shift-setup .step-list{margin:10px 0;padding-left:19px}
+ .shifts-page .shift-setup .step-list li{margin-bottom:6px}
+}
+@media(max-width:360px){
+ .shifts-page .shift-grid>.card{padding:11px}
+ .shifts-page .calendar-week,.shifts-page .calendar-days{gap:2px}
+ .shifts-page .calendar-day,.shifts-page .calendar-day.empty-day{min-height:47px}
+ .shifts-page .shift-legend{gap:6px 8px}
+}
