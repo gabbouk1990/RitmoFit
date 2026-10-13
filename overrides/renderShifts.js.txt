@@ -1,0 +1,55 @@
+function renderShifts(){
+ const [year,month]=state.month.split('-').map(Number);
+ const cal=getMonthDays(year,month);
+ const cells=[...Array(cal.blank).fill(null),...Array.from({length:cal.days},(_,i)=>`${year}-${String(month).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`)];
+ const s=shiftFor(state.date),count=state.shifts.length;
+ const short={Mattina:'M',Pomeriggio:'P',Notte:'N',Smonto:'SM',Riposo:'R',Ferie:'F',Altro:'•'};
+ const shiftClass=x=>['Mattina','Pomeriggio','Notte','Smonto','Riposo','Ferie'].includes(x)?x:'Altro';
+ const dayCells=cells.map(d=>{
+  if(!d)return '<div class="calendar-day empty-day" aria-hidden="true"></div>';
+  const sh=shiftFor(d),type=sh?.type||'';
+  const tag=sh?`<span class="calendar-tag ${shiftClass(type)}" title="${safe(type)}">${short[type]||'•'}</span>`:'';
+  const selected=d===state.date;
+  return `<button type="button" class="calendar-day ${selected?'selected':''} ${d===inputDate()?'today':''}" data-act="selectDay" data-date="${d}" aria-label="${safe(dateFmt(d))}: ${safe(type||'nessun turno')}" aria-pressed="${selected}"><span class="calendar-date">${Number(d.slice(8))}</span>${tag}</button>`;
+ }).join('');
+ const info=s?.source==='ics'?'Evento importato dal file .ics. Per aggiornare eventuali variazioni, importa nuovamente il calendario.':s?.source==='pattern'?'Turno stimato dalla rotazione. Controlla scambi e ferie sul calendario originale.':'Importa il calendario di Supershift oppure attiva la rotazione di riferimento.';
+ const weekdays=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
+ return `<div class="shifts-page">
+ ${head('CALENDARIO','La tua turnistica','Consulta i turni e organizza gli allenamenti in base ai giorni di servizio.')}
+ <div class="shift-toolbar">
+  <div class="inline-actions"><span class="pill ${count?'green':'orange'}">${count?`${count} eventi importati`:'Calendario da importare'}</span>${state.settings.patternEnabled?'<span class="pill blue">Rotazione attiva</span>':''}</div>
+  <button class="btn btn-primary shift-import" data-act="icsImport">⇪ Importa calendario .ics</button>
+ </div>
+ <div class="shift-grid">
+  <section class="card shift-calendar-panel" aria-label="Calendario dei turni">
+   <div class="calendar-header">
+    <button class="btn btn-outline shift-month-control" data-act="monthStep" data-n="-1" aria-label="Mese precedente">←</button>
+    <h3>${safe(new Date(year,month-1,1).toLocaleDateString('it-IT',{month:'long',year:'numeric'}))}</h3>
+    <button class="btn btn-outline shift-month-control" data-act="monthStep" data-n="1" aria-label="Mese successivo">→</button>
+   </div>
+   <div class="calendar-week">${weekdays.map(d=>`<span>${d}</span>`).join('')}</div>
+   <div class="calendar-days">${dayCells}</div>
+   <div class="shift-legend" aria-label="Legenda turni">${['Mattina','Pomeriggio','Notte','Smonto','Riposo'].map(x=>`<span class="shift-legend-item"><span class="calendar-tag ${x}">${short[x]}</span>${x}</span>`).join('')}</div>
+  </section>
+  <section class="card shift-detail" aria-label="Dettaglio giorno selezionato">
+   <div class="eyebrow">GIORNO SELEZIONATO</div>
+   <h3>${safe(dateFmt(state.date))}</h3>
+   <span class="pill ${s?.source==='ics'?'green':'blue'} shift-current-status">${safe(s?.type||'Turno non impostato')}</span>
+   <p class="shift-time">${s?safe(s.label||s.type)+' '+safe(shiftTime(s)):'Nessun turno per questo giorno.'}</p>
+   <div class="hint shift-info">${info}</div>
+   <div class="shift-suggestion"><strong>Allenamento suggerito</strong><span class="pill">${safe(recommended(state.date).name)}</span></div>
+  </section>
+ </div>
+ ${section('Integrazione con Supershift Pro')}
+ <div class="grid-two shift-setup">
+  <div class="card"><h3>1. Importa gli eventi reali</h3>
+   <ol class="step-list"><li>In Supershift Pro attiva <strong>Esportazione nel Calendario iOS</strong>.</li><li>Da Calendario su Mac esporta il calendario turni come <strong>.ics</strong> (File → Esporta → Esporta).</li><li>Carica il file con <strong>Importa calendario .ics</strong>.</li></ol>
+   <p class="caption">Puoi importare il file .ics anche da iPhone, se già salvato in File. Non legge automaticamente il calendario iOS.</p>
+  </div>
+  <div class="card"><h3>2. Rotazione di riferimento (facoltativa)</h3>
+   <p class="tagline">Se non hai un file .ics, imposta una mattina certa e attiva la sequenza M → P → N → Smonto → Riposo. Gli eventi importati avranno la precedenza.</p>
+   <div class="form-grid shift-pattern-fields"><label class="field"><span>Data certa del turno M</span><input type="date" id="shiftAnchor" value="${safe(state.settings.shiftAnchor||'')}"></label><label class="field"><span>Rotazione</span><select id="patternEnabled"><option value="false" ${!state.settings.patternEnabled?'selected':''}>Disattivata</option><option value="true" ${state.settings.patternEnabled?'selected':''}>Attiva</option></select></label></div>
+   <button class="btn btn-outline shift-save-pattern" data-act="savePattern">Salva rotazione</button>
+  </div>
+ </div></div>`;
+}
