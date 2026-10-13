@@ -6,6 +6,7 @@ on:
     paths:
       - 'ritmo-fit-pronto-per-pubblicazione.zip'
       - '.github/workflows/pages.yml'
+      - 'overrides/**'
   workflow_dispatch:
 
 permissions:
@@ -36,10 +37,22 @@ jobs:
           test -f _site/style.css
           touch _site/.nojekyll
 
-      - name: Migliora layout turni e verifica JavaScript
+      - name: Aggiorna turni e schede allenamenti
         run: |
           python3 overrides/patch.py
+          python3 overrides/patch_workouts.py
           node --check _site/app.js
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('_site/app.js').read_text()
+          assert "Piscina B · aerobico variato" in s
+          assert "Hybrid B · forza + conditioning" in s
+          assert "migrateTrainingProgram()" in s
+          assert "restoreTrainingProgram()" in s
+          assert "data-act=\"restoreProgram\"" in s
+          assert "training-program.js.txt" not in s
+          print("Schede aggiornate e verifiche statiche superate")
+          PY
 
       - name: Configura GitHub Pages
         uses: actions/configure-pages@v5
