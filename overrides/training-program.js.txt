@@ -1,0 +1,78 @@
+const TRAINING_PROGRAM_VERSION='2026-10-14';
+const TEMPLATES=[
+ {id:'forza-a',name:'Forza A · fondamentali',kind:'Forza',icon:'🏋️',time:75,color:'green',notes:'Riferimento 07/10: squat e RDL 64 kg, panca 50 kg, lat 50 kg. Obiettivo RPE 7–8, top set fino a 8–8,5 solo quando il recupero è buono; prima aumenta le ripetizioni, poi il carico. Recuperi completi sui multiarticolari.',exercises:[
+  {name:'Cyclette e mobilità anche/spalle',sets:1,reps:'8–10 min',load:'Progressiva',rest:'—'},
+  {name:'Squat bilanciere',sets:3,reps:'6–8',load:'64 kg',rest:'180 s'},
+  {name:'Stacco rumeno bilanciere (RDL)',sets:3,reps:'6–8',load:'64 kg',rest:'150–180 s'},
+  {name:'Panca piana bilanciere',sets:3,reps:'8',load:'50 kg',rest:'150–180 s'},
+  {name:'Lat machine prona',sets:3,reps:'8–10',load:'50 kg',rest:'120 s'},
+  {name:'Rematore manubrio unilaterale',sets:3,reps:'10 / lato',load:'20 kg',rest:'75–90 s'},
+  {name:'Alzate laterali al cavo',sets:3,reps:'12–15',load:'10 kg',rest:'60 s'},
+  {name:'Skillmill power walk (facoltativo)',sets:3,reps:'60 s',load:'Camminata, no corsa',rest:'60 s'}]},
+ {id:'hybrid',name:'Hybrid B · forza + conditioning',kind:'Ibrido',icon:'🔥',time:80,color:'purple',notes:'Carichi guida dal 12/10. Circuito finale circa 18–20 min a RPE 7–8: il 12/10 è arrivato a RPE 9, quindi non aumentare subito intensità. Escludi corsa, wall ball, assault bike e farmer hold. Week-end sempre liberi.',exercises:[
+  {name:'Cyclette e mobilità',sets:1,reps:'8 min',load:'Progressiva',rest:'—'},
+  {name:'Goblet squat manubrio verticale',sets:3,reps:'10',load:'24 kg',rest:'120 s'},
+  {name:'Hip thrust bilanciere',sets:3,reps:'10',load:'64 kg',rest:'120 s'},
+  {name:'Panca inclinata con manubri',sets:3,reps:'10',load:'18 kg / mano',rest:'120 s'},
+  {name:'High row macchina',sets:3,reps:'10',load:'40 kg',rest:'90 s'},
+  {name:'Pullover al cavo con corda',sets:2,reps:'12',load:'20 kg',rest:'60 s'},
+  {name:'Pallof press',sets:3,reps:'12 / lato',load:'10 kg',rest:'45–60 s'},
+  {name:'Circuito: Skillmill power walk',sets:4,reps:'2 min / giro',load:'Camminata sostenuta',rest:'Passa alla cyclette'},
+  {name:'Circuito: cyclette brillante',sets:4,reps:'2 min / giro',load:'RPE 7–8',rest:'Passa alla marcia'},
+  {name:'Circuito: suitcase march',sets:4,reps:'30–40 s / lato',load:'Manubrio gestibile',rest:'20–40 s / giro'}]},
+ {id:'piscina',name:'Piscina A · tecnica e fondo',kind:'Nuoto',icon:'🏊',time:55,color:'blue',notes:'Totale 1700 m. Aerobico facile–moderato (RPE 4–5). I 1725 m del 13/10 sono riferimento di capacità, non una seduta già importata. Preferisci stile e dorso; rana soltanto se ginocchio/adduttori la tollerano.',exercises:[
+  {name:'Riscaldamento stile/dorso',sets:1,reps:'300 m',load:'Facile',rest:'—'},
+  {name:'Tecnica stile',sets:4,reps:'50 m',load:'Focus scivolamento',rest:'20–25 s'},
+  {name:'Aerobico 1',sets:4,reps:'100 m',load:'Stile regolare',rest:'20 s'},
+  {name:'Pull buoy',sets:4,reps:'50 m',load:'Parte superiore',rest:'20 s'},
+  {name:'Aerobico 2',sets:4,reps:'100 m',load:'Stile/dorso',rest:'20–25 s'},
+  {name:'Defaticamento',sets:1,reps:'200 m',load:'Facile',rest:'—'}]},
+ {id:'piscina-b',name:'Piscina B · aerobico variato',kind:'Nuoto',icon:'🌊',time:55,color:'blue',notes:'Totale 1800 m. Varia ritmi e stili rispetto alla Piscina A, senza forzare la rana. RPE 5–6; se sei stanco dopo la notte riduci il volume o riposa.',exercises:[
+  {name:'Riscaldamento libero/dorso',sets:1,reps:'200 m',load:'Facile',rest:'—'},
+  {name:'Tecnica: 25 drill + 25 stile',sets:6,reps:'50 m',load:'Controllata',rest:'20–25 s'},
+  {name:'Fondo a ritmo regolare',sets:5,reps:'100 m',load:'Aerobico',rest:'20 s'},
+  {name:'Dorso sciolto',sets:4,reps:'50 m',load:'Rilassato',rest:'20 s'},
+  {name:'Fondo finale variato',sets:4,reps:'100 m',load:'Stile / dorso',rest:'20–30 s'},
+  {name:'Defaticamento',sets:1,reps:'200 m',load:'Facile',rest:'—'}]},
+ {id:'forza-b',name:'Forza B · manubri e stabilità',kind:'Forza',icon:'💪',time:65,color:'orange',notes:'Seduta alternativa a Hybrid B, non aggiunta obbligatoria. Manubri e varianti diverse dai fondamentali; cura tecnica, asimmetrie e controllo. Carichi non testati indicati come da regolare. Evita movimenti che irritano ginocchia e gomito.',exercises:[
+  {name:'Cyclette e mobilità',sets:1,reps:'8 min',load:'Progressiva',rest:'—'},
+  {name:'RDL con manubri',sets:3,reps:'8–10',load:'Da regolare',rest:'120 s'},
+  {name:'Goblet squat controllato',sets:3,reps:'8',load:'20–24 kg',rest:'120 s'},
+  {name:'Panca manubri presa neutra',sets:3,reps:'8–10',load:'Da regolare',rest:'120 s'},
+  {name:'Lat machine presa neutra',sets:3,reps:'8–10',load:'45–50 kg',rest:'120 s'},
+  {name:'Rematore chest-supported',sets:3,reps:'10',load:'35–40 kg',rest:'90 s'},
+  {name:'Suitcase march sul posto',sets:3,reps:'30–40 s / lato',load:'Da regolare',rest:'60 s'},
+  {name:'Plank',sets:3,reps:'40 s',load:'Corpo libero',rest:'45–60 s'}]}
+];
+function defaultProgramMigration(templates){
+ const existing=Array.isArray(templates)?templates:[],next=[...existing],matches=t=>JSON.stringify(t);
+ let upgraded=0,protectedCount=0;
+ for(const suggested of TEMPLATES){
+  const pos=next.findIndex(t=>t.id===suggested.id);
+  if(pos<0){next.push(structuredClone(suggested));upgraded++;continue;}
+  const current=next[pos],legacy=LEGACY_TEMPLATES.find(t=>t.id===current.id);
+  if(legacy&&matches(current)===matches(legacy)){next[pos]=structuredClone(suggested);upgraded++;}
+  else if(matches(current)!==matches(suggested)) protectedCount++;
+ }
+ return {templates:next,upgraded,protectedCount};
+}
+async function migrateTrainingProgram(){
+ const stored=await getItem('trainingProgramVersion',null);
+ if(stored===TRAINING_PROGRAM_VERSION)return;
+ const result=defaultProgramMigration(state.templates);
+ state.templates=result.templates;
+ if(result.upgraded)await persist('templates');
+ await setItem('trainingProgramVersion',TRAINING_PROGRAM_VERSION);
+}
+async function restoreTrainingProgram(){
+ if(!confirm('Caricare le schede aggiornate? Le versioni personalizzate delle schede di base verranno conservate come copie; storico, Salute, alimentazione e turni resteranno invariati.'))return;
+ const ids=new Set(TEMPLATES.map(t=>t.id)),copies=[];
+ for(const t of state.templates.filter(t=>ids.has(t.id))){
+  const old=LEGACY_TEMPLATES.find(x=>x.id===t.id),isDefault=old&&JSON.stringify(t)===JSON.stringify(old);
+  const isRecommended=JSON.stringify(t)===JSON.stringify(TEMPLATES.find(x=>x.id===t.id));
+  if(!isDefault&&!isRecommended){copies.push({...structuredClone(t),id:'copia-'+t.id+'-'+Date.now()+'-'+copies.length,name:'Copia precedente · '+t.name});}
+ }
+ state.templates=[...TEMPLATES.map(t=>structuredClone(t)),...state.templates.filter(t=>!ids.has(t.id)),...copies];
+ await persist('templates');await setItem('trainingProgramVersion',TRAINING_PROGRAM_VERSION);
+ render();toast('Schede aggiornate. Le eventuali personalizzazioni precedenti sono state salvate come copie.');
+}
