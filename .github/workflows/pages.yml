@@ -1,0 +1,48 @@
+name: Pubblica Ritmo Fit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ritmo-fit-pronto-per-pubblicazione.zip'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Scarica il repository
+        uses: actions/checkout@v4
+
+      - name: Estrai i file del sito
+        run: |
+          mkdir -p _site
+          unzip -q ritmo-fit-pronto-per-pubblicazione.zip -d _site
+          test -f _site/index.html
+          test -f _site/app.js
+          test -f _site/style.css
+
+      - name: Configura GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Carica il sito
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Pubblica il sito
+        id: deployment
+        uses: actions/deploy-pages@v4
