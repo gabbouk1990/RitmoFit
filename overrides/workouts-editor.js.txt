@@ -1,0 +1,48 @@
+function editTemplate(id){
+ const old=state.templates.find(t=>t.id===id)||{id:'scheda-'+Date.now(),name:'',kind:'Forza',icon:'⚡',time:50,color:'green',notes:'',exercises:[{name:'',sets:3,reps:'10',load:'',rest:'90 s'}]};
+ const isNew=!id,ex=old.exercises.map((r,i)=>templateRow(r,i)).join('');
+ openModal(`<h2>${isNew?'Crea scheda':'Modifica scheda'}</h2>
+ <p>Puoi modificare esercizi, serie, ripetizioni, carichi, recuperi e note. Le modifiche vengono salvate solo su questo dispositivo.</p>
+ <div class="form-grid">${field('Nome scheda','name',old.name,'text','required')}${field('Tipologia','kind',old.kind)}${field('Durata stimata (min)','time',old.time,'number','min="0"')}${field('Icona','icon',old.icon)}
+ <label class="field full"><span>Obiettivi, RPE e note</span><textarea name="notes">${safe(old.notes)}</textarea></label></div>
+ <div class="section-head training-editor-title"><h2>Esercizi</h2><button type="button" class="btn btn-outline" data-act="addExercise">+ Aggiungi</button></div>
+ <div class="training-editor-head"><span>Esercizio</span><span>Serie</span><span>Ripetizioni</span><span>Carico</span><span>Recupero</span><span></span></div>
+ <div id="exerciseRows">${ex}</div>`,async f=>{
+  const t={...old};for(const k of ['name','kind','icon','notes'])t[k]=String(f.get(k)||'').trim();
+  t.time=Math.max(0,Number(f.get('time'))||0);
+  t.exercises=[...$('#exerciseRows').querySelectorAll('.template-row')].map(r=>({
+   name:r.querySelector('[data-f="exname"]').value.trim(),
+   sets:Math.max(1,Number(r.querySelector('[data-f="sets"]').value)||1),
+   reps:r.querySelector('[data-f="reps"]').value.trim(),
+   load:r.querySelector('[data-f="load"]').value.trim(),
+   rest:r.querySelector('[data-f="rest"]').value.trim()||'—'
+  })).filter(r=>r.name);
+  if(!t.name)throw Error('Assegna un nome alla scheda');
+  if(!t.exercises.length)throw Error('Aggiungi almeno un esercizio');
+  if(isNew)state.templates.push(t);else state.templates=state.templates.map(z=>z.id===id?t:z);
+  await persist('templates');toast('Scheda salvata.');
+ });
+}
+function templateRow(r,i){
+ return `<div class="template-row training-edit-row">
+ <label class="training-field training-name"><span>Esercizio</span><input data-f="exname" aria-label="Esercizio" value="${safe(r.name)}"></label>
+ <label class="training-field"><span>Serie</span><input data-f="sets" aria-label="Serie" type="number" min="1" value="${safe(r.sets||3)}"></label>
+ <label class="training-field"><span>Ripetizioni</span><input data-f="reps" aria-label="Ripetizioni" value="${safe(r.reps||'10')}"></label>
+ <label class="training-field"><span>Carico</span><input data-f="load" aria-label="Carico" value="${safe(r.load||'')}"></label>
+ <label class="training-field"><span>Recupero</span><input data-f="rest" aria-label="Recupero" value="${safe(r.rest||'90 s')}"></label>
+ <button type="button" data-act="removeExercise" aria-label="Elimina esercizio">×</button></div>`;
+}
+function openTemplate(id){
+ const t=state.templates.find(x=>x.id===id);if(!t)return;
+ openModal(`<div class="training-detail">
+ <div class="eyebrow">${safe(t.kind)} · ${fmt(t.time)} minuti indicativi</div>
+ <h2>${safe(t.icon)} ${safe(t.name)}</h2>
+ <p>${safe(t.notes)}</p>
+ <div class="training-detail-list">${t.exercises.map((e,i)=>`<div class="training-detail-item">
+  <div class="training-detail-index">${i+1}</div>
+  <div class="training-detail-name"><strong>${safe(e.name)}</strong><small>${fmt(e.sets)} × ${safe(e.reps)} · ${safe(e.load||'—')}</small></div>
+  <div class="training-detail-rest">${safe(e.rest||'—')}</div>
+ </div>`).join('')}</div>
+ <div class="hint">Regola i carichi secondo recupero, tecnica e dolore. Il programma è un riferimento modificabile, non un allenamento già registrato.</div>
+ </div>`,async()=>()=>logWorkout(t.id),'Registra sessione');
+}
