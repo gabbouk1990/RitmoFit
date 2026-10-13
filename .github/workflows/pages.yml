@@ -36,6 +36,11 @@ jobs:
           test -f _site/style.css
           touch _site/.nojekyll
 
+      - name: Migliora layout turni e verifica JavaScript
+        run: |
+          python3 overrides/patch.py
+          node --check _site/app.js
+
       - name: Configura GitHub Pages
         uses: actions/configure-pages@v5
 
