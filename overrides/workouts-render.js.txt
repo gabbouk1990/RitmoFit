@@ -1,0 +1,14 @@
+if(state.workoutPane==='schede')content=`<div class="training-overview card">
+  <div><div class="eyebrow">BLOCCO OTTOBRE 2026</div><h3>2 sedute forza/ibrido + 2 piscine</h3>
+  <p>Forza A + Hybrid B + Piscina A/B nei giorni lun–ven, adattando il carico ai turni. Forza B è una variante opzionale, non una quinta seduta obbligatoria. Smonto e weekend dedicati al recupero.</p>
+  </div>
+  <button class="btn btn-outline" data-act="restoreProgram">↺ Carica schede consigliate</button>
+</div>
+<div class="workout-cards training-cards">${state.templates.map(t=>`<div class="card workout-card training-card">
+ <div class="card-top training-card-top"><div class="workout-color ${safe(t.color||'')}">${safe(t.icon||'⚡')}</div><span class="pill">${safe(t.kind)} · ${fmt(t.time)} min</span></div>
+ <div><h3>${safe(t.name)}</h3><p class="training-card-note">${safe(t.notes||'')}</p></div>
+ <div class="training-exercise-preview">${t.exercises.slice(0,4).map(x=>`<div class="training-preview-line"><span class="training-exercise-name">${safe(x.name)}</span><span class="training-exercise-target">${fmt(x.sets)} × ${safe(x.reps)} · ${safe(x.load||'—')}</span></div>`).join('')}${t.exercises.length>4?`<div class="caption">+ ${t.exercises.length-4} esercizi e dettagli nella scheda</div>`:''}</div>
+ <div class="inline-actions training-actions"><button class="btn btn-primary" data-act="openTemplate" data-id="${safe(t.id)}">Apri scheda</button><button class="btn btn-outline" data-act="editTemplate" data-id="${safe(t.id)}">Modifica</button></div>
+</div>`).join('')}</div>
+<div class="spacer"></div><button class="btn btn-outline" data-act="newTemplate">+ Nuova scheda</button>
+<div class="hint training-footer-hint">I carichi di riferimento derivano dalle ultime sedute condivise, ma <strong>non</strong> sono registrati come allenamenti eseguiti nell'app. Le modifiche personali alle schede esistenti vengono conservate; puoi recuperare il programma consigliato con il pulsante in alto.</div>`;
