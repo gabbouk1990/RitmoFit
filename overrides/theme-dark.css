@@ -1,0 +1,52 @@
+/* Ritmo Fit 2026 — tema scuro fotografico, solo grafica */
+:root{color-scheme:dark;--navy:#07111a;--ink:#edf7fb;--muted:#a7bdc9;--line:rgba(202,247,239,.13);--card:rgba(9,22,32,.84);--teal:#30cbb7;--mint:#a3e873;--orange:#ffb875;background:#07111a!important;color:#edf7fb!important}
+html,body{background:#07111a!important;color:#edf7fb!important}
+body{--rf-bg:linear-gradient(130deg,#111d27,#0a161b);--rf-pos:center}
+body[data-tab="oggi"]{--rf-bg:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1600&q=80')}
+body[data-tab="allenamenti"]{--rf-bg:url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1600&q=80');--rf-pos:center 40%}
+body[data-tab="alimentazione"]{--rf-bg:url('https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1600&q=80')}
+body[data-tab="progressi"]{--rf-bg:url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1600&q=80')}
+body[data-tab="turni"]{--rf-bg:radial-gradient(ellipse at 80% 25%,#165160,#0a1a29 52%,#071019)}
+body[data-tab="impostazioni"]{--rf-bg:radial-gradient(ellipse at 80% 15%,#184747,#0a1521 54%,#061019)}
+.app-shell{background:transparent!important;isolation:isolate}
+.main-column{position:relative;isolation:isolate;background:transparent!important;min-width:0}
+.main-column:before{content:"";position:fixed;inset:0 0 0 238px;z-index:-2;background-image:linear-gradient(180deg,rgba(5,12,19,.73),rgba(6,13,20,.78) 46%,rgba(4,12,20,.93)),var(--rf-bg);background-size:cover;background-repeat:no-repeat;background-position:var(--rf-pos);filter:saturate(.86);pointer-events:none}
+.main-column:after{content:"";position:fixed;inset:0 0 0 238px;z-index:-1;background:radial-gradient(ellipse at 90% 6%,rgba(46,205,181,.15),transparent 43%),linear-gradient(90deg,rgba(5,11,20,.26),transparent 35%,rgba(6,12,21,.3));pointer-events:none}
+body[data-tab="turni"] .main-column:after{background:repeating-linear-gradient(90deg,transparent 0,transparent 83px,rgba(139,226,213,.035) 84px),radial-gradient(ellipse at 75% 20%,rgba(42,187,197,.22),transparent 55%)}
+.sidebar{background:linear-gradient(180deg,rgba(7,16,24,.96),rgba(9,23,30,.95))!important;border-right:1px solid rgba(170,236,223,.10)!important;backdrop-filter:blur(14px)}
+.brandmark,.brand-mobile{background:linear-gradient(130deg,#b5ef7b,#43c9b9)!important;color:#10232c!important}
+.brandtext{color:#f4fbff!important}.brandtext span{color:#a2eacf!important}.brandtext small,.sidebar-title{color:#9cb1c4!important}
+.nav-btn{color:#a4bdcb!important}.nav-btn.active,.nav-btn:hover{color:#e5fff8!important;background:rgba(61,160,144,.15)!important;box-shadow:inset 3px 0 #7ce9c3!important}
+.side-bottom{background:rgba(255,255,255,.05)!important}.privacy-circle{background:#71dfb9!important}
+.topbar{position:sticky;top:0;z-index:12;background:rgba(7,17,27,.85)!important;border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(15px)}
+.topbar h1,.headline,.section-head h2,.card h2,.card h3,.card h4,.training-overview h3,.nutrition-guidance h3{color:#f3fbff!important}
+.topbar small,.subtext,.eyebrow,.caption,.secondary-text,.kpi-label,.kpi-foot{color:#a9bdc8!important}.eyebrow{color:#a0ead9!important}
+.avatar{background:rgba(78,202,180,.2)!important;color:#a6ffee!important}.icon-button{background:#152a38!important;border-color:rgba(255,255,255,.15)!important;color:#ebfafa!important}
+main#view{position:relative;z-index:1}
+.card,.shift-grid>.card,.shift-setup>.card,.training-overview,.nutrition-guidance,.nutrition-library,.nutrition-diary{background:rgba(9,22,32,.83)!important;color:#e0edf7!important;border:1px solid rgba(202,247,239,.11)!important;box-shadow:0 14px 42px rgba(0,0,0,.27)!important;backdrop-filter:blur(15px)}
+.hero{background:linear-gradient(110deg,rgba(7,20,29,.95),rgba(20,85,85,.73))!important;color:#fff!important;border:1px solid rgba(255,255,255,.11)!important;box-shadow:0 20px 44px rgba(0,0,0,.29)}.hero-side{background:rgba(7,23,32,.69)!important}.hero p,.hero-side small,.hero-side p{color:#bad7e0!important}.hero-eyebrow{color:#a3f5d6!important}
+.kpi-symbol,.workout-color,.food-icon,.macro-box{background:rgba(52,164,141,.13)!important;color:#baf5e1!important;border:1px solid rgba(183,238,233,.10)}.workout-color.orange{background:rgba(237,155,81,.13)!important}.workout-color.blue{background:rgba(81,159,235,.13)!important}.workout-color.purple{background:rgba(161,104,241,.15)!important}
+.kpi-number,.macro-box b,.hero-shift{color:#f7feff!important}.macro-box span,.kpi-foot{color:#a4bdc8!important}
+.pill{background:rgba(81,120,140,.20)!important;color:#e5f4fc!important;border:1px solid rgba(250,255,255,.08)!important}.pill.green{color:#a3ffb9!important;background:rgba(76,167,99,.15)!important}.pill.blue{color:#b5e7ff!important;background:rgba(89,170,217,.16)!important}.pill.orange{color:#ffd5a6!important;background:rgba(242,162,83,.15)!important}
+.btn{border-radius:12px!important;transition:background .15s ease,transform .15s ease}.btn:active{transform:translateY(1px)}.btn-primary{background:linear-gradient(135deg,#186c70,#23a998)!important;color:#fff!important;border:1px solid rgba(163,248,233,.18)!important}.btn-mint{background:linear-gradient(135deg,#a2ea78,#44cab0)!important;color:#173226!important}
+.btn-outline,.btn-muted,.btn-plain{background:rgba(22,42,54,.86)!important;color:#e2f0f7!important;border:1px solid rgba(180,232,230,.17)!important}
+.tabs{background:rgba(11,26,37,.91)!important;border:1px solid rgba(255,255,255,.07)}.tab{background:transparent!important;color:#a5c1ce!important}.tab.active{background:rgba(60,174,148,.2)!important;color:#ecfffa!important;box-shadow:none!important}
+.data-table th{color:#b6d4dd!important;border-bottom-color:rgba(255,255,255,.12)!important}.data-table td,.mini-row,.stat-line{color:#dfedf6!important;border-bottom-color:rgba(255,255,255,.08)!important}.data-table td small{color:#9fb8c6!important}.empty{color:#a7bdc9!important}
+.field,.field span,.training-field span{color:#bdd4dd!important}
+.field input,.field select,.field textarea,select.standalone,.template-row input,.training-edit-row input,.nutrition-row-controls input,.nutrition-row-controls select,.nutrition-extra-fields input,.food-live-fields input,.food-live-fields select,.training-swap-field select,.timer-custom input{background:rgba(6,17,27,.96)!important;color:#f0fbff!important;border:1px solid rgba(194,239,239,.17)!important;color-scheme:dark!important}
+.field input:focus,.field select:focus,.field textarea:focus,select:focus-visible,input:focus-visible{outline:2px solid rgba(88,219,197,.45)!important;outline-offset:1px}
+.modal{background:#0b1d29!important;color:#effcff!important;border:1px solid rgba(255,255,255,.15)!important}.modal::backdrop{background:rgba(2,9,15,.80)!important;backdrop-filter:blur(7px)}.modal form{background:#0b1d29!important}.modal h2{color:#f3fcff!important}.modal p{color:#afc6d2!important}.modal-actions{border-top-color:rgba(255,255,255,.10)!important}.toast{background:#15323c!important;color:#f0fffa!important}
+.workout-card p,.food-card p,.nutrition-plan-head p,.nutrition-guidance p,.training-overview p,.hint,.tagline,.training-card-note,.training-exercise-target,.runner-prescription,.training-detail-rest,.training-detail-name small{color:#b1c8d6!important}
+.nutrition-ingredient-list,.nutrition-catalog-item,.nutrition-diary-item,.nutrition-totals,.nutrition-row-calculated,.food-ingredient-row,.food-live-row,.shift-suggestion,.runner-series-count,.calendar-day,.shifts-page .calendar-day{background:rgba(19,39,49,.88)!important;border-color:rgba(200,241,233,.14)!important;color:#e2f4f5!important}
+.nutrition-ingredient-line,.nutrition-ingredient-line b,.nutrition-catalog-item strong,.nutrition-inline-macros span,.nutrition-macros span,.nutrition-serving span,.food-live-meta b,.nutrition-row-calculated,.nutrition-category-caption strong{color:#d7f9ed!important}
+.nutrition-ingredient-values,.nutrition-catalog-item small,.nutrition-catalog-item .caption,.nutrition-category-caption span,.food-live-meta,.food-live-heading{color:#a9c0cf!important}
+.nutrition-inline-macros span,.nutrition-macros span{background:rgba(53,146,131,.14)!important}
+.nutrition-category-button{background:rgba(24,52,63,.95)!important;color:#d1e8f1!important;border-color:rgba(194,238,233,.15)!important}.nutrition-category-button.active{background:#266b69!important;color:#fff!important}
+.calendar-day.selected,.shifts-page .calendar-day.selected{background:rgba(51,147,126,.34)!important;border-color:#56e1bc!important}.calendar-week span,.calendar-date,.shift-detail .shift-time,.shift-legend-item{color:#c6dbe4!important}
+.timer-clock,.timer-phase,.runner-series-count b,.training-detail-name strong{color:#aaf8df!important}.timer-preset{background:rgba(38,119,110,.30)!important;color:#d4ffed!important;border-color:rgba(118,239,217,.19)!important}
+.timer-progress-track,.goal-progress{background:rgba(255,255,255,.07)!important}.timer-progress-track span,.goal-progress div{background:linear-gradient(90deg,#8beaa2,#2bcbb8)!important}
+.session-delete-button{background:rgba(159,51,55,.25)!important;color:#ffd3d3!important;border-color:rgba(255,140,142,.22)!important}.session-import-label{color:#adc3cc!important}
+.mobile-nav{background:rgba(7,18,27,.96)!important;backdrop-filter:blur(13px);border-top:1px solid rgba(200,244,232,.11)!important}.mobile-nav .nav-btn.active{color:#b8f9dc!important;background:rgba(46,145,123,.19)!important}
+@media(max-width:900px){.main-column:before,.main-column:after{inset:0}.topbar{padding-inline:18px}main#view{padding-inline:18px}}
+@media(max-width:700px){.card{backdrop-filter:blur(9px)}.topbar{background:rgba(7,17,27,.92)!important}.nutrition-diary-item,.nutrition-catalog-item,.food-live-row{background:rgba(15,34,44,.93)!important}}
+@media(prefers-reduced-motion:reduce){.btn{transition:none!important}}
