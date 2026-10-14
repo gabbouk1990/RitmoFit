@@ -1,0 +1,48 @@
+function foodIngredientLines(ingredients){
+ if(!Array.isArray(ingredients)||!ingredients.length)return '<span class="nutrition-empty">Ingredienti non ancora specificati</span>';
+ return ingredients.map(x=>{
+  const q=itemNutrition(x);
+  return `<div class="nutrition-ingredient-line"><span><b>${fmt(x.grams,1)} g</b> · ${safe(x.name)}</span><span class="nutrition-ingredient-values">${fmt(q.kcal)} kcal · P ${fmt(q.p,1)} · C ${fmt(q.c,1)} · G ${fmt(q.f,1)}</span></div>`;
+ }).join('');
+}
+function foodMacroBar(obj){
+ return `<div class="food-macros nutrition-macros"><span><b>${fmt(obj.kcal)}</b> kcal</span><span>P <b>${fmt(obj.p,1)}</b> g</span><span>C <b>${fmt(obj.c,1)}</b> g</span><span>G <b>${fmt(obj.f,1)}</b> g</span></div>`;
+}
+function foodPlanCard(m){
+ return `<section class="card food-card nutrition-plan-card">
+ <div class="food-main"><div class="food-icon">${safe(m.icon||'🍽️')}</div><div class="nutrition-plan-head"><div class="eyebrow">${safe(m.slot)}</div><h3>${safe(m.name)}</h3><p>${safe(m.details||'')}</p></div></div>
+ <div class="nutrition-ingredient-list">${foodIngredientLines(m.ingredients)}</div>
+ ${foodMacroBar(m)}
+ <div class="food-actions nutrition-actions"><button class="btn btn-outline" data-act="editMeal" data-id="${safe(m.id)}">Modifica quantità</button><button class="btn btn-primary" data-act="eatMeal" data-id="${safe(m.id)}">+ Registra</button></div>
+ </section>`;
+}
+function foodCatalogView(){
+ const active=FOOD_CATEGORIES.some(c=>c.id===state.foodCategory)?state.foodCategory:'proteine';
+ const category=FOOD_CATEGORIES.find(c=>c.id===active);
+ const items=FOOD_CATALOG.filter(x=>x.category===active);
+ return `<div class="card nutrition-library">
+ <div class="card-top nutrition-library-heading"><div><h3>Opzioni alimentari per categoria</h3><p class="caption">Seleziona una categoria. Quantità e valori sono indicativi: verifica peso e confezione.</p></div><button class="btn btn-primary" data-act="newMeal">+ Crea un pasto</button></div>
+ <div class="nutrition-category-filter" aria-label="Categorie di alimenti">${FOOD_CATEGORIES.map(c=>`<button type="button" class="nutrition-category-button ${c.id===active?'active':''}" data-act="foodCategory" data-to="${c.id}" aria-pressed="${c.id===active}">${c.icon} ${c.name}</button>`).join('')}</div>
+ <div class="nutrition-category-caption"><strong>${category.icon} ${category.name}</strong><span>${safe(category.hint)} · ${items.length} opzioni</span></div>
+ <div class="nutrition-catalog-list">${items.length?items.map(item=>{
+  const n=itemNutrition({...item,grams:item.portion});
+  return `<article class="nutrition-catalog-item"><div><strong>${safe(item.name)}</strong><small>${safe(item.detail)}</small></div><div class="nutrition-serving"><span>Porzione esempio: <b>${fmt(item.portion)} g</b></span><span>${fmt(n.kcal)} kcal</span></div><div class="nutrition-inline-macros"><span>P ${fmt(n.p,1)} g</span><span>C ${fmt(n.c,1)} g</span><span>G ${fmt(n.f,1)} g</span></div><div class="caption">Per 100 g: ${fmt(item.kcal)} kcal · P ${fmt(item.p,1)} · C ${fmt(item.c,1)} · G ${fmt(item.f,1)}</div></article>`;
+ }).join(''):`<div class="empty">Per un alimento non presente, apri un pasto e seleziona “Personalizzato”: puoi inserire i valori dell’etichetta.</div>`}</div>
+ </div>`;
+}
+function foodDiaryView(d,list){
+ return `<section class="card nutrition-diary">
+ <div class="card-top nutrition-diary-head"><div><h3>Diario del ${safe(dateFmt(d,{day:'numeric',month:'long'}))}</h3><p class="caption">Solo i pasti effettivamente registrati contribuiscono al bilancio.</p></div><button class="btn btn-primary" data-act="addFoodLog">+ Registra pasto</button></div>
+ ${list.length?`<div class="nutrition-diary-items">${list.map(m=>`<article class="nutrition-diary-item"><div class="nutrition-diary-top"><div><span class="eyebrow">${safe(m.slot||'Pasto')}</span><h3>${safe(m.name)}</h3><small>${safe(m.details||'')}</small></div><div class="nutrition-diary-buttons"><button class="btn btn-outline" data-act="editFoodLog" data-id="${safe(m.id)}">Modifica</button><button class="btn btn-plain" data-act="removeFoodLog" data-id="${safe(m.id)}" aria-label="Elimina pasto">✕</button></div></div><div class="nutrition-ingredient-list">${foodIngredientLines(m.ingredients)}</div>${foodMacroBar(m)}</article>`).join('')}</div>`:'<div class="empty"><div class="empty-symbol">🥗</div>Non hai ancora registrato pasti per questa data.</div>'}
+ </section>`;
+}
+function renderFood(){
+ const d=state.date, list=mealDaily(d),sum=calcMacros(list),settings=state.settings, pane=state.foodPane;
+ const isPlan=pane==='piano',isCatalog=pane==='catalogo';
+ const content=isPlan?`<div class="nutrition-guidance"><div><strong>Componi pasti con le quantità reali</strong><p>Ogni pasto include ingredienti in grammi, preparazione, kcal, proteine, carboidrati e grassi. Puoi sostituire ogni ingrediente mantenendo la stessa categoria.</p></div><button class="btn btn-outline" data-act="foodPane" data-to="catalogo">Esplora 53 alimenti →</button></div><div class="grid-two nutrition-plan-grid">${state.meals.map(foodPlanCard).join('')}</div><div class="nutrition-bottom-actions"><button class="btn btn-outline" data-act="newMeal">+ Aggiungi pasto al piano</button></div>`:
+ isCatalog?foodCatalogView():foodDiaryView(d,list);
+ return `${head('NUTRIZIONE','Alimentazione su misura','Pasti modificabili, alternative per ogni gruppo alimentare e quantità espresse in grammi.')}
+ <div class="filter-row nutrition-toolbar"><div class="tabs nutrition-tabs"><button class="tab ${isPlan?'active':''}" data-act="foodPane" data-to="piano">Piano alimentare</button><button class="tab ${isCatalog?'active':''}" data-act="foodPane" data-to="catalogo">Alimenti</button><button class="tab ${!isPlan&&!isCatalog?'active':''}" data-act="foodPane" data-to="diario">Diario</button></div><label class="field"><span>Data</span><input id="dayPicker" type="date" value="${safe(d)}"></label></div>
+ <section class="card nutrition-daily-summary"><div class="card-top"><div><h3>Bilancio del giorno</h3><span class="secondary-text">Calcolato solo dai pasti registrati, non da quelli suggeriti</span></div><button class="btn btn-outline" data-act="editGoals">Obiettivi</button></div><div class="macro-grid"><div class="macro-box"><b>${fmt(sum.kcal)}</b><span>kcal ${settings.kcalGoal?'/ '+fmt(settings.kcalGoal):''}</span></div><div class="macro-box"><b>${fmt(sum.p,1)} g</b><span>Proteine ${settings.proteinGoal?'/ '+fmt(settings.proteinGoal)+' g':''}</span></div><div class="macro-box"><b>${fmt(sum.c,1)} g</b><span>Carboidrati ${settings.carbsGoal?'/ '+fmt(settings.carbsGoal)+' g':''}</span></div><div class="macro-box"><b>${fmt(sum.f,1)} g</b><span>Grassi ${settings.fatsGoal?'/ '+fmt(settings.fatsGoal)+' g':''}</span></div></div>${settings.proteinGoal?`<div class="goal-progress"><div style="width:${Math.min(100,100*sum.p/settings.proteinGoal)}%"></div></div>`:''}</section>
+ ${content}<div class="hint nutrition-disclaimer">Valori medi di riferimento, <strong>non etichette certificate né indicazioni caloriche prescritte</strong>. Pesa gli alimenti nella forma indicata (crudi, cotti, sgocciolati), verifica le etichette e inserisci eventuali condimenti separatamente. Le quantità del piano non vengono registrate automaticamente nel diario.</div>`;
+}
