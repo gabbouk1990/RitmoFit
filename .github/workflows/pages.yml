@@ -42,6 +42,7 @@ jobs:
           python3 overrides/patch.py
           python3 overrides/patch_workouts.py
           python3 overrides/patch_food.py
+          python3 overrides/patch_interactive.py
           node --check _site/app.js
           python3 - <<'PY'
           from pathlib import Path
@@ -59,8 +60,15 @@ jobs:
           assert "upgradeDefaultMeals()" in s
           assert "nutrition-disclaimer" in s
           assert "food-ingredient-row" in s
-          assert 'ritmo-fit-static-v4' in Path('_site/sw.js').read_text()
-          print("Schede, turni e alimentazione: controlli statici superati")
+          assert 'ritmo-fit-static-v5' in Path('_site/sw.js').read_text()
+          assert 'function renderTrainingTimer()' in s
+          assert 'function foodPlanCardV2' in s
+          assert 'food-live-select' in s
+          assert 'function trainingAlternatives' in s
+          assert 'case \'foodCategory\'' in s
+          assert 'await restoreWorkoutRunner();render();' in s
+          assert 'Esplora ${FOOD_CATALOG.length} alimenti' in s
+          print("Timer, sostituzioni e catalogo alimentare: verifiche statiche superate")
           PY
 
       - name: Configura GitHub Pages
