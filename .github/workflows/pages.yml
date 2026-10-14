@@ -41,6 +41,7 @@ jobs:
         run: |
           python3 overrides/patch.py
           python3 overrides/patch_workouts.py
+          python3 overrides/patch_food.py
           node --check _site/app.js
           python3 - <<'PY'
           from pathlib import Path
@@ -51,7 +52,15 @@ jobs:
           assert "restoreTrainingProgram()" in s
           assert "data-act=\"restoreProgram\"" in s
           assert "training-program.js.txt" not in s
-          print("Schede aggiornate e verifiche statiche superate")
+          assert "const FOOD_CATALOG_ROWS=" in s
+          assert "function foodIngredientEditorRow" in s
+          assert "function editFoodLog" in s
+          assert "case 'foodCategory'" in s
+          assert "upgradeDefaultMeals()" in s
+          assert "nutrition-disclaimer" in s
+          assert "food-ingredient-row" in s
+          assert 'ritmo-fit-static-v4' in Path('_site/sw.js').read_text()
+          print("Schede, turni e alimentazione: controlli statici superati")
           PY
 
       - name: Configura GitHub Pages
