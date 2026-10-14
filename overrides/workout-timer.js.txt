@@ -92,9 +92,8 @@ async function runnerSetDone(){
  r.completed[idx]+=1;
  if(r.completed[idx]>=goal&&idx<r.exercises.length-1)r.exerciseIndex+=1;
  const prog=runnerProgress(),more=prog.done<prog.total;
- if(r.autoRest&&more){
-  const sec=restSeconds(ex.rest);
-  if(sec>0)runnerTimerStart(sec,'rest');
+ if(r.autoRest&&more&&restSeconds(ex.rest)>0){
+  runnerTimerStart(restSeconds(ex.rest),'rest');
  }else{
   await saveWorkoutRunner();
   render();
