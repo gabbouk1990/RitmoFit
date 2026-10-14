@@ -1,0 +1,74 @@
+/* Ritmo Fit v5 - selettori alimenti e timer allenamenti */
+.food-live-card{gap:13px;min-width:0}
+.food-live-heading{font-size:11px;font-weight:790;letter-spacing:.02em;color:#426e67;border-top:1px solid #e7eeee;padding-top:12px}
+.food-live-ingredients{display:flex;flex-direction:column;gap:10px}
+.food-live-row{border:1px solid #e1ece9;border-radius:13px;background:#fbfdfc;padding:10px;min-width:0}
+.food-live-fields{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr) minmax(78px,.6fr);gap:6px}
+.food-live-fields label{display:flex;flex-direction:column;gap:5px;min-width:0}
+.food-live-fields label span{font-size:9px;color:#6b8489;font-weight:800}
+.food-live-fields select,.food-live-fields input{border:1px solid #d8e5e5;border-radius:9px;background:#fff;padding:9px 6px;min-width:0;max-width:100%;width:100%;font:inherit;color:#2a5459;font-size:11px;height:40px}
+.food-live-fields select:focus-visible,.food-live-fields input:focus-visible{outline:2px solid #76b792;outline-offset:2px}
+.food-live-meta{display:flex;justify-content:space-between;align-items:center;gap:7px;flex-wrap:wrap;margin-top:8px;font-size:10px;color:#798e92}
+.food-live-meta b{color:#39695b;font-size:10px;font-weight:750}
+.workout-timer-intro{display:flex;flex-direction:column;gap:13px;margin:17px 0}
+.workout-timer-intro h3{font-size:21px;margin:0}
+.workout-timer-intro p{font-size:12px;line-height:1.6;color:#637e88}
+.timer-start-options{display:flex;flex-wrap:wrap;gap:8px}
+.timer-start-options .btn{min-height:42px;white-space:normal}
+.training-runner{display:grid;grid-template-columns:minmax(0,1fr) minmax(275px,.8fr);gap:16px;margin:14px 0}
+.workout-timer-main,.workout-live-sets{min-width:0}
+.timer-title-row{display:flex;justify-content:space-between;align-items:start;gap:10px}
+.timer-title-row h3{font-size:20px;line-height:1.25;margin:6px 0}
+.timer-title-row small{font-size:11px;color:#78919c}
+.timer-title-row .btn{flex-shrink:0}
+.timer-phase{margin-top:22px;text-transform:uppercase;letter-spacing:.13em;font-size:10px;color:#44745d;font-weight:900;text-align:center}
+.timer-clock{font-size:clamp(52px,9vw,94px);line-height:1.15;font-weight:850;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:-.06em;color:#254c45;margin:8px 0 17px}
+.timer-progress-track{height:9px;border-radius:10px;overflow:hidden;background:#e9f1ef;margin-bottom:15px}
+.timer-progress-track span{display:block;height:100%;background:linear-gradient(90deg,#a8d77d,#29846f);border-radius:10px;transition:width .25s}
+.timer-control-row,.timer-presets>div{display:flex;flex-wrap:wrap;gap:6px}
+.timer-control-row .btn{flex:1 1 65px;min-height:39px;font-size:11px;padding:7px 8px}
+.timer-presets{margin-top:23px;padding-top:16px;border-top:1px solid #e6eeee}
+.timer-presets>strong{display:block;font-size:12px;margin-bottom:12px;color:#335767}
+.timer-preset{border:1px solid #cae0d7;border-radius:8px;background:#f0f8f3;padding:10px 12px;color:#2e6f54;font-size:11px;font-weight:800;cursor:pointer;flex:1 1 51px}
+.timer-preset:hover{background:#dcefde}
+.timer-custom{display:flex;align-items:center;gap:8px;margin:12px 0 0;flex-wrap:wrap}
+.timer-custom label{font-size:10px;color:#637c88;font-weight:780}
+.timer-custom input{width:90px;min-height:39px;box-sizing:border-box;border:1px solid #d5e3e7;border-radius:9px;padding:7px 9px}
+.timer-custom .btn{min-height:39px}
+.timer-background-note{margin-top:14px}
+.workout-live-sets{display:flex;flex-direction:column;gap:13px}
+.workout-live-sets h3{font-size:18px;margin:0;line-height:1.3}
+.runner-prescription{font-size:12px;color:#67838c;line-height:1.6}
+.runner-series-count{background:#eef8ed;border:1px solid #d6e9d5;border-radius:13px;padding:17px;display:flex;align-items:baseline;justify-content:space-between;gap:9px}
+.runner-series-count b{font-size:28px;color:#306e52;letter-spacing:-1px}
+.runner-series-count span{font-size:11px;color:#5a786b}
+.runner-done-button{min-height:54px;font-size:15px}
+.runner-switch{display:flex;gap:9px;align-items:start;font-size:12px;line-height:1.5;color:#3a6570;cursor:pointer}
+.runner-switch input{width:19px;height:19px;accent-color:#398d64;flex-shrink:0;margin:0}
+.training-swap-field{display:flex;flex-direction:column;gap:7px;color:#64818d;font-size:11px;font-weight:770;min-width:0}
+.training-swap-field select{width:100%;min-width:0;border:1px solid #d8e5e5;border-radius:10px;min-height:42px;padding:10px 9px;background:#fff;color:#325562;font-size:12px}
+.runner-progress{font-size:12px;color:#65818a}
+.workout-editor-alternative{grid-column:1/-1}
+.training-edit-row .training-swap-field{grid-column:1/-1}
+.training-detail-list+.btn{margin:10px 0}
+.training-actions{gap:6px}
+.training-actions .btn{flex:1 1 100px;white-space:normal}
+@media(max-width:1090px){.training-runner{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:720px){
+ .food-live-fields{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .food-live-food{grid-column:1/-1;grid-row:2}
+ .food-live-grams{grid-column:2;grid-row:1}
+ .food-live-fields select,.food-live-fields input{font-size:12px}
+ .food-live-row{padding:10px}
+ .training-runner{gap:12px}
+ .workout-timer-main,.workout-live-sets{padding:15px}
+ .timer-title-row{flex-wrap:wrap}
+ .timer-title-row .btn{margin-left:auto}
+ .timer-clock{font-size:67px;margin-top:10px}
+ .timer-control-row .btn{font-size:11px}
+ .timer-custom{align-items:stretch}
+ .timer-custom label{flex:1 1 100%}
+ .timer-custom input{flex:1}
+ .timer-custom .btn{flex:1}
+}
+@media(max-width:350px){.food-live-fields{grid-template-columns:1fr}.food-live-food,.food-live-grams{grid-column:1;grid-row:auto}.timer-clock{font-size:53px}}
