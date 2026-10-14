@@ -1,0 +1,199 @@
+// Timer a scadenza assoluta: quando l'app torna in primo piano ricalcola il tempo.
+// Nessuna notifica o allarme garantito a schermo bloccato su iOS.
+let workoutRunner=null,workoutTicker=null;
+const freshTimer=()=>({phase:'idle',running:false,endsAt:null,remainingMs:0,totalMs:0});
+const timerSeconds=t=>Math.max(0,Math.ceil((t?.running?((t?.endsAt||0)-Date.now()):t?.remainingMs||0)/1000));
+const toClock=secs=>`${String(Math.floor(Math.max(0,secs)/60)).padStart(2,'0')}:${String(Math.max(0,secs)%60).padStart(2,'0')}`;
+function restSeconds(v){
+ const value=String(v||'').toLowerCase(),n=Number.parseInt(value.match(/\d+/)?.[0]||'0',10);
+ return value.includes('min')?n*60:n;
+}
+async function saveWorkoutRunner(){await setItem('activeWorkout',workoutRunner);}
+async function restoreWorkoutRunner(){
+ const saved=await getItem('activeWorkout',null);
+ if(saved&&Array.isArray(saved.exercises)&&Array.isArray(saved.completed)){
+  workoutRunner=saved;
+  if(!workoutRunner.timer)workoutRunner.timer=freshTimer();
+ }
+ ensureWorkoutTicker();
+}
+function ensureWorkoutTicker(){
+ if(!workoutTicker)workoutTicker=setInterval(workoutTimerTick,350);
+}
+function workoutTimerTick(){
+ const t=workoutRunner?.timer;
+ if(!t)return;
+ let left=timerSeconds(t);
+ if(t.running&&left<=0){
+  const phase=t.phase;
+  workoutRunner.timer=freshTimer();
+  void saveWorkoutRunner();
+  if(typeof navigator.vibrate==='function')navigator.vibrate([180,70,180]);
+  if(state.tab==='allenamenti'&&state.workoutPane==='timer')render();
+  toast(phase==='prep'?'Pronti! Inizia la prima serie.':'Recupero concluso: puoi ripartire.');
+  return;
+ }
+ const clock=document.querySelector('#restCountdown'),progress=document.querySelector('#workoutTimerProgress');
+ if(clock)clock.textContent=toClock(left);
+ if(progress)progress.style.width=`${t.totalMs?Math.max(0,Math.min(100,100*(t.totalMs-(left*1000))/t.totalMs)):0}%`;
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)workoutTimerTick();});
+async function startWorkout(id){
+ const current=state.templates.find(t=>t.id===id);
+ if(workoutRunner&&!(window.confirm('Hai già una sessione/timer in corso. Sostituirla senza registrare quella precedente?')))return;
+ workoutRunner={templateId:current?.id||null,title:current?.name||'Timer libero',
+ date:inputDate(),startedAt:Date.now(),exercises:current?structuredClone(current.exercises):[],
+ completed:current?current.exercises.map(()=>0):[],exerciseIndex:0,autoRest:true,timer:freshTimer()};
+ await saveWorkoutRunner();ensureWorkoutTicker();
+ state.workoutPane='timer';state.tab='allenamenti';render();
+}
+function runnerCurrent(){
+ const r=workoutRunner;
+ return r?.exercises?.[r.exerciseIndex]||null;
+}
+function runnerProgress(){
+ if(!workoutRunner)return {done:0,total:0};
+ return {done:workoutRunner.completed.reduce((a,b)=>a+b,0),
+ total:workoutRunner.exercises.reduce((a,b)=>a+Math.max(1,Number(b.sets)||1),0)};
+}
+function runnerTimerStart(seconds,phase='rest'){
+ if(!workoutRunner)return;
+ const duration=Math.max(1,Math.min(3600,Math.round(Number(seconds)||0)))*1000;
+ workoutRunner.timer={phase,running:true,endsAt:Date.now()+duration,remainingMs:duration,totalMs:duration};
+ ensureWorkoutTicker();
+ void saveWorkoutRunner();
+ render();
+}
+function runnerTimerPause(){
+ const t=workoutRunner?.timer;if(!t)return;
+ if(t.running){
+  t.remainingMs=Math.max(0,t.endsAt-Date.now());t.endsAt=null;t.running=false;
+ }else if(t.remainingMs>0){t.endsAt=Date.now()+t.remainingMs;t.running=true;}
+ void saveWorkoutRunner();render();
+}
+function runnerTimerAdjust(seconds){
+ const t=workoutRunner?.timer;if(!t||t.phase==='idle')return;
+ const next=Math.max(0,(t.running?t.endsAt-Date.now():t.remainingMs)+seconds*1000);
+ if(next<=0){workoutRunner.timer=freshTimer();}
+ else{t.remainingMs=next;if(t.running)t.endsAt=Date.now()+next;t.totalMs=Math.max(next,t.totalMs);}
+ void saveWorkoutRunner();render();
+}
+function runnerTimerSkip(){
+ if(!workoutRunner)return;
+ workoutRunner.timer=freshTimer();
+ void saveWorkoutRunner();render();
+}
+async function runnerSetDone(){
+ const r=workoutRunner,idx=r?.exerciseIndex,ex=r?.exercises?.[idx];
+ if(!ex)return;
+ if(r.timer?.running&&r.timer.phase==='prep'){toast('Termina prima il countdown di partenza.');return;}
+ const goal=Math.max(1,Number(ex.sets)||1);
+ if(r.completed[idx]>=goal)return;
+ r.completed[idx]+=1;
+ if(r.completed[idx]>=goal&&idx<r.exercises.length-1)r.exerciseIndex+=1;
+ const prog=runnerProgress(),more=prog.done<prog.total;
+ if(r.autoRest&&more){
+  const sec=restSeconds(ex.rest);
+  if(sec>0)runnerTimerStart(sec,'rest');
+ }else{
+  await saveWorkoutRunner();
+  render();
+ }
+ if(!more)toast('Serie completate. Puoi registrare la sessione.');
+}
+async function runnerSwap(name){
+ const r=workoutRunner,x=runnerCurrent();
+ if(!r||!x||!name)return;
+ r.exercises[r.exerciseIndex]={...x,name,load:'Da regolare'};
+ await saveWorkoutRunner();render();
+ toast('Cambio applicato solo alla sessione. Per renderlo stabile modifica la scheda.');
+}
+function renderTrainingTimer(){
+ const r=workoutRunner;
+ if(!r)return `<section class="card workout-timer-intro"><div class="eyebrow">TIMER E RECUPERO</div><h3>Avvia una sessione o usa il timer libero</h3>
+  <p>Conta serie e recuperi, scegli esercizi alternativi e attiva l'avvio automatico del recupero alla fine di una serie. Il salvataggio nello storico avviene solo su tua conferma.</p>
+  <div class="timer-start-options">${state.templates.map(t=>`<button type="button" class="btn btn-outline" data-act="startWorkout" data-id="${safe(t.id)}">${safe(t.icon||'🏋️')} ${safe(t.name)}</button>`).join('')}</div>
+  <button class="btn btn-primary" data-act="startWorkout" data-id="__free__">⏱️ Solo timer</button>
+ </section>`;
+ const current=runnerCurrent(),progress=runnerProgress(),t=r.timer||freshTimer(),sec=timerSeconds(t);
+ const possible=trainingAlternatives(current?.name);
+ return `<div class="training-runner">
+  <section class="card workout-timer-main">
+   <div class="timer-title-row"><div><div class="eyebrow">SESSIONE ATTIVA</div><h3>${safe(r.title)}</h3><small>${current?'Esercizio '+(r.exerciseIndex+1)+' di '+r.exercises.length:'Cronometro per i recuperi'}</small></div><button class="btn btn-outline" data-act="stopWorkout">Termina / esci</button></div>
+   <div class="timer-phase">${t.phase==='prep'?'COUNTDOWN DI PARTENZA':t.phase==='rest'?'RECUPERO':'PRONTO'}</div>
+   <div class="timer-clock" role="timer" aria-label="Tempo rimanente" id="restCountdown">${toClock(sec)}</div>
+   <div class="timer-progress-track"><span id="workoutTimerProgress" style="width:${t.totalMs?Math.max(0,Math.min(100,100*(t.totalMs-sec*1000)/t.totalMs)):0}%"></span></div>
+   <div class="timer-control-row">
+    <button type="button" class="btn btn-outline" data-act="timerStart" data-seconds="5" data-phase="prep">5s partenza</button>
+    <button type="button" class="btn btn-outline" data-act="timerPause" ${t.phase==='idle'?'disabled':''}>${t.running?'⏸ Pausa':'▶ Riprendi'}</button>
+    <button type="button" class="btn btn-outline" data-act="timerAdjust" data-seconds="15" ${t.phase==='idle'?'disabled':''}>+15s</button>
+    <button type="button" class="btn btn-outline" data-act="timerAdjust" data-seconds="-15" ${t.phase==='idle'?'disabled':''}>−15s</button>
+    <button type="button" class="btn btn-outline" data-act="timerSkip" ${t.phase==='idle'?'disabled':''}>Salta</button>
+   </div>
+   <div class="timer-presets"><strong>Avvia recupero manuale</strong><div>${[30,60,90,120,150,180].map(s=>`<button class="timer-preset" data-act="timerStart" data-seconds="${s}">${s}s</button>`).join('')}</div>
+     <div class="timer-custom"><label for="manualRestSeconds">Secondi personalizzati</label><input id="manualRestSeconds" type="number" min="5" max="3600" step="5" value="${restSeconds(current?.rest)||90}"><button type="button" class="btn btn-primary" data-act="timerCustom">Avvia</button></div>
+   </div>
+   <div class="hint timer-background-note">Su iPhone il timer si riallinea quando riapri l'app, ma il suono e la vibrazione non sono garantiti se Safari è in background o lo schermo è bloccato.</div>
+  </section>
+  <section class="card workout-live-sets">
+   ${current?`<div class="eyebrow">ESECUZIONE</div><h3>${safe(current.name)}</h3><div class="runner-prescription">${fmt(current.sets)} serie × ${safe(current.reps)} · ${safe(current.load||'Da regolare')} · pausa ${safe(current.rest||'—')}</div>
+    <div class="runner-series-count"><b>${r.completed[r.exerciseIndex]||0} / ${Math.max(1,Number(current.sets)||1)}</b><span>serie completate</span></div>
+    <button class="btn btn-primary runner-done-button" data-act="runnerSetDone" ${r.completed[r.exerciseIndex]>=Math.max(1,Number(current.sets)||1)?'disabled':''}>✓ Serie completata</button>
+    <label class="runner-switch"><input type="checkbox" id="runnerAutoRest" ${r.autoRest?'checked':''}> Avvia automaticamente il recupero dopo la serie</label>
+    <label class="field"><span>Vai all'esercizio</span><select id="runnerExerciseJump">${r.exercises.map((e,i)=>`<option value="${i}" ${i===r.exerciseIndex?'selected':''}>${i+1}. ${safe(e.name)} (${r.completed[i]}/${e.sets})</option>`).join('')}</select></label>
+    ${exerciseAlternativesSelect(current.name,'workout-run-alternative')}
+    <p class="caption">Sostituzioni temporanee: il carico viene segnato “Da regolare”; la scheda originale non viene modificata.</p>
+    <div class="runner-progress">Progressione: <b>${progress.done} / ${progress.total} serie</b></div>
+    <button class="btn btn-outline" data-act="finishWorkout">Registra sessione e termina</button>`:
+   `<h3>Timer libero</h3><p>Seleziona un recupero manuale o avvia il countdown di partenza.</p><label class="runner-switch"><input type="checkbox" id="runnerAutoRest" ${r.autoRest?'checked':''}> Recupero automatico se avvii una scheda</label>`}
+  </section>
+ </div>`;
+}
+async function handleWorkoutAction(act,t){
+ const id=t.dataset.id;
+ switch(act){
+  case 'startWorkout':await startWorkout(id);return true;
+  case 'runnerSetDone':await runnerSetDone();return true;
+  case 'timerStart':runnerTimerStart(Number(t.dataset.seconds),t.dataset.phase||'rest');return true;
+  case 'timerCustom':runnerTimerStart(Number(document.querySelector('#manualRestSeconds')?.value)||90);return true;
+  case 'timerPause':runnerTimerPause();return true;
+  case 'timerSkip':runnerTimerSkip();return true;
+  case 'timerAdjust':runnerTimerAdjust(Number(t.dataset.seconds)||0);return true;
+  case 'stopWorkout':
+   if(!workoutRunner)return true;
+   if(!window.confirm('Chiudere il timer e la sessione in corso? I dati non registrati andranno persi.'))return true;
+   workoutRunner=null;await saveWorkoutRunner();render();return true;
+  case 'finishWorkout':runnerFinishModal();return true;
+ }
+ return false;
+}
+function runnerFinishModal(){
+ const r=workoutRunner;if(!r||!r.exercises.length)return;
+ const duration=Math.max(1,Math.round((Date.now()-r.startedAt)/60000));
+ const details=r.exercises.map((x,i)=>`${x.name}: ${r.completed[i]||0}/${x.sets} serie, ${x.reps}, ${x.load}`).join('; ');
+ const progress=runnerProgress();
+ openModal(`<h2>Registra la sessione</h2>
+  <p>${safe(r.title)} · ${progress.done} serie completate su ${progress.total}. Nessun dato viene registrato finché non premi “Salva sessione”.</p>
+  <div class="form-grid">${field('Data','date',r.date,'date','required')}${field('Durata (min)','duration',duration,'number','min="1"')}${field('RPE percepito (1–10)','rpe',7,'number','min="1" max="10" step="0.5"')}
+  <label class="field full"><span>Carichi, sensazioni e dolori</span><textarea name="notes">${safe(details)}</textarea></label></div>`,async f=>{
+  const date=String(f.get('date')||r.date),duration=Math.max(1,Number(f.get('duration'))||1);
+  const rpe=Number(f.get('rpe'));
+  state.sessions.push({id:'session-'+Date.now(),date,type:r.title,duration,rpe:rpe||null,
+    notes:String(f.get('notes')||''),completedSets:structuredClone(r.completed),
+    exercises:structuredClone(r.exercises),source:'manual'});
+  await persist('sessions');
+  workoutRunner=null;await saveWorkoutRunner();
+  state.workoutPane='storico';toast('Sessione registrata nel diario allenamenti.');
+ },'Salva sessione');
+}
+document.addEventListener('change',e=>{
+ if(e.target.id==='runnerAutoRest'&&workoutRunner){
+  workoutRunner.autoRest=e.target.checked;void saveWorkoutRunner();
+ }
+ if(e.target.id==='runnerExerciseJump'&&workoutRunner){
+  workoutRunner.exerciseIndex=Number(e.target.value);void saveWorkoutRunner();render();
+ }
+ if(e.target.matches('.workout-run-alternative')){
+  void runnerSwap(e.target.value).catch(err=>toast(err.message));
+ }
+});
