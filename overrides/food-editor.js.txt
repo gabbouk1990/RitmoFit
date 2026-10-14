@@ -1,0 +1,130 @@
+function foodIngredientEditorRow(input){
+ const row=input||catalogIngredient('pollo',150);
+ const category=FOOD_CATEGORIES.some(c=>c.id===row.category)?row.category:'personalizzati';
+ const foodId=FOOD_BY_ID.has(row.foodId)&&FOOD_BY_ID.get(row.foodId).category===category?row.foodId:'custom';
+ const items=FOOD_CATALOG.filter(x=>x.category===category);
+ const selections=items.map(x=>`<option value="${safe(x.id)}" ${foodId===x.id?'selected':''}>${safe(x.name)}</option>`).join('');
+ return `<article class="food-ingredient-row">
+ <div class="nutrition-row-toolbar"><strong>Ingrediente</strong><button type="button" class="btn btn-plain" data-act="removeFoodIngredient" aria-label="Rimuovi ingrediente">✕ Rimuovi</button></div>
+ <div class="nutrition-row-controls">
+ <label class="field"><span>Categoria</span><select class="food-category">${FOOD_CATEGORIES.map(c=>`<option value="${c.id}" ${c.id===category?'selected':''}>${c.icon} ${c.name}</option>`).join('')}</select></label>
+ <label class="field"><span>Alimento / alternativa</span><select class="food-choice">${selections}<option value="custom" ${foodId==='custom'?'selected':''}>✏️ Personalizzato</option></select></label>
+ <label class="field food-quantity"><span>Quantità (g)</span><input class="food-grams" type="number" inputmode="decimal" required min="0.1" max="10000" step="0.1" value="${safe(row.grams||100)}"></label>
+ </div>
+ <div class="nutrition-row-calculated" aria-live="polite">Calcolo in corso...</div>
+ <details class="nutrition-extra"><summary>Nome, preparazione e valori per 100 g (modificabili)</summary><div class="nutrition-extra-fields">
+ <label class="field full"><span>Nome alimento</span><input class="food-name" value="${safe(row.name||'Alimento personalizzato')}" required></label>
+ <label class="field full"><span>Dettaglio / forma di pesata</span><input class="food-detail" value="${safe(row.detail||'Peso edibile')}" placeholder="Es. 150 g cotti e sgocciolati"></label>
+ <label class="field"><span>kcal / 100 g</span><input class="food-n-kcal" type="number" inputmode="decimal" min="0" step="0.1" value="${safe(row.kcal||0)}" required></label>
+ <label class="field"><span>Proteine / 100 g</span><input class="food-n-p" type="number" inputmode="decimal" min="0" step="0.1" value="${safe(row.p||0)}" required></label>
+ <label class="field"><span>Carboidrati / 100 g</span><input class="food-n-c" type="number" inputmode="decimal" min="0" step="0.1" value="${safe(row.c||0)}" required></label>
+ <label class="field"><span>Grassi / 100 g</span><input class="food-n-f" type="number" inputmode="decimal" min="0" step="0.1" value="${safe(row.f||0)}" required></label>
+ </div></details>
+ </article>`;
+}
+function foodRowsFromModal(){
+ return [...document.querySelectorAll('#foodIngredients .food-ingredient-row')].map(row=>({
+  foodId:row.querySelector('.food-choice').value,
+  category:row.querySelector('.food-category').value,
+  name:row.querySelector('.food-name').value.trim(),
+  detail:row.querySelector('.food-detail').value.trim(),
+  grams:Number(row.querySelector('.food-grams').value),
+  kcal:Number(row.querySelector('.food-n-kcal').value),
+  p:Number(row.querySelector('.food-n-p').value),
+  c:Number(row.querySelector('.food-n-c').value),
+  f:Number(row.querySelector('.food-n-f').value)
+ }));
+}
+function foodUpdatePreview(){
+ if(!document.querySelector('#foodIngredients'))return;
+ const items=foodRowsFromModal();
+ for(const [i,row] of [...document.querySelectorAll('#foodIngredients .food-ingredient-row')].entries()){
+  const n=itemNutrition(items[i]);
+  const info=row.querySelector('.nutrition-row-calculated');
+  if(info)info.textContent=`${fmt(items[i].grams,1)} g → ${fmt(n.kcal)} kcal · P ${fmt(n.p,1)} g · C ${fmt(n.c,1)} g · G ${fmt(n.f,1)} g`;
+ }
+ const total=foodNutrition(items),out=document.querySelector('#foodNutritionPreview');
+ if(out)out.innerHTML=foodMacroBar(total);
+}
+function foodIngredientChange(event){
+ const target=event.target,row=target.closest('#foodIngredients .food-ingredient-row');
+ if(!row)return false;
+ if(target.classList.contains('food-category')){
+  const category=target.value,option=FOOD_CATALOG.find(x=>x.category===category);
+  const grams=Math.max(0.1,Number(row.querySelector('.food-grams').value)||100);
+  const item=option?catalogIngredient(option.id,grams):{category,foodId:'custom',name:'Alimento personalizzato',detail:'Inserisci valori da etichetta',grams,kcal:0,p:0,c:0,f:0};
+  row.outerHTML=foodIngredientEditorRow(item);
+ }
+ if(target.classList.contains('food-choice')){
+  const grams=Math.max(0.1,Number(row.querySelector('.food-grams').value)||100);
+  const id=target.value,category=row.querySelector('.food-category').value;
+  const item=id==='custom'?{category,foodId:'custom',name:'Alimento personalizzato',detail:'Inserisci valori da etichetta',grams,kcal:0,p:0,c:0,f:0}:catalogIngredient(id,grams);
+  row.outerHTML=foodIngredientEditorRow(item);
+ }
+ foodUpdatePreview();return true;
+}
+function foodPreviousIngredients(obj){
+ if(Array.isArray(obj?.ingredients)&&obj.ingredients.length)return structuredClone(obj.ingredients);
+ if(obj&&(Number(obj.kcal)||Number(obj.p)||Number(obj.c)||Number(obj.f)))
+  return [{foodId:'custom',category:'personalizzati',name:obj.name||'Pasto precedente',detail:'Valori manuali precedenti: aggiorna con quantità ed etichette se disponibili',grams:100,kcal:obj.kcal||0,p:obj.p||0,c:obj.c||0,f:obj.f||0}];
+ return [];
+}
+function editFoodEntry(mode,entry){
+ const plan=mode==='piano',old=entry||{};
+ const id=old.id||(plan?'pasto-':'log-')+Date.now();
+ const items=foodPreviousIngredients(old),canReplace=plan?state.meals.some(m=>m.id===id):state.foodLogs.some(m=>m.id===id);
+ const title=plan?(canReplace?'Modifica pasto del piano':'Nuovo pasto del piano'):(canReplace?'Modifica pasto registrato':'Registra pasto consumato');
+ openModal(`<div class="nutrition-editor">
+ <div class="eyebrow">${plan?'PIANO ALIMENTARE':'DIARIO ALIMENTARE'}</div><h2>${title}</h2><p>Seleziona alimenti da ogni categoria, specifica i grammi e modifica i valori nutrizionali secondo la confezione. Il totale si aggiorna mentre compili.</p>
+ <div class="form-grid">
+ ${plan?'':field('Data di consumo','date',old.date||state.date,'date','required')}
+ ${field('Momento della giornata','slot',old.slot||'Pasto','text','required')}
+ ${field('Nome pasto','name',old.name||'','text','required')}
+ ${plan?field('Emoji','icon',old.icon||'🍽️'):''}
+ <label class="field full"><span>Preparazione, note e alternative</span><textarea name="details" rows="2">${safe(old.details||'')}</textarea></label></div>
+ <div class="nutrition-editor-heading"><h3>Ingredienti e quantità</h3><button class="btn btn-outline" type="button" data-act="addFoodIngredient">+ Aggiungi alimento</button></div>
+ <div id="foodIngredients">${items.map(foodIngredientEditorRow).join('')}</div>
+ <div class="nutrition-totals"><div class="eyebrow">TOTALE DEL PASTO</div><div id="foodNutritionPreview"></div><p class="caption">Calcolo sui grammi indicati. Le calorie da etichetta possono differire dal calcolo 4-4-9 dei macro.</p></div>
+ </div>`,async form=>{
+  const ingredients=foodRowsFromModal();
+  if(!ingredients.length)throw Error('Aggiungi almeno un alimento al pasto.');
+  if(ingredients.some(x=>!x.name||!Number.isFinite(x.grams)||x.grams<=0||x.grams>10000||nutritionKeys.some(k=>!Number.isFinite(x[k])||x[k]<0)))throw Error('Controlla grammi e valori nutrizionali di tutti gli alimenti.');
+  const macros=foodNutrition(ingredients);
+  const obj={...old,id,slot:String(form.get('slot')||'Pasto').trim(),name:String(form.get('name')||'').trim(),
+   details:String(form.get('details')||'').trim(),ingredients,...macros};
+  if(!obj.name)throw Error('Assegna un nome al pasto.');
+  if(plan){
+   obj.icon=String(form.get('icon')||'🍽️');
+   state.meals=canReplace?state.meals.map(x=>x.id===id?obj:x):[...state.meals,obj];
+   await persist('meals');
+  }else{
+   obj.date=String(form.get('date')||state.date);
+   if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(obj.date))throw Error('Seleziona una data valida.');
+   state.foodLogs=canReplace?state.foodLogs.map(x=>x.id===id?obj:x):[...state.foodLogs,obj];
+   await persist('foodLogs');
+  }
+  toast(plan?'Pasto aggiornato nel piano.':'Pasto registrato nel diario.');
+ },plan?'Salva nel piano':'Salva nel diario');
+ foodUpdatePreview();
+}
+function editMeal(id){editFoodEntry('piano',state.meals.find(m=>m.id===id)||null);}
+function eatMeal(id){
+ const m=state.meals.find(x=>x.id===id);if(!m)return;
+ const copy={...structuredClone(m),id:'log-'+Date.now(),mealId:m.id,date:state.date};
+ editFoodEntry('diario',copy);
+}
+function foodLogModal(m){editFoodEntry('diario',m||null);}
+function editFoodLog(id){const m=state.foodLogs.find(x=>x.id===id);if(m)editFoodEntry('diario',m);}
+function foodIngredientClick(act,button){
+ if(act==='addFoodIngredient'){
+  const box=document.querySelector('#foodIngredients');if(!box)return true;
+  const select=box.querySelector('.food-ingredient-row:last-child .food-category');
+  const cat=select?.value||'proteine',ref=FOOD_CATALOG.find(x=>x.category===cat);
+  const item=ref?catalogIngredient(ref.id):{foodId:'custom',category:'personalizzati',name:'Alimento personalizzato',detail:'Da etichetta',grams:100,kcal:0,p:0,c:0,f:0};
+  box.insertAdjacentHTML('beforeend',foodIngredientEditorRow(item));foodUpdatePreview();return true;
+ }
+ if(act==='removeFoodIngredient'){
+  button.closest('.food-ingredient-row')?.remove();foodUpdatePreview();return true;
+ }
+ return false;
+}
