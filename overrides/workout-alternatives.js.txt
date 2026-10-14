@@ -1,7 +1,7 @@
 // Proposte di sostituzione: carichi da ricalibrare, non trasferire automaticamente i kg.
 const WORKOUT_ALTERNATIVES=[
  {match:/squat|goblet|leg press/i,items:['Goblet squat con manubrio','Squat al box controllato','Squat bilanciere','Leg press ROM tollerato','Squat con 2 manubri']},
- {match:/stacco rumeno|\\brdl\\b|deadlift|pull.through/i,items:['RDL con manubri','Stacco rumeno bilanciere','Pull-through al cavo','Hip thrust bilanciere']},
+ {match:/stacco rumeno|\brdl\b|deadlift|pull.through/i,items:['RDL con manubri','Stacco rumeno bilanciere','Pull-through al cavo','Hip thrust bilanciere']},
  {match:/hip thrust|glute bridge/i,items:['Hip thrust bilanciere','Glute bridge a terra','Pull-through al cavo','RDL con manubri']},
  {match:/panca|chest press|push.up|distensioni/i,items:['Panca con manubri presa neutra','Panca piana bilanciere','Panca inclinata con manubri','Chest press alla macchina','Push-up rialzati']},
  {match:/lat machine|lat pulldown|pull.down/i,items:['Lat machine presa neutra','Lat machine presa prona','Pulldown a braccio singolo al cavo','Pullover al cavo con corda']},
