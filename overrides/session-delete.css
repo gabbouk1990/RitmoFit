@@ -1,0 +1,7 @@
+/* Rimozione singole sessioni manuali dallo storico */
+.session-delete-cell{white-space:nowrap;text-align:right;min-width:92px}
+.session-delete-button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:36px;padding:8px 10px;border:1px solid #f0d9d7;border-radius:9px;background:#fff7f6;color:#a64440;font-size:11px;font-weight:800;white-space:nowrap}
+.session-delete-button:hover{background:#ffe9e7;border-color:#e6aca8}
+.session-delete-button:focus-visible{outline:3px solid #b76363;outline-offset:2px}
+.session-import-label{display:inline-block;font-size:10px;color:#8796a2}
+@media(max-width:720px){.session-delete-cell{min-width:92px}.session-delete-button{min-height:42px;padding:10px 9px}.data-table td.session-delete-cell{padding-right:8px}}
