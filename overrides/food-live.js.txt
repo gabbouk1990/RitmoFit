@@ -1,0 +1,56 @@
+
+function foodPlanCardV2(m){
+ const ingredients=Array.isArray(m.ingredients)?m.ingredients:[];
+ const rows=ingredients.map((x,i)=>{
+  const category=FOOD_CATEGORIES.find(c=>c.id===x.category)?.id||'personalizzati';
+  const known=FOOD_BY_ID.has(x.foodId)&&FOOD_BY_ID.get(x.foodId).category===category;
+  const choices=FOOD_CATALOG.filter(f=>f.category===category);
+  const foodChoices=choices.map(f=>`<option value="${safe(f.id)}" ${known&&x.foodId===f.id?'selected':''}>${safe(f.name)}</option>`).join('');
+  const info=itemNutrition(x);
+  return `<div class="food-live-row" data-meal="${safe(m.id)}" data-index="${i}">
+   <div class="food-live-fields">
+    <label><span>Categoria</span><select class="food-live-category" aria-label="Categoria ingrediente ${i+1}">${FOOD_CATEGORIES.map(c=>`<option value="${c.id}" ${c.id===category?'selected':''}>${c.icon} ${c.name}</option>`).join('')}</select></label>
+    <label class="food-live-food"><span>Alimento alternativo</span><select class="food-live-select" aria-label="Sostituisci ${safe(x.name)}">${foodChoices}<option value="custom" ${!known?'selected':''}>✏️ ${known?'Inserisci alimento personalizzato':safe(x.name)}</option></select></label>
+    <label class="food-live-grams"><span>Grammi</span><input type="number" class="food-live-quantity" min="1" max="10000" step="1" inputmode="decimal" value="${safe(x.grams||100)}" aria-label="Grammi di ${safe(x.name)}"></label>
+   </div>
+   <div class="food-live-meta"><span>${safe(x.detail||'Peso edibile')}</span><b>${fmt(info.kcal)} kcal · P ${fmt(info.p,1)} · C ${fmt(info.c,1)} · G ${fmt(info.f,1)}</b></div>
+  </div>`;
+ }).join('');
+ return `<section class="card nutrition-plan-card food-card food-live-card">
+  <div class="food-main"><div class="food-icon">${safe(m.icon||'🍽️')}</div><div class="nutrition-plan-head"><div class="eyebrow">${safe(m.slot)}</div><h3>${safe(m.name)}</h3><p>${safe(m.details||'')}</p></div></div>
+  <div class="food-live-heading">Cambia alimenti e quantità direttamente qui</div>
+  <div class="food-live-ingredients">${rows||'<p class="caption">Aggiungi gli ingredienti per attivare le alternative.</p>'}</div>
+  ${foodMacroBar(m)}
+  <div class="food-actions nutrition-actions"><button class="btn btn-outline" data-act="editMeal" data-id="${safe(m.id)}">+ Ingredienti / dettagli</button><button class="btn btn-primary" data-act="eatMeal" data-id="${safe(m.id)}">Registra nel diario</button></div>
+ </section>`;
+}
+foodPlanCard=foodPlanCardV2;
+async function foodLiveChange(target){
+ const row=target.closest('.food-live-row');if(!row)return false;
+ const meal=state.meals.find(m=>m.id===row.dataset.meal),i=Number(row.dataset.index);
+ if(!meal||!Array.isArray(meal.ingredients)||!meal.ingredients[i])return true;
+ let existing=meal.ingredients[i],updated=null;
+ const grams=Math.max(1,Math.min(10000,Number(row.querySelector('.food-live-quantity')?.value)||Number(existing.grams)||100));
+ if(target.classList.contains('food-live-category')){
+  const category=target.value,option=FOOD_CATALOG.find(f=>f.category===category);
+  if(!option){editMeal(meal.id);return true;}
+  updated=catalogIngredient(option.id,grams);
+ }else if(target.classList.contains('food-live-select')){
+  const id=target.value;
+  if(id==='custom'){editMeal(meal.id);return true;}
+  updated=catalogIngredient(id,grams);
+ }else if(target.classList.contains('food-live-quantity')){
+  updated={...existing,grams};
+ }else return false;
+ const copy=structuredClone(meal);
+ copy.ingredients[i]=updated;
+ Object.assign(copy,foodNutrition(copy.ingredients));
+ state.meals=state.meals.map(m=>m.id===meal.id?copy:m);
+ await persist('meals');
+ render();
+ toast('Alternativa salvata nel piano. Il diario non è stato modificato.');
+ return true;
+}
+document.addEventListener('change',e=>{
+ if(e.target.closest('.food-live-row'))void foodLiveChange(e.target).catch(err=>toast('Errore alimentazione: '+err.message));
+});
