@@ -44,6 +44,7 @@ jobs:
           python3 overrides/patch_food.py
           python3 overrides/patch_interactive.py
           python3 overrides/patch_session_delete.py
+          python3 overrides/patch_theme.py
           node --check _site/app.js
           python3 - <<'PY'
           from pathlib import Path
@@ -61,7 +62,7 @@ jobs:
           assert "upgradeDefaultMeals()" in s
           assert "nutrition-disclaimer" in s
           assert "food-ingredient-row" in s
-          assert 'ritmo-fit-static-v6' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v7' in Path('_site/sw.js').read_text()
           assert 'function renderTrainingTimer()' in s
           assert 'function foodPlanCardV2' in s
           assert 'food-live-select' in s
@@ -75,6 +76,12 @@ jobs:
           assert '<th>Azioni</th>' in s
           assert 'state.sessions=previous.filter(s=>s.id!==id)' in s
           print("Rimozione singolo allenamento manuale: verificata")
+          assert "document.body.dataset.tab=state.tab" in s
+          css=Path("_site/style.css").read_text()
+          assert "body[data-tab=\"allenamenti\"]" in css
+          assert "body[data-tab=\"alimentazione\"]" in css
+          assert "--rf-bg" in css
+          print("Nuovo tema scuro e sfondi dedicati: verificati")
           PY
 
       - name: Configura GitHub Pages
