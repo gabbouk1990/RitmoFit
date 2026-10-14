@@ -43,6 +43,7 @@ jobs:
           python3 overrides/patch_workouts.py
           python3 overrides/patch_food.py
           python3 overrides/patch_interactive.py
+          python3 overrides/patch_session_delete.py
           node --check _site/app.js
           python3 - <<'PY'
           from pathlib import Path
@@ -60,7 +61,7 @@ jobs:
           assert "upgradeDefaultMeals()" in s
           assert "nutrition-disclaimer" in s
           assert "food-ingredient-row" in s
-          assert 'ritmo-fit-static-v5' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v6' in Path('_site/sw.js').read_text()
           assert 'function renderTrainingTimer()' in s
           assert 'function foodPlanCardV2' in s
           assert 'food-live-select' in s
@@ -69,6 +70,11 @@ jobs:
           assert 'await restoreWorkoutRunner();render();' in s
           assert 'Esplora ${FOOD_CATALOG.length} alimenti' in s
           print("Timer, sostituzioni e catalogo alimentare: verifiche statiche superate")
+          assert "function workoutSessionAction(s)" in s
+          assert "case 'deleteWorkoutSession'" in s
+          assert '<th>Azioni</th>' in s
+          assert 'state.sessions=previous.filter(s=>s.id!==id)' in s
+          print("Rimozione singolo allenamento manuale: verificata")
           PY
 
       - name: Configura GitHub Pages
