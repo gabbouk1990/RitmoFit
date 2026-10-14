@@ -1,0 +1,101 @@
+/* Ritmo Fit - Alimentazione: catalogo, porzioni ed editor mobile */
+.nutrition-toolbar{align-items:center;gap:12px}
+.nutrition-tabs{flex-wrap:wrap;gap:5px}
+.nutrition-daily-summary{margin-bottom:17px}
+.nutrition-guidance{border:1px solid #dae9df;background:linear-gradient(115deg,#f1f9f2,#fafcf8);border-radius:16px;padding:17px 19px;margin:0 0 17px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.nutrition-guidance strong{color:#254b3b;font-size:14px}
+.nutrition-guidance p{margin:7px 0 0;color:#5d7672;font-size:12px;line-height:1.55}
+.nutrition-guidance .btn{flex-shrink:0}
+.nutrition-plan-grid{align-items:stretch}
+.nutrition-plan-card{display:flex;flex-direction:column;min-width:0;gap:13px}
+.nutrition-plan-head{min-width:0}
+.nutrition-plan-card .food-main{align-items:flex-start}
+.nutrition-plan-head h3{margin:4px 0 7px;line-height:1.3}
+.nutrition-plan-head p{white-space:normal;overflow-wrap:anywhere;font-size:11px;line-height:1.6;margin:0;color:#82939d}
+.nutrition-ingredient-list{padding:10px 12px;background:#f7f9f9;border:1px solid #eaf0ef;border-radius:12px;display:flex;flex-direction:column;gap:0}
+.nutrition-ingredient-line{display:flex;align-items:baseline;justify-content:space-between;gap:9px;padding:7px 0;border-bottom:1px dashed #dfe9e5;font-size:11px;color:#455f67}
+.nutrition-ingredient-line:last-child{border-bottom:0}
+.nutrition-ingredient-line>span:first-child{min-width:0;flex:1;overflow-wrap:anywhere}
+.nutrition-ingredient-line b{color:#1a594b}
+.nutrition-ingredient-values{font-size:10px;color:#69858b;text-align:right;max-width:48%;line-height:1.4}
+.nutrition-empty{font-size:11px;color:#8596a0}
+.nutrition-macros{display:flex;flex-wrap:wrap;gap:5px 8px;padding:3px 0}
+.nutrition-macros span{font-size:11px;background:#ecf4f1;border-radius:8px;padding:5px 7px;color:#325e58;white-space:nowrap}
+.nutrition-macros span:first-child{background:#e3f2df;color:#23623f}
+.nutrition-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:auto}
+.nutrition-actions .btn{flex:1 1 130px;min-height:41px}
+.nutrition-bottom-actions{margin:14px 0}
+.nutrition-library{min-width:0}
+.nutrition-library-heading{gap:12px;flex-wrap:wrap}
+.nutrition-library-heading p{line-height:1.5;margin:4px 0 0}
+.nutrition-category-filter{display:flex;align-items:center;gap:7px;overflow-x:auto;overscroll-behavior-inline:contain;padding:12px 0 15px;scrollbar-width:thin}
+.nutrition-category-button{appearance:none;background:#f2f5f7;border:1px solid #dfe7e9;border-radius:999px;padding:9px 12px;white-space:nowrap;color:#42606c;font-family:inherit;font-size:12px;font-weight:750;cursor:pointer}
+.nutrition-category-button.active{background:#2c6254;color:#fff;border-color:#2c6254}
+.nutrition-category-button:focus-visible{outline:3px solid #84bfa2;outline-offset:2px}
+.nutrition-category-caption{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:#78919a;font-size:12px;padding:11px 0 16px;border-top:1px solid #eef2f2}
+.nutrition-category-caption strong{color:#224d4f;font-size:15px}
+.nutrition-catalog-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.nutrition-catalog-item{min-width:0;padding:13px 14px;border:1px solid #e6edee;border-radius:13px;display:flex;flex-direction:column;gap:10px;background:#fcfdfd}
+.nutrition-catalog-item>div:first-child{display:flex;flex-direction:column;gap:3px}
+.nutrition-catalog-item strong{font-size:12px;color:#25434c;line-height:1.4}
+.nutrition-catalog-item small{font-size:10px;color:#778994}
+.nutrition-serving{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;flex-wrap:wrap;color:#52736e}
+.nutrition-serving span:last-child{font-weight:800;color:#25634e}
+.nutrition-inline-macros{display:flex;flex-wrap:wrap;gap:6px}
+.nutrition-inline-macros span{font-size:10px;background:#eaf3f0;border-radius:7px;padding:5px 7px;color:#38685e}
+.nutrition-catalog-item .caption{font-size:10px;line-height:1.5;color:#7e8f99}
+.nutrition-diary-items{display:flex;flex-direction:column;gap:14px;padding-top:10px}
+.nutrition-diary-item{border:1px solid #e7eff0;padding:16px;border-radius:14px;background:#fff}
+.nutrition-diary-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.nutrition-diary-top h3{margin:3px 0 5px;font-size:15px}
+.nutrition-diary-top small{font-size:11px;line-height:1.55;color:#8496a1;overflow-wrap:anywhere}
+.nutrition-diary-buttons{display:flex;gap:5px}
+.nutrition-diary-buttons .btn{font-size:11px}
+.nutrition-diary-head{gap:12px;flex-wrap:wrap}
+.nutrition-disclaimer{margin-top:16px;line-height:1.55}
+.nutrition-editor{min-width:0}
+.nutrition-editor>p{font-size:12px;color:#647a82;line-height:1.65}
+.nutrition-editor-heading{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:18px 0 12px;flex-wrap:wrap}
+.nutrition-editor-heading h3{font-size:15px;margin:0}
+.nutrition-editor-heading button{min-height:40px}
+.food-ingredient-row{border:1px solid #dce7e7;border-radius:13px;padding:12px;margin-bottom:12px;background:#fbfdfc;min-width:0}
+.nutrition-row-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;gap:10px;color:#395e62;font-size:12px}
+.nutrition-row-toolbar button{color:#9b6666;font-size:11px}
+.nutrition-row-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(95px,.65fr);gap:8px;align-items:end}
+.nutrition-row-controls .field,.nutrition-extra-fields .field{min-width:0}
+.nutrition-row-controls input,.nutrition-row-controls select,.nutrition-extra-fields input{box-sizing:border-box;min-width:0;width:100%;font-size:12px;max-width:100%}
+.nutrition-row-calculated{font-size:11px;color:#386956;font-weight:730;line-height:1.6;margin:11px 0 7px;background:#edf6ed;border-radius:8px;padding:8px 9px}
+.nutrition-extra{border-top:1px dashed #dce6e5;padding-top:7px}
+.nutrition-extra summary{cursor:pointer;font-size:11px;color:#4c7180;font-weight:700;padding:6px 0}
+.nutrition-extra-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:9px}
+.nutrition-extra-fields .full{grid-column:1/-1}
+.nutrition-totals{background:#eef6f0;border:1px solid #dce8dd;padding:14px;border-radius:13px;margin:15px 0}
+.nutrition-totals .nutrition-macros{margin:9px 0}
+.nutrition-totals p{line-height:1.6}
+@media(max-width:800px){
+ .nutrition-guidance{flex-direction:column;align-items:stretch;padding:15px}
+ .nutrition-guidance .btn{width:100%}
+ .nutrition-catalog-list{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+ .nutrition-toolbar{flex-direction:column;align-items:stretch}
+ .nutrition-tabs{display:flex;justify-content:space-between}
+ .nutrition-tabs .tab{flex:1;padding:9px 5px;font-size:11px;text-align:center}
+ .nutrition-daily-summary .card-top{gap:12px;flex-wrap:wrap}
+ .nutrition-plan-grid{gap:12px}
+ .nutrition-plan-card{padding:15px}
+ .nutrition-ingredient-line{flex-direction:column;align-items:flex-start;gap:3px}
+ .nutrition-ingredient-values{max-width:none;text-align:left}
+ .nutrition-library{padding:14px}
+ .nutrition-category-button{font-size:11px}
+ .nutrition-category-caption{align-items:flex-start;flex-direction:column}
+ .nutrition-diary-item{padding:12px}
+ .nutrition-diary-top{flex-wrap:wrap}
+ .nutrition-diary-buttons{margin-left:auto}
+ .nutrition-row-controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .nutrition-row-controls .food-quantity{grid-column:1/-1}
+ .nutrition-extra-fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .food-ingredient-row{padding:10px}
+ .nutrition-editor-heading .btn{flex:1}
+}
+@media(max-width:360px){.nutrition-row-controls{grid-template-columns:1fr}.nutrition-row-controls .food-quantity{grid-column:auto}.nutrition-diary-buttons{width:100%}.nutrition-diary-buttons .btn{flex:1}}
