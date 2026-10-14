@@ -1,0 +1,43 @@
+// Proposte di sostituzione: carichi da ricalibrare, non trasferire automaticamente i kg.
+const WORKOUT_ALTERNATIVES=[
+ {match:/squat|goblet|leg press/i,items:['Goblet squat con manubrio','Squat al box controllato','Squat bilanciere','Leg press ROM tollerato','Squat con 2 manubri']},
+ {match:/stacco rumeno|\\brdl\\b|deadlift|pull.through/i,items:['RDL con manubri','Stacco rumeno bilanciere','Pull-through al cavo','Hip thrust bilanciere']},
+ {match:/hip thrust|glute bridge/i,items:['Hip thrust bilanciere','Glute bridge a terra','Pull-through al cavo','RDL con manubri']},
+ {match:/panca|chest press|push.up|distensioni/i,items:['Panca con manubri presa neutra','Panca piana bilanciere','Panca inclinata con manubri','Chest press alla macchina','Push-up rialzati']},
+ {match:/lat machine|lat pulldown|pull.down/i,items:['Lat machine presa neutra','Lat machine presa prona','Pulldown a braccio singolo al cavo','Pullover al cavo con corda']},
+ {match:/rematore|high row|chest.supported/i,items:['Rematore manubrio unilaterale','Rematore chest-supported','Rematore al cavo presa neutra','High row alla macchina']},
+ {match:/alzate laterali|deltoid/i,items:['Alzate laterali manubri','Alzate laterali al cavo','Reverse fly alla macchina','Alzate laterali da seduto']},
+ {match:/plank|pallof|dead bug|suitcase|core/i,items:['Plank','Side plank','Pallof press al cavo','Dead bug','Suitcase march sul posto']},
+ {match:/skillmill|cyclette|camminata|conditioning/i,items:['Skillmill power walk (no corsa)','Cyclette a ritmo sostenuto','Camminata inclinata senza corsa','Cyclette intervalli moderati']},
+ {match:/tecnica|drill|pull buoy|dorso|fondo|aerobico|riscaldamento.*stile|defaticamento/i,items:['Stile libero facile','Dorso sciolto','Tecnica stile 25+25 m','Pull buoy 50 m','Stile libero aerobico']},
+ {match:/pullover/i,items:['Pullover al cavo con corda','Lat machine presa neutra','Pulldown a braccio singolo al cavo']},
+ {match:/mobilit/i,items:['Mobilità anche e spalle','Cyclette progressiva','Attivazione core leggera']}
+];
+function trainingAlternatives(name){
+ const current=String(name||'');
+ const group=WORKOUT_ALTERNATIVES.find(g=>g.match.test(current));
+ const options=group?group.items:[];
+ return [...new Set(options.filter(x=>x.toLowerCase()!==current.toLowerCase()))];
+}
+function exerciseAlternativesSelect(name,cssClass='training-alternative-picker'){
+ const options=trainingAlternatives(name);
+ return `<label class="training-swap-field"><span>Alternative all'esercizio</span><select class="${cssClass}" aria-label="Esercizi alternativi a ${safe(name)}"><option value="">Scegli un'alternativa…</option>${options.map(n=>`<option value="${safe(n)}">${safe(n)}</option>`).join('')}</select></label>`;
+}
+const previousTemplateRow=templateRow;
+templateRow=function(row,i){
+ const markup=previousTemplateRow(row,i);
+ const extension=exerciseAlternativesSelect(row.name,'workout-editor-alternative');
+ return markup.slice(0,-6)+extension+'</div>';
+};
+document.addEventListener('change',e=>{
+ if(e.target.matches('.workout-editor-alternative')){
+  const row=e.target.closest('.template-row');
+  const name=e.target.value;
+  if(row&&name){
+   row.querySelector('[data-f="exname"]').value=name;
+   row.querySelector('[data-f="load"]').value='Da regolare';
+   e.target.value='';
+   toast('Esercizio sostituito nella bozza. Ricalibra il carico e salva la scheda.');
+  }
+ }
+});
