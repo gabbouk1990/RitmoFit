@@ -1,0 +1,99 @@
+// Valori medi indicativi per 100 g di alimento nella forma indicata.
+// Da verificare sull'etichetta del prodotto; non equivalgono a prescrizioni.
+const FOOD_CATEGORIES=[
+ {id:'proteine',name:'Proteine',icon:'🥩',hint:'Carni, pesce, uova, whey'},
+ {id:'carboidrati',name:'Carboidrati',icon:'🍞',hint:'Cereali, pane, pasta, tuberi'},
+ {id:'grassi',name:'Grassi',icon:'🥑',hint:'Oli, frutta secca e semi'},
+ {id:'verdure',name:'Verdure',icon:'🥦',hint:'Ortaggi e contorni'},
+ {id:'frutta',name:'Frutta',icon:'🍎',hint:'Frutta fresca'},
+ {id:'legumi',name:'Legumi',icon:'🫘',hint:'Alimenti misti: proteine e carboidrati'},
+ {id:'latticini',name:'Latticini',icon:'🥛',hint:'Yogurt, formaggi e fiocchi di latte'},
+ {id:'personalizzati',name:'Personalizzati',icon:'✏️',hint:'Inserisci i valori dalla tua etichetta'}
+];
+const FOOD_CATALOG_ROWS=[
+ ['pollo','proteine','Petto di pollo cotto','Senza pelle, cotto',150,165,31,0,3.6],
+ ['tacchino','proteine','Petto di tacchino cotto','Senza pelle, cotto',150,135,29,0,1.6],
+ ['tonno','proteine','Tonno al naturale sgocciolato','Peso sgocciolato',120,110,25,0,1],
+ ['salmone','proteine','Salmone fresco cotto','Cotto',150,205,22,0,13],
+ ['salmone-aff','proteine','Salmone affumicato','Pronto al consumo',80,165,22,0,9],
+ ['bresaola','proteine','Bresaola','Affettato',80,150,32,0.5,2],
+ ['manzo','proteine','Manzo magro cotto','Taglio magro, cotto',150,190,29,0,8],
+ ['uova','proteine','Uovo intero','Peso senza guscio, crudo',100,143,12.6,0.7,9.5],
+ ['albumi','proteine','Albumi','Liquidi, crudi',200,46,10.5,0.7,0.2],
+ ['whey','proteine','Proteine whey in polvere','Media indicativa: verifica marca',30,390,78,8,6],
+ ['pane-int','carboidrati','Pane integrale','Peso del pane',90,245,9,44,3.5],
+ ['pane-multi','carboidrati','Pane multicereali','Peso del pane',90,255,9.5,45,4.2],
+ ['wasa','carboidrati','Cracker tipo Wasa integrali','Peso secco',40,345,10,65,3],
+ ['fresella','carboidrati','Fresella integrale','Peso secco',80,365,11,72,3],
+ ['riso','carboidrati','Riso crudo','Peso prima della cottura',80,358,7,80,0.7],
+ ['pasta','carboidrati','Pasta secca','Peso prima della cottura',80,355,12.5,72,1.5],
+ ['avena','carboidrati','Fiocchi d’avena secchi','Peso secco',50,375,13,62,7],
+ ['patate','carboidrati','Patate lesse','Peso dopo la cottura',250,86,1.7,20,0.1],
+ ['couscous','carboidrati','Cous cous secco','Peso secco',80,365,12,73,2],
+ ['mais','carboidrati','Mais cotto o in scatola sgocciolato','Peso sgocciolato',100,98,3.3,19,1.5],
+ ['olio','grassi','Olio extravergine d’oliva','Gramme effettivi aggiunti',10,884,0,0,100],
+ ['mandorle','grassi','Mandorle','Peso senza guscio',20,579,21,22,50],
+ ['noci','grassi','Noci','Peso senza guscio',20,654,15,14,65],
+ ['nocciole','grassi','Nocciole','Peso senza guscio',20,628,15,17,61],
+ ['burro-arachidi','grassi','Burro di arachidi','Verifica ingredienti ed etichetta',20,590,25,20,50],
+ ['avocado','grassi','Avocado','Polpa',100,160,2,9,15],
+ ['semi-zucca','grassi','Semi di zucca','Sgusciati',20,559,30,11,49],
+ ['broccoli','verdure','Broccoli cotti','Peso dopo la cottura',200,35,2.4,7.2,0.4],
+ ['zucchine','verdure','Zucchine cotte','Senza olio aggiunto',200,20,1.5,3.5,0.3],
+ ['melanzane','verdure','Melanzane cotte','Senza olio aggiunto',200,35,0.8,8,0.2],
+ ['peperoni','verdure','Peperoni crudi','Peso edibile',150,26,1,6,0.3],
+ ['pomodori','verdure','Pomodori','Peso edibile',150,18,0.9,3.9,0.2],
+ ['insalata','verdure','Insalata mista','Senza condimento',100,20,1.5,3,0.2],
+ ['carote','verdure','Carote crude','Peso edibile',150,41,0.9,9.6,0.2],
+ ['spinaci','verdure','Spinaci cotti','Senza condimento',200,23,3,3.8,0.3],
+ ['banana','frutta','Banana','Peso senza buccia',120,89,1.1,23,0.3],
+ ['mela','frutta','Mela','Peso senza torsolo',150,52,0.3,14,0.2],
+ ['pera','frutta','Pera','Peso edibile',150,57,0.4,15,0.1],
+ ['arancia','frutta','Arancia','Peso senza buccia',180,47,0.9,12,0.1],
+ ['kiwi','frutta','Kiwi','Peso senza buccia',120,61,1.1,15,0.5],
+ ['frutti-bosco','frutta','Frutti di bosco','Peso edibile',150,48,1,11,0.5],
+ ['uva','frutta','Uva','Peso edibile',120,69,0.7,18,0.2],
+ ['ceci','legumi','Ceci cotti','Peso scolato, senza condimento',150,140,7.5,23,2.5],
+ ['fagioli','legumi','Fagioli cotti','Peso scolato, senza condimento',150,110,7.5,18,0.5],
+ ['lenticchie','legumi','Lenticchie cotte','Peso dopo cottura',150,116,9,20,0.4],
+ ['piselli','legumi','Piselli cotti','Peso dopo cottura',150,81,5.4,14,0.4],
+ ['yogurt-greco','latticini','Yogurt greco bianco 0%','Senza zuccheri aggiunti',170,59,10,3.6,0.2],
+ ['skyr','latticini','Skyr bianco','Naturale, senza zuccheri aggiunti',170,62,11,4,0.2],
+ ['fruyo','latticini','Yogurt proteico tipo Fruyo','Controlla il gusto e l’etichetta',170,75,8.5,9,0.3],
+ ['mozzarella','latticini','Mozzarella vaccina','Peso sgocciolato',100,250,18,2,19],
+ ['fiocchi','latticini','Fiocchi di latte','Verifica la marca',150,100,12,3.2,4],
+ ['parmigiano','latticini','Parmigiano Reggiano','Porzione pesata',25,392,33,0,28],
+ ['latte','latticini','Latte parzialmente scremato','Grammatura indicativa, circa 1 g = 1 ml',200,46,3.4,4.9,1.6]
+];
+const FOOD_CATALOG=FOOD_CATALOG_ROWS.map(([id,category,name,detail,portion,kcal,p,c,f])=>({id,category,name,detail,portion,kcal,p,c,f}));
+const FOOD_BY_ID=new Map(FOOD_CATALOG.map(x=>[x.id,x]));
+const FOOD_DEFAULT_RECIPES={
+ colazione:[['yogurt-greco',170],['whey',15],['banana',120]],
+ pranzo:[['pollo',120],['patate',220],['broccoli',200],['olio',10]],
+ spuntino:[['whey',30],['banana',120]],
+ cena:[['tonno',120],['fagioli',130],['pomodori',150],['pane-int',70],['olio',10]]
+};
+const nutritionKeys=['kcal','p','c','f'];
+const nutritionRound=n=>Math.round((Number(n)||0)*10)/10;
+function catalogIngredient(id,grams){
+ const item=FOOD_BY_ID.get(id);if(!item)throw Error('Alimento non presente nel catalogo: '+id);
+ return {foodId:item.id,category:item.category,name:item.name,detail:item.detail,grams:grams??item.portion,kcal:item.kcal,p:item.p,c:item.c,f:item.f};
+}
+function recipeIngredients(id){return (FOOD_DEFAULT_RECIPES[id]||[]).map(([key,g])=>catalogIngredient(key,g));}
+function itemNutrition(row){
+ const g=Math.max(0,Number(row.grams)||0)/100;
+ return Object.fromEntries(nutritionKeys.map(k=>[k,nutritionRound(g*(Number(row[k])||0))]));
+}
+function foodNutrition(items){
+ return items.reduce((sum,item)=>{const nutrition=itemNutrition(item);for(const k of nutritionKeys)sum[k]+=nutrition[k];return sum;},{kcal:0,p:0,c:0,f:0});
+}
+function upgradeDefaultMeals(){
+ let changed=false;
+ state.meals=state.meals.map(m=>{
+  const legacy=MEALS.find(x=>x.id===m.id);
+  if(!legacy||JSON.stringify(m)!==JSON.stringify(legacy)||!FOOD_DEFAULT_RECIPES[m.id])return m;
+  const ingredients=recipeIngredients(m.id),nutrition=foodNutrition(ingredients);changed=true;
+  return {...m,ingredients,...nutrition,details:m.details+' Quantità di esempio: personalizzabili.'};
+ });
+ return changed;
+}
