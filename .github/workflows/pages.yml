@@ -50,6 +50,7 @@ jobs:
           python3 overrides/patch_exercise_images.py
           python3 overrides/patch_muscle_visuals.py
           python3 overrides/patch_third_pass.py
+          python3 overrides/patch_fourth_pass.py
           node --check _site/app.js
           python3 - <<'PY'
           from pathlib import Path
@@ -67,7 +68,7 @@ jobs:
           assert "upgradeDefaultMeals()" in s
           assert "nutrition-disclaimer" in s
           assert "food-ingredient-row" in s
-          assert 'ritmo-fit-static-v12' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v13' in Path('_site/sw.js').read_text()
           assert 'function renderTrainingTimer()' in s
           assert 'function foodPlanCardV2' in s
           assert 'food-live-select' in s
@@ -125,8 +126,25 @@ jobs:
           assert 'class=\"third-mobile-dock\"' in s
           assert '.third-mobile-dock' in css
           assert '.third-history-panel' in css
-          assert 'ritmo-fit-static-v12' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v13' in Path('_site/sw.js').read_text()
           print("Terza passata Allenamenti: controlli statici superati")
+          assert 'function rf4ActivityScreen()' in s
+          assert 'function rf4ProgramsScreen()' in s
+          assert 'function rf4TemplateScreen()' in s
+          assert 'function rf4ExerciseScreen()' in s
+          assert "data-act=\"rf4Category\"" in s
+          assert "data-act=\"rf4OpenTemplate\"" in s
+          assert "data-act=\"rf4OpenExercise\"" in s
+          assert "data-act=\"rf4StatsRange\"" in s
+          assert "data-act=\"rf4TimerFocus\"" in s
+          assert "renderWorkoutCardsPro=function()" in s
+          assert "renderTrainingTimerPro=function()" in s
+          assert ".rf4-category-list" in css
+          assert ".rf4-template-row" in css
+          assert ".rf4-exercise-hero-art" in css
+          assert ".rf4-period-tabs" in css
+          assert "ritmo-fit-static-v13" in Path('_site/sw.js').read_text()
+          print("Quarta passata mobile dark: UI, viste e timer verificati")
           PY
 
       - name: Scarica immagini esercizi con licenza CC BY-SA
