@@ -21,8 +21,9 @@ function proSetDetails(){
  while(workoutRunner.setDetails.length<workoutRunner.exercises.length)workoutRunner.setDetails.push([]);
  return workoutRunner.setDetails;
 }
+function proIsDistance(ex){return /\b(?:m|metri)\b/i.test(String(ex?.reps||''));}
 function proSuggestedReps(ex){
- return Math.max(1,Math.min(200,Number(String(ex?.reps||'').match(/\d+/)?.[0])||10));
+ return Math.max(1,Math.min(proIsDistance(ex)?5000:200,Number(String(ex?.reps||'').match(/\d+/)?.[0])||10));
 }
 function proSuggestedLoad(ex){
  const s=String(ex?.load||'');
@@ -87,7 +88,7 @@ function renderTrainingTimerPro(){
  }).join('');
  return '<div class="pro-runner-layout"><section class="card pro-runner-primary"><div class="pro-runner-title"><div><div class="eyebrow">SESSIONE IN CORSO</div><h3>'+proEsc(r.title)+'</h3><span class="caption">'+tot.done+' di '+tot.total+' serie completate</span></div><button class="btn btn-outline" data-act="stopWorkout">Esci</button></div><div class="pro-runner-progress"><span style="width:'+(tot.total?Math.round(100*tot.done/tot.total):0)+'%"></span></div>'+
  (x?'<div class="pro-active-exercise"><div class="pro-exercise-eyebrow">ESERCIZIO '+(idx+1)+' DI '+r.exercises.length+'</div><div class="pro-current-name"><div class="pro-current-icon">'+proInfo(x.name).icon+'</div><div><h2>'+proEsc(x.name)+'</h2><p>'+proEsc(proInfo(x.name).muscles)+'</p></div><button class="pro-info-btn" data-act="proActiveInfo" aria-label="Apri dettagli esercizio">ⓘ</button></div><div class="pro-prescription">'+fmt(x.sets)+' serie · '+proEsc(x.reps)+' ripetizioni · '+proEsc(x.rest||'—')+' recupero</div><div class="pro-set-dots">'+Array.from({length:Math.max(1,Number(x.sets)||1)},(_,j)=>'<span class="'+(j<completed?'done':j===completed?'now':'')+'">'+(j<completed?'✓':j+1)+'</span>').join('')+'</div>'+
- '<div class="pro-actual-fields"><label><span>Ripetizioni effettuate</span><div class="pro-number-step"><button type="button" data-act="proAdjustReps" data-n="-1">−</button><input id="runnerActualReps" inputmode="numeric" type="number" min="0" max="200" step="1" value="'+proSuggestedReps(x)+'"><button type="button" data-act="proAdjustReps" data-n="1">+</button></div></label><label><span>Carico (kg)</span><div class="pro-number-step"><button type="button" data-act="proAdjustLoad" data-n="-2.5">−</button><input id="runnerActualLoad" inputmode="decimal" type="number" min="0" max="1000" step="0.5" placeholder="A corpo libero" value="'+proSuggestedLoad(x)+'"><button type="button" data-act="proAdjustLoad" data-n="2.5">+</button></div></label></div>'+
+ '<div class="pro-actual-fields"><label><span>'+(proIsDistance(x)?'Metri eseguiti':'Ripetizioni effettuate')+'</span><div class="pro-number-step"><button type="button" data-act="proAdjustReps" data-n="-1">−</button><input id="runnerActualReps" inputmode="numeric" type="number" min="0" max="'+(proIsDistance(x)?5000:200)+'" step="1" value="'+proSuggestedReps(x)+'"><button type="button" data-act="proAdjustReps" data-n="1">+</button></div></label><label><span>Carico (kg)</span><div class="pro-number-step"><button type="button" data-act="proAdjustLoad" data-n="-2.5">−</button><input id="runnerActualLoad" inputmode="decimal" type="number" min="0" max="1000" step="0.5" placeholder="A corpo libero" value="'+proSuggestedLoad(x)+'"><button type="button" data-act="proAdjustLoad" data-n="2.5">+</button></div></label></div>'+
  '<div class="pro-set-buttons"><button class="btn btn-primary pro-main-complete" data-act="proCompleteSet" '+(completed>=Math.max(1,Number(x.sets)||1)?'disabled':'')+'>✓ Serie completata</button><button class="btn btn-outline" data-act="proUndo" '+(!r.lastSetRef?'disabled':'')+'>↶ Annulla ultima</button></div><label class="runner-switch pro-runner-switch"><input id="runnerAutoRest" type="checkbox" '+(r.autoRest?'checked':'')+'> Recupero automatico dopo ogni serie</label><label class="pro-switch-exercise"><span>Cambia esercizio</span><select id="runnerExerciseJump">'+r.exercises.map((e,i)=>'<option value="'+i+'" '+(i===idx?'selected':'')+'>'+(i+1)+'. '+proEsc(e.name)+'</option>').join('')+'</select></label><label class="pro-switch-exercise"><span>Alternativa durante la sessione</span><select class="workout-run-alternative"><option value="">Scegli una variante…</option>'+trainingAlternatives(x.name).map(s=>'<option value="'+proEsc(s)+'">'+proEsc(s)+'</option>').join('')+'</select></label></div>':'<div class="pro-free-timer-notice">Timer libero: scegli la durata del recupero qui sotto.</div>')+
  '<button class="btn btn-outline pro-finish" data-act="proFinish" '+(!x?'disabled':'')+'>💾 Riepilogo e salva allenamento</button></section>'+
  '<aside class="pro-runner-side"><section class="card pro-timer-card"><div class="eyebrow">RECUPERO</div><div class="pro-timer-ring" id="proTimerRing" style="--ring-progress:'+pct+'%"><div><span>'+proEsc(t.phase==='prep'?'PARTENZA':t.phase==='rest'?'RECUPERO':'PRONTO')+'</span><strong id="restCountdown">'+toClock(sec)+'</strong><small>serie '+(completed+1)+' / '+(x?.sets||'—')+'</small></div></div><div class="timer-progress-track pro-time-hidden"><span id="workoutTimerProgress" style="width:'+pct+'%"></span></div><div class="pro-timer-presets">'+[45,60,75,90,120,180].map(n=>'<button class="timer-preset" data-act="timerStart" data-seconds="'+n+'">'+n+'s</button>').join('')+'</div><div class="pro-timer-controls"><button class="btn btn-outline" data-act="timerPause" '+(t.phase==='idle'?'disabled':'')+'>'+(t.running?'⏸ Pausa':'▶ Riprendi')+'</button><button class="btn btn-outline" data-act="timerAdjust" data-seconds="15" '+(t.phase==='idle'?'disabled':'')+'>+15s</button><button class="btn btn-outline" data-act="timerSkip" '+(t.phase==='idle'?'disabled':'')+'>Salta</button></div><button class="btn btn-outline pro-prep" data-act="timerStart" data-seconds="5" data-phase="prep">▶ Countdown partenza 5s</button><p class="caption">Su iPhone, con lo schermo bloccato, il suono non è garantito. Il tempo si riallinea all’apertura.</p></section>'+
@@ -105,7 +106,7 @@ function proSessionFinish(){
  const r=workoutRunner;if(!r||!r.exercises.length)return;
  const byEx=proSetDetails();
  const done=runnerProgress(),duration=Math.max(1,Math.round((Date.now()-r.startedAt)/60000));
- const report=byEx.map((sets,i)=>sets.length?'<div class="pro-summary-line"><strong>'+proEsc(r.exercises[i].name)+'</strong><span>'+sets.map((z,j)=>(j+1)+': '+z.reps+' × '+(z.load===null?'corpo libero':z.load+' kg')).join(' · ')+'</span></div>':'').join('');
+ const report=byEx.map((sets,i)=>sets.length?'<div class="pro-summary-line"><strong>'+proEsc(r.exercises[i].name)+'</strong><span>'+sets.map((z,j)=>(j+1)+': '+(z.unit==='m'?z.reps+' m':z.reps+' × '+(z.load===null?'corpo libero':z.load+' kg'))).join(' · ')+'</span></div>':'').join('');
  openModal('<div class="pro-finish-modal"><h2>Riepilogo allenamento</h2><p>'+proEsc(r.title)+' · '+done.done+' / '+done.total+' serie completate</p><div class="pro-summary-list">'+(report||'<p>Non hai ancora completato serie.</p>')+'</div><div class="form-grid">'+field('Data','date',r.date,'date','required')+field('Durata (min)','duration',duration,'number','min="1"')+field('RPE (1–10)','rpe',7,'number','min="1" max="10" step="0.5"')+'<label class="field full"><span>Note</span><textarea name="notes" rows="3"></textarea></label></div></div>',async f=>{
   if(!done.done)throw Error('Completa almeno una serie prima di registrare la seduta.');
   const date=String(f.get('date')||r.date),duration=Math.max(1,Number(f.get('duration'))||1),rpe=Number(f.get('rpe'));
@@ -121,11 +122,11 @@ async function proCompleteSet(){
  const reps=Number(document.querySelector('#runnerActualReps')?.value);
  const loadRaw=String(document.querySelector('#runnerActualLoad')?.value||'').replace(',','.');
  const load=loadRaw===''?null:Number(loadRaw);
- if(!Number.isInteger(reps)||reps<0||reps>200){toast('Inserisci ripetizioni valide (0–200).');return;}
+ if(!Number.isInteger(reps)||reps<0||reps>(proIsDistance(x)?5000:200)){toast(proIsDistance(x)?'Inserisci metri validi (0–5000).':'Inserisci ripetizioni valide (0–200).');return;}
  if(load!==null&&(!Number.isFinite(load)||load<0||load>1000)){toast('Inserisci un carico valido.');return;}
  const previous=proSetDetails()[idx].length;
  if((r.completed[idx]||0)>=Math.max(1,Number(x.sets)||1))return;
- r.setDetails[idx].push({reps,load,at:Date.now()});
+ r.setDetails[idx].push({reps,unit:proIsDistance(x)?'m':'rep',load,at:Date.now()});
  r.lastSetRef={index:idx,offset:previous};
  try{await runnerSetDone();}catch(e){r.setDetails[idx].pop();toast('Errore di salvataggio: '+e.message);}
 }
@@ -159,7 +160,7 @@ async function handleWorkoutProAction(act,t){
    workoutRunner.exerciseIndex=i;await saveWorkoutRunner();render();return true;
   }
   case 'proAdjustReps':{
-   const field=document.querySelector('#runnerActualReps');if(field)field.value=String(Math.max(0,Math.min(200,(Number(field.value)||0)+Number(t.dataset.n||0))));return true;
+   const field=document.querySelector('#runnerActualReps'),distance=proIsDistance(runnerCurrent());if(field)field.value=String(Math.max(0,Math.min(distance?5000:200,(Number(field.value)||0)+(distance?25:1)*Number(t.dataset.n||0))));return true;
   }
   case 'proAdjustLoad':{
    const field=document.querySelector('#runnerActualLoad');if(field)field.value=String(Math.max(0,Math.min(1000,Math.round(((Number(field.value)||0)+Number(t.dataset.n||0))*2)/2)));return true;
@@ -167,7 +168,7 @@ async function handleWorkoutProAction(act,t){
   case 'proSessionDetails':{
    const obj=state.sessions.find(s=>s.id===t.dataset.id);if(!obj)return true;
    const detail=Array.isArray(obj.setDetails)?obj.setDetails:[];
-   const html=detail.map((sets,i)=>sets.length?'<div class="pro-summary-line"><strong>'+proEsc(obj.exercises?.[i]?.name||'Esercizio')+'</strong><span>'+sets.map((z,j)=>(j+1)+': '+z.reps+' × '+(z.load===null?'corpo libero':z.load+' kg')).join(' · ')+'</span></div>':'').join('');
+   const html=detail.map((sets,i)=>sets.length?'<div class="pro-summary-line"><strong>'+proEsc(obj.exercises?.[i]?.name||'Esercizio')+'</strong><span>'+sets.map((z,j)=>(j+1)+': '+(z.unit==='m'?z.reps+' m':z.reps+' × '+(z.load===null?'corpo libero':z.load+' kg'))).join(' · ')+'</span></div>':'').join('');
    openModal('<h2>'+proEsc(obj.type||'Allenamento')+'</h2><p>'+proEsc(obj.date)+' · '+fmt(obj.duration)+' min · RPE '+proEsc(obj.rpe||'—')+'</p><div class="pro-summary-list">'+(html||'<p>Questa sessione è stata registrata prima del diario per serie.</p>')+'</div><p>'+proEsc(obj.notes||'')+'</p>',async()=>{},'Chiudi');
    return true;
   }
