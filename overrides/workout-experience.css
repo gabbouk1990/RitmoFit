@@ -122,3 +122,9 @@
 @media(max-width:1120px){.pro-runner-layout{grid-template-columns:1fr}.pro-program-grid{grid-template-columns:1fr}}
 @media(max-width:720px){.pro-training-intro{padding:16px}.pro-training-intro h3{font-size:18px}.pro-goal-circle{width:77px;height:77px}.pro-goal-circle strong{font-size:21px}.pro-week-strip{gap:4px}.pro-program-grid{gap:11px}.pro-program-card{padding:13px}.pro-program-head h3{font-size:15px}.pro-program-exercise{min-height:57px}.pro-program-actions .btn{min-height:45px}.pro-runner-layout{gap:12px}.pro-runner-layout .card{padding:13px}.pro-active-exercise{padding:12px}.pro-current-name h2{font-size:16px}.pro-actual-fields{gap:8px}.pro-stats-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.pro-timer-ring{max-width:225px}.pro-bars{gap:5px}.pro-goal-actions .btn{flex:1}.pro-start-grid{grid-template-columns:1fr}}
 @media(max-width:380px){.pro-program-actions{flex-wrap:wrap}.pro-program-actions .btn{flex:1 1 100%}.pro-set-buttons .btn{flex:1 1 100%}.pro-actual-fields{grid-template-columns:1fr}.pro-timer-ring strong{font-size:42px}}
+
+/* Barra sezioni scorrevole su iPhone, senza tagliare Timer e Statistiche */
+body[data-tab="allenamenti"] .filter-row .tabs{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;justify-content:flex-start}
+body[data-tab="allenamenti"] .filter-row .tabs .tab{flex:0 0 auto;white-space:nowrap;min-height:39px;padding:10px 12px}
+body[data-tab="allenamenti"] .filter-row{min-width:0}
+body[data-tab="allenamenti"] #view{min-width:0}
