@@ -69,12 +69,12 @@ jobs:
           assert 'food-live-select' in s
           assert 'function trainingAlternatives' in s
           assert 'case \'foodCategory\'' in s
-          assert 'await restoreWorkoutRunner();render();' in s
+          assert "await restoreWorkoutRunner();state.hiddenHealthWorkouts=await getItem('hiddenHealthWorkouts',[]);" in s
           assert 'Esplora ${FOOD_CATALOG.length} alimenti' in s
           print("Timer, sostituzioni e catalogo alimentare: verifiche statiche superate")
           assert "function workoutSessionAction(s)" in s
           assert "case 'deleteWorkoutSession'" in s
-          assert '<th>Azioni</th>' in s
+          assert 'session-inline-actions' in s
           assert 'state.sessions=previous.filter(s=>s.id!==id)' in s
           print("Rimozione singolo allenamento manuale: verificata")
           assert "document.body.dataset.tab=state.tab" in s
