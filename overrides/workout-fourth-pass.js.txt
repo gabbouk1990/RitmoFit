@@ -1,0 +1,203 @@
+/* Ritmo Fit · quarta passata visiva
+ * Navigazione in-app Allenati > Attività > Scheda > Esercizio.
+ * La gestione delle sessioni e i dati utente restano quelli esistenti.
+ */
+let rf4Stage='activities';
+let rf4Category='forza';
+let rf4TemplateId='';
+let rf4ExerciseIndex=0;
+let rf4ExerciseTab='esegui';
+let rf4StatsRange='week';
+let rf4TimerFocus=false;
+
+const RF4_CATEGORIES=[
+ {id:'forza',title:'Forza e pesi',sub:'Bilanciere, manubri e progressione',icon:'🏋️',image:'./assets/exercises/squat-1.png',tone:'blue'},
+ {id:'hybrid',title:'Functional / Hybrid',sub:'Forza e conditioning, senza corsa',icon:'🔥',image:'./assets/exercises/goblet-squat-1.png',tone:'coral'},
+ {id:'nuoto',title:'Piscina',sub:'Tecnica, fondo e recupero attivo',icon:'🏊',image:'./assets/exercises/swimming-1.png',tone:'purple'},
+ {id:'tutte',title:'Tutte le schede',sub:'I tuoi programmi personalizzati',icon:'✦',image:'./assets/exercises/dumbbell-bench-press-1.png',tone:'green'}
+];
+const rf4Safe=(s)=>proEsc(s);
+function rf4Kind(t){
+ const title=String((t?.kind||'')+' '+(t?.name||'')).toLowerCase();
+ return /nuoto|piscina|swim/.test(title)?'nuoto':/hybrid|ibrido|functional|conditioning/.test(title)?'hybrid':'forza';
+}
+function rf4Programs(kind){
+ return (state.templates||[]).filter(t=>kind==='tutte'||rf4Kind(t)===kind);
+}
+function rf4Program(id){return (state.templates||[]).find(t=>t.id===id);}
+function rf4CategoryInfo(id){return RF4_CATEGORIES.find(c=>c.id===id)||RF4_CATEGORIES[0];}
+function rf4Subnav(label,go='rf4Back'){
+ return '<button type="button" class="rf4-back" data-act="'+go+'"><span aria-hidden="true">←</span> '+rf4Safe(label)+'</button>';
+}
+function rf4BodyArt(ex,cls='rf4-list-art'){
+ return '<span class="'+cls+'">'+proExerciseIllustration(ex,1,'rf4-art-image')+'</span>';
+}
+function rf4WeekPanel(){
+ const p=proWeekProgress();
+ const goal=Math.min(100,p.percent);
+ return '<section class="rf4-week-panel"><div class="rf4-week-top"><div><span class="rf4-kicker">LA TUA SETTIMANA</span><h3>Obiettivo allenamento</h3><p>'+p.count+' sedute su '+p.goal+' previste</p></div><div class="rf4-ring-small" style="--rf4p:'+goal+'%"><strong>'+p.count+'/'+p.goal+'</strong></div></div>'+
+ '<div class="rf4-week-meter"><span style="width:'+goal+'%"></span></div>'+
+ proWeekStrip()+'<button type="button" class="rf4-text-action" data-act="proGoal">⚙ Modifica obiettivo</button></section>';
+}
+function rf4ActivityScreen(){
+ const categories=RF4_CATEGORIES.map(c=>{
+  const number=rf4Programs(c.id).length;
+  return '<button type="button" class="rf4-category-card '+c.tone+'" data-act="rf4Category" data-category="'+c.id+'">'+
+  '<div class="rf4-category-photo"><img src="'+c.image+'" alt="" loading="lazy" decoding="async"></div>'+
+  '<div class="rf4-category-mark">'+c.icon+'</div><div class="rf4-category-info"><strong>'+rf4Safe(c.title)+'</strong><small>'+rf4Safe(c.sub)+'</small><span>'+number+' '+(number===1?'scheda':'schede')+' disponibili</span></div><span class="rf4-chevron">›</span></button>';
+ }).join('');
+ const continueWorkout=workoutRunner?'<button class="rf4-continue" data-act="rf4Resume"><span class="rf4-play-mini">▶</span><span><strong>Riprendi la seduta</strong><small>'+rf4Safe(workoutRunner.title||'Allenamento')+' · '+runnerProgress().done+' serie completate</small></span><span>›</span></button>':'';
+ return '<div class="rf4-app rf4-activities"><div class="rf4-screen-head"><div class="rf4-kicker">RITMO FIT / ALLENATI</div><h2>Scegli la tua attività</h2><p>Programmi, esercizi e recuperi in un’unica app.</p></div>'+
+ continueWorkout+rf4WeekPanel()+
+ '<div class="rf4-section-heading"><h3>Allenamenti</h3><button class="rf4-text-action" data-act="workoutPane" data-to="statistiche">Statistiche ›</button></div>'+
+ '<div class="rf4-category-list">'+categories+'</div>'+
+ '<div class="rf4-secondary-actions"><button class="btn btn-outline" data-act="newTemplate">+ Crea scheda</button><button class="btn btn-outline" data-act="restoreProgram">↺ Schede consigliate</button></div></div>';
+}
+function rf4ProgramsScreen(){
+ const c=rf4CategoryInfo(rf4Category), programs=rf4Programs(rf4Category);
+ const cards=programs.map((t,i)=>{
+  const first=(t.exercises||[])[0]||{name:'Programma',sets:0,reps:'—'};
+  const image=proExerciseIllustration(first,1,'rf4-program-image');
+  return '<button class="rf4-program-card" data-act="rf4OpenTemplate" data-id="'+rf4Safe(t.id)+'"><span class="rf4-program-icon">'+image+'</span><span class="rf4-program-copy"><strong>'+rf4Safe(t.name)+'</strong><small>'+rf4Safe(t.kind)+' · '+fmt(t.time)+' min</small><em>'+t.exercises.length+' esercizi · '+rf4Safe(proInfo(first.name).muscles)+'</em></span><span class="rf4-chevron">›</span></button>';
+ }).join('');
+ return '<div class="rf4-app rf4-programs">'+rf4Subnav('Allenati')+
+ '<section class="rf4-category-hero '+c.tone+'"><div class="rf4-category-hero-art"><img src="'+c.image+'" alt="" loading="lazy"></div><div class="rf4-category-hero-copy"><div class="rf4-kicker">SCEGLI LA TUA SCHEDA</div><h2>'+rf4Safe(c.title)+'</h2><p>'+rf4Safe(c.sub)+'</p></div></section>'+
+ '<div class="rf4-programs-summary"><div><strong>'+programs.length+'</strong><small>Programmi disponibili</small></div><div><strong>'+programs.reduce((sum,t)=>sum+t.exercises.length,0)+'</strong><small>Esercizi totali</small></div></div>'+
+ '<div class="rf4-section-heading"><h3>Le tue schede</h3><button class="rf4-text-action" data-act="newTemplate">+ Nuova</button></div>'+
+ '<div class="rf4-programs-list">'+(cards||'<div class="card">Nessuna scheda disponibile. Creane una per questa attività.</div>')+'</div>'+
+ '<p class="rf4-hint">Puoi modificare esercizi, quantità di serie, carichi e recuperi nelle singole schede.</p></div>';
+}
+function rf4TemplateScreen(){
+ const t=rf4Program(rf4TemplateId);
+ if(!t){rf4Stage='programs';return rf4ProgramsScreen();}
+ const exercises=t.exercises||[];
+ const rows=exercises.map((ex,i)=>{
+  const meta=proInfo(ex.name),muscles=proMuscleKey(ex);
+  return '<button class="rf4-template-row" type="button" data-act="rf4OpenExercise" data-index="'+i+'">'+
+  '<span class="rf4-number '+['mint','blue','orange','purple'][i%4]+'">'+(i+1)+'</span>'+
+  rf4BodyArt(ex)+
+  '<span class="rf4-template-row-copy"><strong>'+rf4Safe(ex.name)+'</strong><small>'+rf4Safe(meta.muscles)+'</small><em>'+fmt(ex.sets)+' × '+rf4Safe(ex.reps)+' · '+rf4Safe(ex.load||'—')+'</em></span><span class="rf4-chevron">›</span></button>';
+ }).join('');
+ const pool=rf4Kind(t)==='nuoto';
+ return '<div class="rf4-app rf4-template">'+rf4Subnav(rf4CategoryInfo(rf4Category).title)+
+ '<section class="rf4-template-head"><div class="rf4-template-head-inner"><div class="rf4-kicker">PROGRAMMA · '+rf4Safe(t.kind)+'</div><h2>'+rf4Safe(t.name)+'</h2><p>'+rf4Safe(t.notes||'')+'</p><div class="rf4-detail-tags"><span>◷ '+fmt(t.time)+' min</span><span>▣ '+exercises.length+' esercizi</span><span>'+rf4Safe(pool?'Nuoto':'Forza / recupero')+'</span></div></div><button class="rf4-play-round" data-act="startWorkout" data-id="'+rf4Safe(t.id)+'" aria-label="Avvia allenamento">▶</button></section>'+
+ '<div class="rf4-section-heading"><h3>Esercizi</h3><button class="rf4-text-action" data-act="editTemplate" data-id="'+rf4Safe(t.id)+'">✎ Modifica</button></div>'+
+ '<div class="rf4-template-list">'+rows+'</div>'+
+ '<div class="rf4-template-footer"><button class="btn btn-primary" data-act="startWorkout" data-id="'+rf4Safe(t.id)+'">▶ Inizia allenamento</button></div></div>';
+}
+function rf4ExerciseScreen(){
+ const t=rf4Program(rf4TemplateId);
+ const x=t?.exercises?.[rf4ExerciseIndex];
+ if(!x){rf4Stage='template';return rf4TemplateScreen();}
+ const meta=proInfo(x.name),alternatives=trainingAlternatives(x.name);
+ const pool=proIsDistance(x);
+ const tabs=[['esegui','Esegui'],['istruzioni','Istruzioni'],['storico','Storico']];
+ const tabbar='<div class="rf4-detail-tabs" role="tablist" aria-label="Dettagli esercizio">'+tabs.map(([id,text])=>
+  '<button type="button" role="tab" aria-selected="'+(rf4ExerciseTab===id)+'" class="'+(rf4ExerciseTab===id?'active':'')+'" data-act="rf4ExerciseTab" data-tab="'+id+'">'+text+'</button>').join('')+'</div>';
+ let body='';
+ if(rf4ExerciseTab==='esegui'){
+  body='<div class="rf4-exercise-hero-art"><div>'+proExerciseIllustration(x,1,'rf4-exercise-pose')+'<small>Fase iniziale</small></div><div>'+proExerciseIllustration(x,2,'rf4-exercise-pose')+'<small>Fase finale</small></div></div>'+
+  '<section class="rf4-muscle-preview"><h3>Muscoli coinvolti</h3><div class="rf4-muscle-row">'+proMuscleThumb(x,'rf4-muscle-image')+'<div><strong>'+rf4Safe(meta.muscles)+'</strong><p>Visualizza i gruppi principali e secondari evidenziati.</p><button class="rf4-text-action" data-act="rf4ExerciseTab" data-tab="istruzioni">Apri mappa muscolare →</button></div></div></section>'+
+  '<div class="rf4-exercise-metrics"><div><small>Serie</small><strong>'+fmt(x.sets)+'</strong></div><div><small>'+(pool?'Metri':'Ripetizioni')+'</small><strong>'+rf4Safe(x.reps)+'</strong></div><div><small>Recupero</small><strong>'+rf4Safe(x.rest||'—')+'</strong></div></div>';
+ }else if(rf4ExerciseTab==='istruzioni'){
+  body='<div class="rf4-instructions"><section><h3>Tecnica e attenzione</h3><p>'+rf4Safe(meta.cue)+'</p></section>'+
+   proMuscleDetails(x)+'<section class="rf4-alternative-list"><h3>Varianti e alternative</h3><div>'+(alternatives.length?alternatives.map(y=>'<span>'+rf4Safe(y)+'</span>').join(''):'<span>Utilizza la modifica scheda per scegliere un’alternativa appropriata.</span>')+'</div></section></div>';
+ }else{
+  body=thirdExerciseHistory(x);
+ }
+ return '<div class="rf4-app rf4-exercise">'+rf4Subnav(t.name)+
+ '<div class="rf4-exercise-title"><div><div class="rf4-kicker">ESERCIZIO '+(rf4ExerciseIndex+1)+' DI '+t.exercises.length+'</div><h2>'+rf4Safe(x.name)+'</h2><small>'+rf4Safe(meta.muscles)+'</small></div><span class="rf4-exercise-label">'+rf4Safe(t.kind)+'</span></div>'+
+ tabbar+body+
+ '<div class="rf4-exercise-footer"><button class="btn btn-outline" data-act="rf4ExercisePrev" '+(rf4ExerciseIndex===0?'disabled':'')+'>← Prec.</button><button class="btn btn-primary" data-act="startWorkout" data-id="'+rf4Safe(t.id)+'">▶ Inizia</button><button class="btn btn-outline" data-act="rf4ExerciseNext" '+(rf4ExerciseIndex>=t.exercises.length-1?'disabled':'')+'>Succ. →</button></div></div>';
+}
+renderWorkoutCardsPro=function(){
+ if(rf4Stage==='programs')return rf4ProgramsScreen();
+ if(rf4Stage==='template')return rf4TemplateScreen();
+ if(rf4Stage==='exercise')return rf4ExerciseScreen();
+ return rf4ActivityScreen();
+};
+const rf4OldTimer=renderTrainingTimerPro;
+renderTrainingTimerPro=function(){
+ const base=rf4OldTimer();
+ if(!workoutRunner)return '<div class="rf4-app rf4-timer-page"><div class="rf4-screen-head"><div class="rf4-kicker">RECUPERO</div><h2>Timer e sessioni</h2><p>Scegli una scheda, imposta il recupero e registra le serie.</p></div>'+base+'</div>';
+ const timer=workoutRunner.timer||freshTimer(),s=timerSeconds(timer);
+ return '<div class="rf4-app rf4-timer-page '+(rf4TimerFocus?'rf4-timer-focus':'')+'">'+
+ '<div class="rf4-timer-toolbar"><div><div class="rf4-kicker">WORKOUT IN CORSO</div><h2>'+rf4Safe(workoutRunner.title||'Allenamento')+'</h2></div><button type="button" class="rf4-timer-focus-button" data-act="rf4TimerFocus">'+(rf4TimerFocus?'Mostra esercizi':'⏱ Solo timer')+'</button></div>'+
+ base+'</div>';
+};
+function rf4DateWithin(session,range){
+ const date=String(session?.date||'').slice(0,10),today=inputDate();
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return false;
+ if(range==='year')return date.slice(0,4)===today.slice(0,4);
+ if(range==='month')return date.slice(0,7)===today.slice(0,7);
+ return date>=proIso(proWeekMonday(today))&&date<=today;
+}
+function rf4FilteredSessions(){return (state.sessions||[]).filter(x=>rf4DateWithin(x,rf4StatsRange));}
+function rf4Stats(){
+ const filtered=rf4FilteredSessions();
+ const periods={week:'Settimana',month:'Mese',year:'Anno'};
+ const totalMins=filtered.reduce((a,x)=>a+(Number(x.duration)||0),0);
+ const totalSets=filtered.reduce((a,x)=>a+((x.completedSets||[]).reduce((b,v)=>b+(Number(v)||0),0)),0);
+ const totalDays=new Set(filtered.map(s=>s.date)).size;
+ const tab='<div class="rf4-period-tabs">'+Object.entries(periods).map(([k,v])=>
+  '<button class="'+(rf4StatsRange===k?'active':'')+'" data-act="rf4StatsRange" data-range="'+k+'">'+v+'</button>').join('')+'</div>';
+ // Data labels reflect the selected timeframe. No zero-filling absent health measurements.
+ let buckets=[];
+ const now=new Date(inputDate()+'T12:00:00');
+ if(rf4StatsRange==='week'){
+  const mon=proWeekMonday(inputDate());
+  buckets=Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return {key:proIso(d),label:['L','M','M','G','V','S','D'][i]};});
+ }else if(rf4StatsRange==='month'){
+  const count=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const spans=[[1,7],[8,14],[15,21],[22,count]];
+  buckets=spans.map(([start,end],i)=>({key:i,label:'S'+(i+1),has:s=>{const day=Number(s.date.slice(8));return day>=start&&day<=end;}}));
+ }else{
+  buckets=Array.from({length:12},(_,i)=>({key:i,label:['G','F','M','A','M','G','L','A','S','O','N','D'][i],has:s=>Number(s.date.slice(5,7))===i+1}));
+ }
+ const data=buckets.map(b=>{
+  const arr=filtered.filter(s=>b.has?b.has(s):s.date===b.key);
+  return {...b,count:arr.length,mins:arr.reduce((a,s)=>a+(Number(s.duration)||0),0)};
+ });
+ const max=Math.max(1,...data.map(d=>d.mins));
+ const chart=data.map(d=>'<div class="rf4-stat-bar"><strong>'+d.mins+'</strong><div><span style="height:'+Math.max(2,100*d.mins/max)+'%"></span></div><small>'+d.label+'</small></div>').join('');
+ const recent=filtered.slice().sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,5);
+ const recentRows=recent.map(s=>'<div class="rf4-recent-row"><span>✓</span><div><strong>'+rf4Safe(s.type||s.name||'Allenamento')+'</strong><small>'+rf4Safe(s.date)+' · '+fmt(s.duration)+' min</small></div><em>'+rf4Safe(s.rpe?'RPE '+fmt(s.rpe,1):'Registrata')+'</em></div>').join('');
+ const details=rf4ExistingStats();
+ return '<div class="rf4-app rf4-stats"><div class="rf4-screen-head"><div class="rf4-kicker">IL TUO ANDAMENTO</div><h2>Statistiche</h2><p>Progressi delle sedute registrate in Ritmo Fit.</p></div>'+tab+
+ '<div class="rf4-stat-grid"><div><small>Sedute</small><strong>'+filtered.length+'</strong><span>nel periodo</span></div><div><small>Tempo</small><strong>'+Math.round(totalMins/60*10)/10+' h</strong><span>'+totalMins+' min totali</span></div><div><small>Serie</small><strong>'+totalSets+'</strong><span>registrate</span></div><div><small>Giorni</small><strong>'+totalDays+'</strong><span>attivi</span></div></div>'+
+ '<section class="rf4-stats-card"><div class="rf4-section-heading"><h3>Tempo di allenamento</h3><span>minuti</span></div><div class="rf4-stats-bars">'+chart+'</div></section>'+
+ '<section class="rf4-stats-card"><h3>Ultime sessioni</h3>'+(recentRows||'<p class="rf4-hint">Nessuna sessione manuale registrata per questo periodo.</p>')+'</section>'+
+ '<details class="rf4-stats-details"><summary>Altre statistiche: carichi e volume <span>⌄</span></summary>'+details+'</details>'+
+ '<p class="rf4-hint">Gli allenamenti importati da Apple Salute restano consultabili nello Storico. Qui non li sommo alle sessioni manuali per evitare duplicazioni.</p></div>';
+}
+const rf4ExistingStats=renderWorkoutStatsPro;
+renderWorkoutStatsPro=rf4Stats;
+// Keep all existing logging/editing handlers. These are navigation-only additions.
+const rf4OldHandle=handleWorkoutProAction;
+handleWorkoutProAction=async function(act,t){
+ const id=t.dataset.id;
+ switch(act){
+  case 'rf4Category':
+   rf4Category=t.dataset.category||'forza';rf4Stage='programs';render();return true;
+  case 'rf4OpenTemplate':
+   rf4TemplateId=id;rf4Stage='template';render();return true;
+  case 'rf4OpenExercise':{
+   const template=rf4Program(rf4TemplateId),idx=Number(t.dataset.index);
+   if(!template||!Number.isInteger(idx)||idx<0||idx>=template.exercises.length)return true;
+   rf4ExerciseIndex=idx;rf4ExerciseTab='esegui';rf4Stage='exercise';render();return true;
+  }
+  case 'rf4Back':
+   rf4Stage=rf4Stage==='exercise'?'template':rf4Stage==='template'?'programs':'activities';render();return true;
+  case 'rf4ExerciseTab':
+   rf4ExerciseTab=t.dataset.tab||'esegui';render();return true;
+  case 'rf4ExercisePrev':rf4ExerciseIndex=Math.max(0,rf4ExerciseIndex-1);rf4ExerciseTab='esegui';render();return true;
+  case 'rf4ExerciseNext':{
+   const template=rf4Program(rf4TemplateId);
+   rf4ExerciseIndex=Math.min((template?.exercises?.length||1)-1,rf4ExerciseIndex+1);rf4ExerciseTab='esegui';render();return true;
+  }
+  case 'rf4Resume':state.workoutPane='timer';render();return true;
+  case 'rf4TimerFocus':rf4TimerFocus=!rf4TimerFocus;render();return true;
+  case 'rf4StatsRange':rf4StatsRange=t.dataset.range||'week';render();return true;
+ }
+ return rf4OldHandle(act,t);
+};
