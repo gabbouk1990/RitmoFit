@@ -49,6 +49,7 @@ jobs:
           python3 overrides/patch_training_experience.py
           python3 overrides/patch_exercise_images.py
           python3 overrides/patch_muscle_visuals.py
+          python3 overrides/patch_third_pass.py
           node --check _site/app.js
           python3 - <<'PY'
           from pathlib import Path
@@ -66,7 +67,7 @@ jobs:
           assert "upgradeDefaultMeals()" in s
           assert "nutrition-disclaimer" in s
           assert "food-ingredient-row" in s
-          assert 'ritmo-fit-static-v11' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v12' in Path('_site/sw.js').read_text()
           assert 'function renderTrainingTimer()' in s
           assert 'function foodPlanCardV2' in s
           assert 'food-live-select' in s
@@ -116,6 +117,16 @@ jobs:
           assert "pro-muscle-mini" in css
           assert "pro-muscle-panel" in css
           print("Mappe muscolari evidenziate: layout verificato")
+          assert 'function thirdExerciseHistory(ex)' in s
+          assert 'function thirdVolumeBySession(session)' in s
+          assert "data-act=\"thirdResume\"" in s
+          assert "data-act=\"proCompleteSet\"" in s
+          assert 'id=\"thirdRpe\"' in s
+          assert 'class=\"third-mobile-dock\"' in s
+          assert '.third-mobile-dock' in css
+          assert '.third-history-panel' in css
+          assert 'ritmo-fit-static-v12' in Path('_site/sw.js').read_text()
+          print("Terza passata Allenamenti: controlli statici superati")
           PY
 
       - name: Scarica immagini esercizi con licenza CC BY-SA
