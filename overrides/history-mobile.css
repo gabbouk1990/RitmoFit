@@ -1,0 +1,29 @@
+/* Session history: actions visible immediately beside each workout */
+.workout-history-scroll{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.workout-history-table{width:100%}
+.workout-history-table td:nth-child(2){min-width:175px}
+.session-inline-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.session-inline-actions .btn{padding:7px 11px;min-height:38px;font-weight:800;font-size:11px;white-space:nowrap}
+.session-inline-actions .session-delete-button{border:1px solid rgba(252,146,137,.35);background:rgba(163,56,50,.18);color:#ffd1cd}
+.session-inline-actions .session-hide-button{border:1px solid rgba(94,211,195,.3);background:rgba(27,139,129,.14);color:#b3faec}
+.session-restore-button{margin-top:10px;white-space:normal;min-height:38px}
+@media(max-width:720px){
+  .workout-history-scroll{overflow:visible}
+  .workout-history-table,.workout-history-table tbody{display:block;width:100%}
+  .workout-history-table thead{display:none}
+  .workout-history-table tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;padding:13px;margin:0 0 12px;border:1px solid rgba(255,255,255,.10);background:rgba(13,25,36,.72);border-radius:13px}
+  .workout-history-table td{min-width:0!important;width:auto;display:block;padding:6px 3px!important;border:0!important;overflow-wrap:anywhere;font-size:12px}
+  .workout-history-table td:nth-child(2){grid-column:1/-1;grid-row:1}
+  .workout-history-table td:nth-child(1){grid-column:1;grid-row:2}
+  .workout-history-table td:nth-child(3){grid-column:2;grid-row:2}
+  .workout-history-table td:nth-child(4){grid-column:1;grid-row:3}
+  .workout-history-table td:nth-child(5){grid-column:2;grid-row:3}
+  .workout-history-table td::before{display:block;margin-bottom:4px;font-size:10px;text-transform:uppercase;letter-spacing:.075em;color:#a3b7c8;font-weight:780}
+  .workout-history-table td:nth-child(1)::before{content:'Data'}
+  .workout-history-table td:nth-child(2)::before{content:'Allenamento'}
+  .workout-history-table td:nth-child(3)::before{content:'Durata'}
+  .workout-history-table td:nth-child(4)::before{content:'Calorie'}
+  .workout-history-table td:nth-child(5)::before{content:'FC media'}
+  .session-inline-actions .btn{min-height:43px;flex:1 1 100%;margin-top:2px;font-size:12px}
+  .session-restore-button{width:100%}
+}
