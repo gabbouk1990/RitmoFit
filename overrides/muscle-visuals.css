@@ -1,0 +1,44 @@
+/* Mappa anatomica muscoli principali/secondari, stile dark Ritmo Fit */
+.pro-muscle-mini{display:grid;place-items:center;flex:0 0 41px;width:41px;height:58px;border-radius:10px;background:#122239;border:1px solid rgba(113,156,208,.25);overflow:hidden}
+.pro-muscle-thumb{display:block;height:100%;width:100%;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.18))}
+.pro-program-exercise{min-width:0}
+.pro-exercise-copy{flex:1 1 auto;min-width:0}
+.pro-exercise-prescription{flex:0 0 auto}
+.pro-active-muscles{width:57px;height:71px;min-width:57px;display:grid;place-items:center;background:#192b43;border:1px solid rgba(105,151,215,.27);border-radius:12px;overflow:hidden}
+.pro-active-muscle-img{display:block;width:100%;height:100%;object-fit:contain}
+.pro-muscle-section{margin:16px 0;padding:16px;border-radius:17px;background:linear-gradient(145deg,rgba(16,35,57,.95),rgba(13,27,46,.96));border:1px solid rgba(119,174,238,.16)}
+.pro-muscle-section-head h3{font-size:15px!important;color:#f1f7ff!important;margin:5px 0 12px!important}
+.pro-muscle-panel{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(125px,.85fr);align-items:center;gap:14px}
+.pro-muscle-panel>img{display:block;width:100%;height:auto;max-height:295px;object-fit:contain;background:rgba(11,24,40,.86);border:1px solid rgba(150,176,209,.12);border-radius:12px}
+.pro-muscle-legend{display:flex;flex-direction:column;gap:11px}
+.pro-muscle-legend-item{display:flex;gap:9px;align-items:flex-start}
+.pro-muscle-legend-item>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.pro-muscle-legend-item strong{font-size:12px;color:#e9f4ff}
+.pro-muscle-legend-item small{font-size:11px;color:#a8c3dc;line-height:1.5}
+.pro-muscle-dot{display:inline-block;width:12px;height:12px;min-width:12px;margin-top:4px;border-radius:50%}
+.pro-muscle-dot.primary{background:#ef5350;box-shadow:0 0 9px #ef535077}
+.pro-muscle-dot.secondary{background:#f4b860;box-shadow:0 0 9px #f4b86055}
+.pro-muscle-legend>.caption{font-size:10px;line-height:1.55;margin:4px 0 0}
+.pro-muscle-credits{font-size:9px;line-height:1.55;margin-top:13px;color:#8aa6c3}
+.pro-muscle-credits a{color:#93ccff;text-decoration:underline;text-underline-offset:2px}
+.pro-muscle-unknown{background:rgba(255,255,255,.05);border-radius:12px;padding:12px;margin:12px 0;color:#bdd1e7;font-size:11px}
+.pro-muscle-unknown p{color:#96adbf;font-size:11px}
+@media(max-width:720px){
+ .pro-muscle-mini{width:37px;flex-basis:37px;height:53px}
+ .pro-program-exercise{gap:6px;padding:8px 6px}
+ .pro-active-muscles{width:47px;height:60px;min-width:47px}
+ .pro-muscle-section{padding:12px}
+ .pro-muscle-panel{grid-template-columns:minmax(0,1fr)}
+ .pro-muscle-panel>img{max-height:260px}
+ .pro-muscle-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .pro-muscle-legend>.caption{grid-column:1/-1}
+ .pro-muscle-legend-item small{font-size:10px}
+}
+@media(max-width:390px){
+ .pro-exercise-prescription{margin-left:auto;flex:0 0 auto}
+ .pro-muscle-mini{width:32px;flex-basis:32px;height:48px}
+ .pro-illustration-slot{width:43px!important;min-width:43px!important;height:45px!important}
+ .pro-program-exercise{flex-wrap:wrap;gap:5px}
+ .pro-exercise-copy{flex:1 1 90px}
+ .pro-exercise-prescription{font-size:10px;max-width:100%}
+}
