@@ -1,0 +1,60 @@
+/* Mappa muscolare anatomica: principale rosso corallo, secondario ambra.
+   SVG statici Apache 2.0 / MIT generati al deploy da Anatome. */
+const PRO_MUSCLE_LIBRARY={
+ squat:{label:'Gambe e glutei',primary:'Quadricipiti, glutei',secondary:'Adduttori, femorali, addominali'},
+ hinge:{label:'Catena posteriore',primary:'Femorali, glutei',secondary:'Lombari, dorsali, avambracci'},
+ glutes:{label:'Glutei',primary:'Glutei',secondary:'Femorali, addominali'},
+ chest:{label:'Spinta orizzontale',primary:'Pettorali',secondary:'Tricipiti, deltoidi'},
+ incline:{label:'Spinta inclinata',primary:'Pettorali, deltoidi anteriori',secondary:'Tricipiti'},
+ vertical:{label:'Tirata verticale',primary:'Gran dorsale',secondary:'Bicipiti, trapezi, avambracci'},
+ row:{label:'Tirata orizzontale',primary:'Dorsali, regione scapolare',secondary:'Bicipiti, deltoidi posteriori'},
+ pullover:{label:'Estensione della spalla',primary:'Gran dorsale',secondary:'Tricipiti (capo lungo), addominali'},
+ shoulders:{label:'Spinta sulle spalle',primary:'Deltoidi',secondary:'Tricipiti, trapezi'},
+ lateral:{label:'Abduzione spalle',primary:'Deltoidi',secondary:'Trapezi'},
+ plank:{label:'Tenuta isometrica',primary:'Addominali',secondary:'Obliqui, spalle, glutei'},
+ core:{label:'Antirotazione',primary:'Obliqui, addominali',secondary:'Deltoidi, glutei'},
+ carry:{label:'Stabilità e presa',primary:'Obliqui, avambracci',secondary:'Trapezi, addominali'},
+ swimming:{label:'Nuoto / lavoro globale',primary:'Dorsali, deltoidi',secondary:'Pettorali, tricipiti, addominali'},
+ walking:{label:'Camminata sostenuta',primary:'Glutei, quadricipiti',secondary:'Femorali, polpacci'},
+ cycling:{label:'Cyclette',primary:'Quadricipiti',secondary:'Glutei, polpacci'}
+};
+const PRO_MUSCLE_MAP_CREDITS='<div class="pro-muscle-credits">Mappe anatomiche: <a href="https://github.com/Rippy1911/anatome" target="_blank" rel="noopener noreferrer">Anatome / NextSolutions</a> (Apache 2.0), con percorsi muscolari di <a href="https://github.com/HichamELBSI/react-native-body-highlighter" target="_blank" rel="noopener noreferrer">Hicham El Boussarghini</a> (MIT). Colori e associazioni adattati per Ritmo Fit.</div>';
+
+function proMuscleKey(ex) {
+ const n=String(ex?.name||ex||'').toLocaleLowerCase('it-IT').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const matches=[
+  [/nuoto|piscina|pull buoy|stile|dorso|defaticamento|scivolamento|drill|tecnica.*stile|aerobico|fondo/i,'swimming'],
+  [/pallof|dead bug|antirotazion/i,'core'],
+  [/suitcase march|farmer hold|farmer carry/i,'carry'],
+  [/plank/i,'plank'],
+  [/hip thrust|glute bridge|ponte glutei/i,'glutes'],
+  [/stacco rumeno|(?:^|[^a-z])rdl(?:[^a-z]|$)|romanian deadlift|pull.through/i,'hinge'],
+  [/goblet|squat|leg press|affondi/i,'squat'],
+  [/panca inclinata|incline dumbbell/i,'incline'],
+  [/panca|chest press|push.up|dip\b/i,'chest'],
+  [/pullover|straight.arm pulldown/i,'pullover'],
+  [/alzate laterali|lateral raise/i,'lateral'],
+  [/shoulder press|military press|seated dumbbell press/i,'shoulders'],
+  [/lat machine|lat pulldown|trazioni|pull.up/i,'vertical'],
+  [/rematore|high row|chest.supported|machine row|seated row/i,'row'],
+  [/skillmill|camminata|power walk|treadmill/i,'walking'],
+  [/cyclette/i,'cycling']
+ ];
+ const found=matches.find(([expr])=>expr.test(n));
+ return found?found[1]:null;
+}
+function proMuscleThumb(ex,klass='pro-muscle-thumb'){
+ const key=proMuscleKey(ex),info=key&&PRO_MUSCLE_LIBRARY[key];
+ if(!info)return '';
+ return '<img class="'+klass+'" loading="lazy" decoding="async" src="./assets/muscles/'+key+'.svg" width="44" height="56" alt="'+proEsc('Muscoli evidenziati: '+info.primary+' (principali); '+info.secondary+' (secondari)')+'">';
+}
+function proMuscleDetails(ex){
+ const key=proMuscleKey(ex),info=key&&PRO_MUSCLE_LIBRARY[key];
+ if(!info)return '<div class="pro-muscle-unknown"><strong>Gruppi muscolari</strong><p>Per questa attività generale non è indicato un singolo gruppo muscolare principale.</p></div>';
+ return '<section class="pro-muscle-section"><div class="pro-muscle-section-head"><div><span class="eyebrow">MUSCOLI COINVOLTI</span><h3>Vista anatomica fronte e retro</h3></div></div>'+
+ '<div class="pro-muscle-panel"><img src="./assets/muscles/'+key+'.svg" loading="lazy" decoding="async" width="420" height="300" alt="'+proEsc('Vista anatomica dei muscoli coinvolti in '+String(ex?.name||ex||'esercizio'))+'"><div class="pro-muscle-legend">'+
+ '<div class="pro-muscle-legend-item"><span class="pro-muscle-dot primary"></span><div><strong>Principali</strong><small>'+proEsc(info.primary)+'</small></div></div>'+
+ '<div class="pro-muscle-legend-item"><span class="pro-muscle-dot secondary"></span><div><strong>Secondari</strong><small>'+proEsc(info.secondary)+'</small></div></div>'+
+ '<p class="caption">La colorazione indica il ruolo muscolare prevalente atteso. Non misura quanto un muscolo lavori in ogni persona o variante.</p>'+
+ '</div></div>'+PRO_MUSCLE_MAP_CREDITS+'</section>';
+}
