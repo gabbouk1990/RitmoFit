@@ -26,8 +26,8 @@ change('''<span class="pro-jump-index">'+(i+1)+'</span><span><strong>''',
 change('''<div class="pro-detail-icon">'+meta.icon+'</div><div class="eyebrow">''',
        '''<div class="pro-detail-art">'+proExerciseIllustration(x,1,'pro-detail-image')+proExerciseIllustration(x,2,'pro-detail-image')+'</div><div class="eyebrow">''',
        'Immagini posizioni nella scheda tecnica')
-change("'<p class=\"caption\">Indicazioni generali: non sostituiscono la supervisione di un allenatore o di un professionista sanitario.</p></div>'",
-       "'<p class=\"caption\">Indicazioni generali: non sostituiscono la supervisione di un allenatore o di un professionista sanitario.</p>'+PRO_EXERCISE_IMAGE_CREDITS+'</div>'",
+change("Indicazioni generali: non sostituiscono la supervisione di un allenatore o di un professionista sanitario.</p></div>'",
+       "Indicazioni generali: non sostituiscono la supervisione di un allenatore o di un professionista sanitario.</p>'+PRO_EXERCISE_IMAGE_CREDITS+'</div>'",
        'Attribuzione dettagli')
 change("+'</div><div class=\"pro-bottom-actions\"><button class=\"btn btn-outline\" data-act=\"newTemplate\">+ Crea scheda</button><button class=\"btn btn-outline\" data-act=\"restoreProgram\">↺ Schede consigliate</button></div>';",
        "+'</div><div class=\"pro-bottom-actions\"><button class=\"btn btn-outline\" data-act=\"newTemplate\">+ Crea scheda</button><button class=\"btn btn-outline\" data-act=\"restoreProgram\">↺ Schede consigliate</button></div>'+PRO_EXERCISE_IMAGE_CREDITS;",
