@@ -46,6 +46,7 @@ jobs:
           python3 overrides/patch_session_delete.py
           python3 overrides/patch_theme.py
           python3 overrides/patch_history_mobile.py
+          python3 overrides/patch_training_experience.py
           node --check _site/app.js
           python3 - <<'PY'
           from pathlib import Path
@@ -63,7 +64,7 @@ jobs:
           assert "upgradeDefaultMeals()" in s
           assert "nutrition-disclaimer" in s
           assert "food-ingredient-row" in s
-          assert 'ritmo-fit-static-v8' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v9' in Path('_site/sw.js').read_text()
           assert 'function renderTrainingTimer()' in s
           assert 'function foodPlanCardV2' in s
           assert 'food-live-select' in s
@@ -93,6 +94,16 @@ jobs:
           assert "workout-history-table" in s
           assert 'workout-history-table tbody tr' in css
           print("Azioni visibili e storico responsive: verificati")
+          assert "function renderTrainingTimerPro()" in s
+          assert "function renderWorkoutStatsPro()" in s
+          assert "function proCompleteSet()" in s
+          assert "function proSessionFinish()" in s
+          assert "data-act=\"proSessionDetails\"" in s
+          assert "data-act=\"proAdjustReps\"" in s
+          assert "data-act=\"proAdjustLoad\"" in s
+          assert "data-to=\"statistiche\"" in s
+          assert "pro-timer-ring" in css
+          print("Nuove funzioni Allenamenti e grafica: verificati")
           PY
 
       - name: Configura GitHub Pages
