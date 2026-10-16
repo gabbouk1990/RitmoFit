@@ -1,0 +1,53 @@
+// Fotogrammi da Workout Guide / Everkinetic (CC BY-SA 4.0).
+// Miniature locali: _site/assets/exercises/<slug>-1.png e <slug>-2.png.
+const PRO_EXERCISE_IMAGE_LICENSE='https://creativecommons.org/licenses/by-sa/4.0/';
+const PRO_EXERCISE_IMAGE_SOURCE='https://github.com/bryllim/workout-guide';
+const PRO_EXERCISE_IMAGE_CREDITS='<div class="pro-art-credits">Illustrazioni di <a href="'+PRO_EXERCISE_IMAGE_SOURCE+'" target="_blank" rel="noopener noreferrer">Bryl Lim / Workout Guide</a>, basate in parte su <a href="https://github.com/everkinetic/data" target="_blank" rel="noopener noreferrer">Everkinetic</a> · <a href="'+PRO_EXERCISE_IMAGE_LICENSE+'" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>. Immagini illustrative, non sostitutive di istruzioni professionali.</div>';
+
+function proImageSlug(name) {
+ const n=String(name||'').toLocaleLowerCase('it-IT').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+ const rules=[
+  [/nuoto|piscina|stile|dorso|pull buoy|fondo|aerobico|defaticamento|drill|scivolamento/i,'swimming'],
+  [/pallof/i,'pallof-press'],
+  [/side plank/i,'side-plank'],
+  [/plank/i,'plank'],
+  [/goblet/i,'goblet-squat'],
+  [/stacco rumeno.*manub|rdl.*manub|dumbbell.*romanian/i,'dumbbell-romanian-deadlift'],
+  [/stacco rumeno|(?:^|[^a-z])rdl(?:[^a-z]|$)|romanian deadlift/i,'romanian-deadlift'],
+  [/hip thrust.*manub/i,'dumbbell-hip-thrust'],
+  [/hip thrust/i,'hip-thrust'],
+  [/glute bridge/i,'glute-bridge'],
+  [/panca inclinata.*manubr|incline.*dumbbell/i,'incline-dumbbell-press'],
+  [/panca.*manubr|chest press.*manubr/i,'dumbbell-bench-press'],
+  [/panca piana|bench press.*bilanciere/i,'bench-press'],
+  [/chest press|press.*petto.*macchin/i,'machine-chest-press'],
+  [/push.?up/i,'push-up'],
+  [/dip/i,'assisted-dip'],
+  [/lat machine.*neutr|lat.*presa neutra/i,'close-grip-lat-pulldown'],
+  [/lat machine|pulldown|tirata verticale|trazioni assistite/i,'lat-pulldown'],
+  [/pullover|braccia tese/i,'straight-arm-pulldown'],
+  [/rematore.*chest.supported|chest.supported|panca supportata/i,'chest-supported-row'],
+  [/high row|rematore.*macchin/i,'machine-row'],
+  [/rematore.*manub|row.*manub/i,'one-arm-dumbbell-row'],
+  [/rematore.*bilanciere/i,'barbell-row'],
+  [/rematore|rowing|seated row/i,'seated-row'],
+  [/alzate laterali.*cavo/i,'cable-lateral-raise'],
+  [/alzate laterali|lateral raise/i,'lateral-raise'],
+  [/shoulder press.*macchin/i,'machine-shoulder-press'],
+  [/shoulder press|distensioni.*spalle|military press/i,'seated-dumbbell-press'],
+  [/suitcase march|farmer carry/i,'farmer-carry'],
+  [/squat/i,'squat'],
+  [/skillmill|tapis roulant|treadmill/i,'treadmill-incline-walk'],
+  [/cyclette|bike da camera/i,'cycling'],
+  [/camminat|walking/i,'walking'],
+  [/mobilit|riscaldamento|arm circles/i,'arm-circles']
+ ];
+ const matching=rules.find(([pattern])=>pattern.test(n));
+ return matching?matching[1]:null;
+}
+function proExerciseIllustration(ex,frame=1,cls='pro-exercise-thumbnail') {
+ const slug=proImageSlug(ex?.name||ex);
+ if(!slug)return '<span class="pro-exercise-placeholder" aria-hidden="true">'+proInfo(ex?.name||ex).icon+'</span>';
+ const alt='Illustrazione di '+String(ex?.name||ex||'esercizio')+' · fase '+frame;
+ return '<img class="'+cls+'" src="./assets/exercises/'+slug+'-'+frame+'.png" alt="'+proEsc(alt)+'" loading="lazy" decoding="async" width="64" height="64">';
+}
