@@ -102,7 +102,8 @@ renderWorkoutStatsPro=function(){
  const markup='<section class="card third-volume-card"><div class="third-history-heading"><div><div class="eyebrow">VOLUME ALLENATO</div><h3>Chilogrammi × ripetizioni</h3></div><span class="pill blue">'+last.length+' sedute</span></div>'+
  '<p class="caption">Somma dei kg × ripetizioni nelle serie registrate, esclusi nuoto e corpo libero. È un indicatore descrittivo, non misura direttamente la fatica.</p>'+
  '<div class="third-volume-bars">'+last.map(s=>{const v=thirdVolumeBySession(s);return '<div class="third-volume-col"><strong>'+fmt(v)+'</strong><div><span style="height:'+Math.max(3,100*v/max)+'%"></span></div><small>'+proEsc(String(s.date||'').slice(5))+'</small></div>';}).join('')+'</div></section>';
- return html.replace('</div>',markup+'</div>');
+ const end=html.lastIndexOf('</div>');
+ return end<0?html+markup:html.slice(0,end)+markup+html.slice(end);
 };
 async function handleWorkoutThirdAction(act){
  if(act==='thirdResume'){state.tab='allenamenti';state.workoutPane='timer';render();return true;}
