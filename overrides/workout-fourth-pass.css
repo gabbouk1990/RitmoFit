@@ -1,0 +1,200 @@
+/* RITMO FIT / QUARTA PASSATA • mobile app visual style */
+body[data-tab="allenamenti"]{--rf4-blue:#2683ff;--rf4-blue2:#4aa0ff;--rf4-mint:#4cd898;--rf4-bg:#0b1322;--rf4-card:#151f32;--rf4-line:rgba(159,191,232,.12);--rf4-text:#f0f6ff;--rf4-muted:#96aac5}
+body[data-tab="allenamenti"] .main-column,body[data-tab="allenamenti"] #view{min-width:0}
+body[data-tab="allenamenti"] #view>.eyebrow,body[data-tab="allenamenti"] #view>.headline,body[data-tab="allenamenti"] #view>.subtext{display:none}
+body[data-tab="allenamenti"] #view>.filter-row{background:rgba(10,19,35,.77);border:1px solid rgba(153,190,239,.1);border-radius:15px;padding:8px 10px;margin:2px 0 15px;min-width:0}
+body[data-tab="allenamenti"] #view>.filter-row .tabs{width:100%;max-width:100%;gap:4px;overflow:auto}
+body[data-tab="allenamenti"] #view>.filter-row .tab{white-space:nowrap;font-size:12px;min-height:40px;border-radius:11px}
+body[data-tab="allenamenti"] #view>.filter-row .tab.active{background:#247df3!important;color:#fff!important;box-shadow:0 5px 15px #1d61c644!important}
+.rf4-app{color:var(--rf4-text);padding-bottom:14px;max-width:1080px;margin-inline:auto}
+.rf4-screen-head{margin:13px 0 17px}
+.rf4-kicker{font-size:10px;letter-spacing:.13em;color:#77adfa;font-weight:850}
+.rf4-screen-head h2{margin:7px 0 5px;font-size:clamp(23px,4vw,32px);line-height:1.1;letter-spacing:-.035em;color:#fff}
+.rf4-screen-head p{margin:4px 0;color:#a3b6ce;font-size:12px;line-height:1.6}
+.rf4-app button{font-family:inherit;cursor:pointer}
+.rf4-back{background:none;border:0;padding:8px 4px;color:#c6ddfb;display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:720;margin:3px 0 13px}
+.rf4-back>span{font-size:20px;line-height:1}
+.rf4-section-heading{display:flex;align-items:center;justify-content:space-between;gap:11px;margin:20px 0 11px}
+.rf4-section-heading h3{font-size:16px;color:#f2f6ff;margin:0}
+.rf4-text-action{border:0;background:transparent;color:#8ab9ff;font-size:11px;font-weight:800;white-space:normal;text-align:left;padding:6px 0}
+.rf4-chevron{font-size:26px;color:#aac4e8;line-height:1;flex:none}
+.rf4-week-panel{padding:19px;border:1px solid #83a4d324;border-radius:18px;background:linear-gradient(145deg,rgba(23,37,59,.96),rgba(12,23,40,.94));box-shadow:0 17px 38px #0003}
+.rf4-week-top{display:flex;gap:15px;align-items:center;justify-content:space-between}
+.rf4-week-top h3{margin:7px 0 5px;font-size:16px;color:#f6faff}
+.rf4-week-top p{font-size:11px;color:#aac0d7;margin:0}
+.rf4-ring-small{width:78px;height:78px;min-width:78px;display:grid;place-items:center;position:relative;border-radius:50%;background:radial-gradient(closest-side,#1a2840 75%,transparent 77%),conic-gradient(#5dda80 var(--rf4p),#334057 var(--rf4p))}
+.rf4-ring-small strong{font-size:19px;letter-spacing:-.05em}
+.rf4-week-meter{height:7px;background:#243750;border-radius:18px;overflow:hidden;margin:12px 0 11px}
+.rf4-week-meter span{height:100%;display:block;border-radius:18px;background:linear-gradient(90deg,#34cf91,#8eed9c)}
+.rf4-week-panel .pro-week-strip{max-width:100%;margin:11px 0 9px}
+.rf4-week-panel .pro-week-day strong{background:#263a54}
+.rf4-week-panel .pro-week-day.completed strong{background:#1f7551;border-color:#39ca93}
+.rf4-week-panel .rf4-text-action{margin-top:4px}
+.rf4-continue{display:flex;align-items:center;text-align:left;width:100%;gap:11px;padding:13px;border:1px solid #4198ff7d;border-radius:14px;background:linear-gradient(100deg,#15385f,#112d48);color:#fff;margin-bottom:14px;box-shadow:0 6px 24px #0003}
+.rf4-play-mini{width:43px;height:43px;display:grid;place-items:center;border-radius:12px;background:#238aff;color:#fff;flex:none}
+.rf4-continue>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:4px}
+.rf4-continue strong{font-size:12px}.rf4-continue small{font-size:10px;color:#9bc1e9}.rf4-continue>span:last-child{font-size:26px;color:#d9f1ff}
+.rf4-category-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.rf4-category-card{display:flex;align-items:center;text-align:left;gap:12px;border:1px solid var(--rf4-line);padding:11px;border-radius:17px;background:linear-gradient(125deg,#182940,#111d30);color:#f6faff;min-width:0;min-height:105px;box-shadow:0 10px 25px #0003;transition:transform .18s,border-color .18s}
+.rf4-category-card:active{transform:scale(.99)}
+.rf4-category-card:hover{border-color:#569de777;background:#213550}
+.rf4-category-photo{flex:0 0 94px;height:82px;position:relative;border-radius:12px;overflow:hidden;background:linear-gradient(150deg,#31405e,#14233a)}
+.rf4-category-photo:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 25%,#6986b955,transparent 70%);pointer-events:none}
+.rf4-category-photo img{height:100%;width:100%;object-fit:contain;display:block;position:relative;filter:drop-shadow(0 4px 9px #0004)}
+.rf4-category-card.coral .rf4-category-photo{background:linear-gradient(135deg,#6b352f,#25203c)}
+.rf4-category-card.purple .rf4-category-photo{background:linear-gradient(135deg,#303863,#172c47)}
+.rf4-category-card.green .rf4-category-photo{background:linear-gradient(135deg,#224c51,#193449)}
+.rf4-category-mark{display:grid;place-items:center;border-radius:11px;background:#2768e3;width:37px;height:37px;flex:none;font-size:21px}
+.rf4-category-card.coral .rf4-category-mark{background:#d76442}
+.rf4-category-card.purple .rf4-category-mark{background:#7753d9}
+.rf4-category-card.green .rf4-category-mark{background:#27926d}
+.rf4-category-info{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.rf4-category-info strong{font-size:15px;line-height:1.25;color:#fbfdff}
+.rf4-category-info small{font-size:10px;color:#a8bcce;line-height:1.35}
+.rf4-category-info>span{font-size:10px;color:#7eaef2}
+.rf4-secondary-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+.rf4-secondary-actions button{min-height:43px}
+.rf4-category-hero{position:relative;border:1px solid #48649366;background:linear-gradient(120deg,#253d62,#17263c);border-radius:20px;min-height:180px;overflow:hidden;display:flex;align-items:flex-end;padding:18px}
+.rf4-category-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 0%,#76a8ec3a,transparent 70%)}
+.rf4-category-hero.coral{background:linear-gradient(105deg,#3c2937,#1c2943)}
+.rf4-category-hero.purple{background:linear-gradient(105deg,#292b51,#173752)}
+.rf4-category-hero.green{background:linear-gradient(105deg,#1d4144,#163248)}
+.rf4-category-hero-art{position:absolute;right:2%;top:0;height:100%;width:48%;display:grid;place-items:center}
+.rf4-category-hero-art img{height:100%;width:100%;object-fit:contain;opacity:.8;filter:drop-shadow(0 18px 25px #0008)}
+.rf4-category-hero-copy{position:relative;width:67%;z-index:1}
+.rf4-category-hero-copy h2{font-size:27px;margin:8px 0 6px;color:#fff;letter-spacing:-.04em;line-height:1.1}
+.rf4-category-hero-copy p{font-size:12px;line-height:1.5;color:#c7d8ee;max-width:250px;margin:0}
+.rf4-programs-summary{display:flex;gap:10px;margin:13px 0}
+.rf4-programs-summary>div{display:flex;flex-direction:column;gap:2px;border:1px solid #ffffff15;background:#17263b;border-radius:13px;padding:11px 13px;flex:1}
+.rf4-programs-summary strong{font-size:20px;color:#f5faff}
+.rf4-programs-summary small{font-size:10px;color:#a1b4cd}
+.rf4-programs-list{display:grid;gap:11px}
+.rf4-program-card{display:flex;align-items:center;gap:13px;width:100%;min-height:94px;padding:13px;text-align:left;border:1px solid #ffffff1b;border-radius:16px;background:linear-gradient(125deg,rgba(24,35,53,.98),rgba(17,28,46,.98));box-shadow:0 10px 22px #0003;color:#eef6ff}
+.rf4-program-icon{height:69px;width:69px;flex:0 0 69px;border-radius:13px;display:grid;place-items:center;background:#26304f;overflow:hidden;border:1px solid #ffffff10}
+.rf4-program-image,.rf4-art-image{height:100%;width:100%;object-fit:contain;display:block}
+.rf4-program-copy{min-width:0;flex:1;display:flex;flex-direction:column;gap:5px}
+.rf4-program-copy strong{font-size:14px;color:#f4f8ff;line-height:1.3}
+.rf4-program-copy small{font-size:11px;color:#a9bdd5}
+.rf4-program-copy em{font-style:normal;font-size:10px;color:#80acdf;line-height:1.3}
+.rf4-hint{font-size:11px;line-height:1.6;color:#9ab0ca;margin:12px 0}
+.rf4-template-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 20px;margin:0 0 16px;background:linear-gradient(125deg,#1c2f4e,#14243b 70%);border:1px solid #ffffff1b;border-radius:18px;position:relative;overflow:hidden}
+.rf4-template-head:after{content:"";position:absolute;right:5%;top:-45%;width:230px;height:230px;border:1px solid #69b1ff15;border-radius:50%;box-shadow:0 0 0 44px #69b1ff08,0 0 0 90px #69b1ff08}
+.rf4-template-head-inner{min-width:0;flex:1;z-index:1;position:relative}
+.rf4-template-head h2{font-size:clamp(20px,3vw,29px);color:#f5faff;margin:7px 0 5px;line-height:1.2;letter-spacing:-.035em}
+.rf4-template-head p{font-size:11px;color:#afc2d7;line-height:1.55;max-width:550px;margin:0 0 10px}
+.rf4-detail-tags{display:flex;flex-wrap:wrap;gap:6px}
+.rf4-detail-tags span{padding:6px 8px;font-size:10px;border-radius:9px;background:#ffffff10;border:1px solid #ffffff0d;color:#d2e2f2}
+.rf4-play-round{height:54px;width:54px;flex:0 0 54px;border-radius:50%;border:1px solid #69f6a54d;background:#38bb72;color:#fff;font-size:19px;box-shadow:0 9px 24px #1d7b5133;position:relative;z-index:1}
+.rf4-template-list{display:flex;flex-direction:column;gap:8px}
+.rf4-template-row{display:flex;align-items:center;text-align:left;gap:10px;border:1px solid #ffffff12;border-radius:15px;background:linear-gradient(105deg,#1b2940,#142135);min-height:84px;padding:9px;color:#f2f6ff;width:100%}
+.rf4-number{flex:0 0 24px;height:24px;display:grid;place-items:center;border-radius:50%;color:white;background:#307dfa;font-size:11px;font-weight:850}
+.rf4-number.mint{background:#308f65}.rf4-number.orange{background:#bb6d32}.rf4-number.purple{background:#674bc5}
+.rf4-list-art{height:61px;width:61px;min-width:61px;border-radius:10px;background:#26334d;overflow:hidden;border:1px solid #ffffff0d;display:grid;place-items:center}
+.rf4-template-row-copy{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.rf4-template-row-copy strong{color:#f8fbff;font-size:12px;line-height:1.32;overflow-wrap:anywhere}
+.rf4-template-row-copy small{font-size:10px;color:#a4b5cc;line-height:1.3}
+.rf4-template-row-copy em{font-size:10px;font-style:normal;color:#80b1ff}
+.rf4-template-footer{position:sticky;bottom:8px;z-index:12;display:flex;padding:10px;border-radius:15px;border:1px solid #428beb55;background:#0c1b2ff2;backdrop-filter:blur(18px);margin-top:14px}
+.rf4-template-footer .btn{width:100%;min-height:50px;background:linear-gradient(110deg,#2b83ff,#1b60e5)!important}
+.rf4-exercise-title{display:flex;align-items:flex-start;gap:10px;justify-content:space-between;margin:0 0 12px}
+.rf4-exercise-title h2{font-size:clamp(20px,4vw,29px);line-height:1.16;margin:5px 0;color:#f5faff}
+.rf4-exercise-title small{color:#a8bfd6;font-size:11px}
+.rf4-exercise-label{font-size:10px;border-radius:10px;background:#26466e;color:#c6e1ff;padding:8px;white-space:nowrap}
+.rf4-detail-tabs,.rf4-period-tabs{display:flex;gap:5px;background:#15243a;border:1px solid #ffffff12;padding:5px;border-radius:13px;margin:13px 0 15px}
+.rf4-detail-tabs button,.rf4-period-tabs button{flex:1;border:0;background:none;color:#96acc7;border-radius:10px;font-size:12px;font-weight:760;padding:10px 8px;min-height:42px}
+.rf4-detail-tabs button.active,.rf4-period-tabs button.active{background:#277ffa;color:#fff;box-shadow:0 4px 13px #126af944}
+.rf4-exercise-hero-art{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.rf4-exercise-hero-art>div{background:linear-gradient(150deg,#1b2c48,#131e30);border-radius:17px;border:1px solid #ffffff17;display:flex;flex-direction:column;align-items:center;padding:10px}
+.rf4-exercise-pose{height:220px;width:100%;object-fit:contain;filter:drop-shadow(0 14px 20px #0004)}
+.rf4-exercise-hero-art small{font-size:10px;color:#8fadca;margin:5px 0}
+.rf4-muscle-preview{background:#17263c;border:1px solid #ffffff14;border-radius:16px;padding:14px;margin:14px 0}
+.rf4-muscle-preview h3,.rf4-instructions h3{font-size:14px;color:#f0f6ff;margin:0 0 9px}
+.rf4-muscle-row{display:flex;gap:13px;align-items:center}
+.rf4-muscle-image{height:112px;width:98px;object-fit:contain;background:#0d1c2d;border:1px solid #ffffff16;border-radius:9px}
+.rf4-muscle-row>div{flex:1;min-width:0}
+.rf4-muscle-row strong{font-size:13px;color:#e7f6ff}
+.rf4-muscle-row p{font-size:11px;color:#afc1d3;line-height:1.5}
+.rf4-exercise-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:13px 0}
+.rf4-exercise-metrics>div{border-radius:13px;border:1px solid #ffffff14;background:#15263d;padding:14px 11px;display:flex;flex-direction:column;gap:6px}
+.rf4-exercise-metrics small{font-size:10px;color:#a0b6d2}
+.rf4-exercise-metrics strong{font-size:20px;color:#f9fbff}
+.rf4-instructions{display:flex;flex-direction:column;gap:12px}
+.rf4-instructions>section{background:#15233a;border:1px solid #ffffff11;border-radius:14px;padding:15px}
+.rf4-instructions p{font-size:12px;line-height:1.7;color:#becde0}
+.rf4-alternative-list>div{display:flex;flex-wrap:wrap;gap:6px}
+.rf4-alternative-list span{display:inline-block;border:1px solid #ffffff20;background:#233750;border-radius:10px;color:#dcecff;font-size:11px;padding:9px}
+.rf4-exercise-footer{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px;margin:18px 0}
+.rf4-exercise-footer button{min-height:49px;padding:8px}
+.rf4-timer-toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:11px;margin:10px 0 16px}
+.rf4-timer-toolbar h2{font-size:20px;line-height:1.2;color:#fff;margin:5px 0}
+.rf4-timer-focus-button{color:#bce0ff;background:#1d3d61;border:1px solid #508ccf60;border-radius:11px;min-height:40px;padding:9px;font-size:11px;white-space:nowrap}
+.rf4-timer-page .pro-timer-card{background:linear-gradient(175deg,#13233b,#0e1b2d)!important}
+.rf4-timer-page .pro-timer-ring{width:min(285px,85%);box-shadow:0 0 0 6px #31548025,0 11px 29px #0004}
+.rf4-timer-page .pro-timer-ring strong{font-size:clamp(45px,7vw,62px)}
+.rf4-timer-page .pro-runner-side{min-width:0}
+.rf4-timer-page.rf4-timer-focus .pro-navigation-card{display:none}
+.rf4-timer-page.rf4-timer-focus .pro-runner-layout{grid-template-columns:1fr!important}
+.rf4-timer-page.rf4-timer-focus .pro-timer-card{max-width:640px;width:100%;margin:auto;box-sizing:border-box}
+.rf4-timer-page.rf4-timer-focus .pro-runner-primary{order:2}
+.rf4-timer-page.rf4-timer-focus .pro-runner-side{order:1}
+.rf4-stats .rf4-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.rf4-stat-grid>div{display:flex;flex-direction:column;gap:6px;background:#17253c;border:1px solid #ffffff16;border-radius:14px;padding:15px}
+.rf4-stat-grid small,.rf4-stat-grid span{font-size:10px;color:#90acc8}
+.rf4-stat-grid strong{font-size:25px;color:#f5faff;line-height:1.1}
+.rf4-stats-card{margin:13px 0;padding:17px;border-radius:17px;border:1px solid #ffffff16;background:#14243a}
+.rf4-stats-card h3{font-size:15px;color:#f6faff;margin:0 0 12px}
+.rf4-stats-bars{height:200px;display:flex;align-items:flex-end;justify-content:space-between;gap:7px;margin-top:15px}
+.rf4-stat-bar{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;gap:5px;min-width:0}
+.rf4-stat-bar strong{font-size:10px;color:#d4e6fb;font-variant-numeric:tabular-nums}
+.rf4-stat-bar>div{flex:1;display:flex;align-items:flex-end;width:min(100%,46px);border-radius:9px 9px 1px 1px;background:#21324a;overflow:hidden}
+.rf4-stat-bar>div span{background:linear-gradient(180deg,#53b0ff,#1a64dd);width:100%;border-radius:9px 9px 1px 1px}
+.rf4-stat-bar small{font-size:10px;color:#9baece}
+.rf4-recent-row{display:flex;gap:12px;align-items:center;border-top:1px solid #ffffff12;padding:11px 2px}
+.rf4-recent-row>span{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:#246743;color:#c1ffc9}
+.rf4-recent-row>div{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.rf4-recent-row strong{font-size:12px;color:#f4faff}
+.rf4-recent-row small{font-size:10px;color:#a6bad2}
+.rf4-recent-row em{font-style:normal;color:#9cbee6;font-size:11px;white-space:nowrap}
+.rf4-stats-details{border:1px solid #ffffff16;border-radius:14px;background:#14243a;margin-top:14px}
+.rf4-stats-details summary{cursor:pointer;padding:15px;color:#c9e2fc;font-weight:780;font-size:12px;display:flex;justify-content:space-between}
+.rf4-stats-details[open] summary{border-bottom:1px solid #ffffff11}
+.rf4-stats-details .pro-training-intro{display:none}
+.rf4-stats-details .pro-stats-kpis{padding:10px}
+.rf4-stats-details>.pro-stats-page .pro-stats-kpis{display:none}
+.rf4-stats-details .pro-chart-card,.rf4-stats-details .third-volume-card{margin:12px}
+@media(max-width:960px){
+ .rf4-category-list{grid-template-columns:1fr}
+ .rf4-programs-summary>div{max-width:none}
+}
+@media(max-width:740px){
+ .rf4-app{padding:2px 0 55px}
+ .rf4-category-card{min-height:103px;gap:10px;padding:10px}
+ .rf4-category-photo{flex-basis:91px}
+ .rf4-category-mark{width:35px;height:35px}
+ .rf4-exercise-pose{height:180px}
+ .rf4-template-footer{bottom:89px}
+ .rf4-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .rf4-timer-page .pro-runner-layout{display:flex;flex-direction:column}
+ .rf4-timer-page .pro-runner-side{order:0;width:100%}
+ .rf4-timer-page .pro-runner-primary{order:1;width:100%}
+ .rf4-timer-page .pro-navigation-card{display:none}
+ .rf4-timer-page .pro-timer-ring{width:min(285px,75%)}
+}
+@media(max-width:420px){
+ .rf4-category-mark{display:none}
+ .rf4-category-photo{height:81px;flex-basis:80px}
+ .rf4-category-info strong{font-size:13px}
+ .rf4-category-info small{font-size:10px}
+ .rf4-program-icon{width:63px;height:63px;flex-basis:63px}
+ .rf4-template-head{padding:15px}
+ .rf4-template-head h2{font-size:21px}
+ .rf4-play-round{height:48px;width:48px;flex-basis:48px}
+ .rf4-list-art{height:54px;width:51px;min-width:51px}
+ .rf4-template-row{gap:7px;padding:8px}
+ .rf4-template-row-copy strong{font-size:11px}
+ .rf4-detail-tags span{font-size:9px}
+ .rf4-exercise-pose{height:140px}
+ .rf4-muscle-image{width:74px;height:94px}
+ .rf4-stat-grid>div{padding:13px}
+}
+@media(prefers-reduced-motion:reduce){.rf4-category-card{transition:none}}
