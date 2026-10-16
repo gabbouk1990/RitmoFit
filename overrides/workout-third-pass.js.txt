@@ -1,0 +1,110 @@
+/* Ritmo Fit — terza passata: log serie, RPE, volume e interfaccia mobile.
+ * Aggiunta non distruttiva alle funzioni esistenti.
+ */
+function thirdExerciseSeries(ex) {
+ const rows=[];
+ for(const session of (state.sessions||[])) {
+  if(!Array.isArray(session.setDetails))continue;
+  (session.exercises||[]).forEach((e,i)=>{
+   if(String(e.name||'').toLocaleLowerCase('it-IT')!==String(ex?.name||'').toLocaleLowerCase('it-IT'))return;
+   (session.setDetails[i]||[]).forEach(set=>rows.push({...set,date:session.date}));
+  });
+ }
+ return rows.sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+}
+function thirdExerciseHistory(ex){
+ const rows=thirdExerciseSeries(ex).slice(0,6);
+ if(!rows.length)return '<section class="third-history-panel"><h3>Le tue ultime serie</h3><p class="caption">Dopo aver registrato una seduta troverai qui carichi, ripetizioni e RPE personali.</p></section>';
+ const weighted=rows.filter(r=>r.load!==null&&r.unit!=='m'&&Number.isFinite(Number(r.load)));
+ const peak=weighted.length?Math.max(...weighted.map(r=>Number(r.load))):null;
+ const title='Le tue ultime serie';
+ return '<section class="third-history-panel"><div class="third-history-heading"><h3>'+title+'</h3>'+(peak!==null?'<span class="pill blue">Picco recente '+fmt(peak,1)+' kg</span>':'')+'</div><div class="third-history-rows">'+rows.map(row=>{
+  const isSwim=row.unit==='m';
+  const number=isSwim?fmt(row.reps)+' m':fmt(row.reps)+' rip. · '+(row.load===null?'Corpo libero':fmt(row.load,1)+' kg');
+  return '<div class="third-history-row"><span>'+proEsc(row.date||'—')+'</span><strong>'+number+'</strong><small>'+(row.rpe?'RPE '+fmt(row.rpe,1):'RPE —')+'</small></div>';
+ }).join('')+'</div></section>';
+}
+function thirdSetHistory(){
+ const r=workoutRunner; if(!r||!r.exercises?.length)return '';
+ const index=r.exerciseIndex,previous=proSetDetails()[index]||[],exercise=r.exercises[index];
+ if(!previous.length)return '<div class="third-current-sets"><div class="third-set-heading">Serie eseguite</div><p class="caption">La prima serie comparirà qui appena premi “Serie completata”.</p></div>';
+ return '<div class="third-current-sets"><div class="third-set-heading">Serie eseguite <span>'+previous.length+' / '+fmt(exercise.sets)+'</span></div>'+
+ '<div class="third-set-list">'+previous.map((set,i)=>'<div class="third-set-pill"><b>'+(i+1)+'</b><span>'+(set.unit==='m'?fmt(set.reps)+' m':fmt(set.reps)+' × '+(set.load===null?'corpo libero':fmt(set.load,1)+' kg'))+'</span><small>'+(set.rpe?'RPE '+fmt(set.rpe,1):'RPE —')+'</small></div>').join('')+'</div></div>';
+}
+// Mantiene le illustrazioni e le mappe anatomiche già introdotte.
+const thirdOriginalCards=renderWorkoutCardsPro;
+renderWorkoutCardsPro=function(){
+ let html=thirdOriginalCards();
+ const r=workoutRunner;
+ if(r){
+  const template=state.templates.find(t=>t.id===r.templateId);
+  const count=runnerProgress();
+  const n=(template?.name||r.title||'Timer libero');
+  const resume='<section class="third-resume"><div class="third-resume-icon">▶</div><div><div class="eyebrow">SEDUTA IN CORSO</div><strong>'+proEsc(n)+'</strong><small>'+(count.total?count.done+' di '+count.total+' serie completate':'Timer manuale')+'</small></div><button class="btn btn-primary" data-act="thirdResume">Riprendi</button></section>';
+  html=resume+html;
+ }
+ return html;
+};
+const thirdOriginalDetail=proDetailHtml;
+proDetailHtml=function(ex){
+ const html=thirdOriginalDetail(ex);
+ if(!html.endsWith('</div>'))return html;
+ return html.slice(0,-6)+thirdExerciseHistory(ex)+'</div>';
+};
+const thirdOriginalRunner=renderTrainingTimerPro;
+renderTrainingTimerPro=function(){
+ let html=thirdOriginalRunner(),r=workoutRunner;
+ if(!r||!r.exercises?.length)return html;
+ const x=r.exercises[r.exerciseIndex];if(!x)return html;
+ const setControls='<label class="third-rpe-selector"><span>Quanto è stata impegnativa questa serie?</span><select id="thirdRpe" aria-label="RPE della serie">'+
+  [5,5.5,6,6.5,7,7.5,8,8.5,9,9.5,10].map(v=>'<option value="'+v+'" '+(v===7.5?'selected':'')+'>RPE '+v+'</option>').join('')+
+  '</select></label>'+thirdSetHistory();
+ if(!html.includes('<div class="pro-set-buttons">'))return html;
+ html=html.replace('<div class="pro-set-buttons">',setControls+'<div class="pro-set-buttons">');
+ const pct=runnerProgress();
+ const dock='<div class="third-mobile-dock"><div class="third-mobile-progress"><strong>'+pct.done+'/'+pct.total+'</strong><small>serie</small></div>'+
+ '<button type="button" class="btn btn-primary" data-act="proCompleteSet" '+(r.completed[r.exerciseIndex]>=Math.max(1,Number(x.sets)||1)?'disabled':'')+'>✓ Serie completata</button>'+
+ '<button type="button" class="btn btn-outline" data-act="proActiveInfo" aria-label="Mostra tecnica e muscoli">ⓘ</button></div>';
+ // Dock integrato nel flusso della pagina: solo su schermi piccoli si blocca in basso.
+ html=html.replace('</aside></div>','</aside>'+dock+'</div>');
+ return html;
+};
+const thirdOriginalCompleteSet=proCompleteSet;
+proCompleteSet=async function(){
+ const r=workoutRunner,idx=r?.exerciseIndex;
+ const recordedBefore=r?.setDetails?.reduce((a,z)=>a+(z?.length||0),0)||0;
+ const rpeField=document.querySelector('#thirdRpe');
+ const rpe=rpeField?Number(rpeField.value):null;
+ await thirdOriginalCompleteSet();
+ const sets=r?.setDetails?.reduce((a,z)=>a+(z?.length||0),0)||0;
+ if(r&&sets>recordedBefore&&r.lastSetRef&&Number.isFinite(rpe)&&rpe>=1&&rpe<=10){
+  const ref=r.lastSetRef;
+  if(r.setDetails?.[ref.index]?.[ref.offset]) {
+   r.setDetails[ref.index][ref.offset].rpe=rpe;
+   await saveWorkoutRunner();
+   // keep countdown if running; no extra rerender.
+  }
+ }
+};
+function thirdVolumeBySession(session){
+ if(!Array.isArray(session.setDetails))return 0;
+ return session.setDetails.flat().reduce((sum,z)=>{
+  const kg=Number(z.load),reps=Number(z.reps);
+  return sum+(z.unit!=='m'&&z.load!==null&&Number.isFinite(kg)&&Number.isFinite(reps)&&kg>=0&&reps>=0?kg*reps:0);
+ },0);
+}
+const thirdOriginalStats=renderWorkoutStatsPro;
+renderWorkoutStatsPro=function(){
+ const html=thirdOriginalStats();
+ const last=(state.sessions||[]).filter(x=>x.setDetails?.length).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(-7);
+ if(!last.length)return html;
+ const max=Math.max(1,...last.map(thirdVolumeBySession));
+ const markup='<section class="card third-volume-card"><div class="third-history-heading"><div><div class="eyebrow">VOLUME ALLENATO</div><h3>Chilogrammi × ripetizioni</h3></div><span class="pill blue">'+last.length+' sedute</span></div>'+
+ '<p class="caption">Somma dei kg × ripetizioni nelle serie registrate, esclusi nuoto e corpo libero. È un indicatore descrittivo, non misura direttamente la fatica.</p>'+
+ '<div class="third-volume-bars">'+last.map(s=>{const v=thirdVolumeBySession(s);return '<div class="third-volume-col"><strong>'+fmt(v)+'</strong><div><span style="height:'+Math.max(3,100*v/max)+'%"></span></div><small>'+proEsc(String(s.date||'').slice(5))+'</small></div>';}).join('')+'</div></section>';
+ return html.replace('</div>',markup+'</div>');
+};
+async function handleWorkoutThirdAction(act){
+ if(act==='thirdResume'){state.tab='allenamenti';state.workoutPane='timer';render();return true;}
+ return false;
+}
