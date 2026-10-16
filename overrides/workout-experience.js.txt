@@ -1,0 +1,205 @@
+/* Ritmo Fit - esperienza Allenamenti avanzata, ottobre 2026.
+   Solo presentazione e dati locali: non modifica lo storico precedente. */
+const PRO_EXERCISE_GROUPS=[
+ {test:/squat|goblet|pressa|affond|leg press/i,muscles:'Quadricipiti · Glutei · Core',equipment:'Bilanciere / manubrio / macchina',icon:'🦵',cue:'Piede stabile, movimento controllato e profondità compatibile con il ginocchio. Non forzare se compare dolore.'},
+ {test:/rdl|rumeno|stacco|deadlift|pull.through/i,muscles:'Femorali · Glutei · Erettori spinali',equipment:'Bilanciere / manubri / cavo',icon:'⚙️',cue:'Cerniera d’anca, schiena neutra, carico vicino al corpo. Fermati prima di perdere il controllo.'},
+ {test:/hip thrust|bridge/i,muscles:'Glutei · Femorali',equipment:'Bilanciere / corpo libero',icon:'🏋️',cue:'Piedi stabili, bacino controllato e pausa breve in massima estensione senza iperestendere la schiena.'},
+ {test:/panca|push.up|chest press|dip/i,muscles:'Pettorali · Tricipiti · Deltoidi anteriori',equipment:'Manubri / bilanciere / macchina',icon:'💪',cue:'Scapole stabili e traiettoria controllata. Scegli una presa confortevole per le spalle.'},
+ {test:/lat machine|rematore|high row|pullover|pulldown|trazion/i,muscles:'Gran dorsale · Romboidi · Bicipiti',equipment:'Cavi / manubri / macchina',icon:'🔗',cue:'Inizia con scapole e gomiti; evita di compensare con slanci del busto.'},
+ {test:/shoulder press|military press|alzate|reverse fly/i,muscles:'Spalle · Stabilizzatori scapolari',equipment:'Manubri / cavi',icon:'🎯',cue:'Controlla il movimento ed evita compensi lombari eccessivi.'},
+ {test:/plank|pallof|dead bug|suitcase|core/i,muscles:'Addominali · Obliqui · Stabilizzatori',equipment:'Corpo libero / cavo / manubrio',icon:'🧩',cue:'Respira regolarmente e mantieni il tronco stabile, senza inseguire la fatica a scapito della tecnica.'},
+ {test:/nuoto|stile|dorso|pull buoy|aerobico|fondo|drill|defaticamento/i,muscles:'Dorso · Spalle · Core',equipment:'Piscina',icon:'🏊',cue:'Ritmo fluido, respirazione controllata e tecnica prima della velocità. Adatta lo stile al comfort delle ginocchia.'},
+ {test:/skillmill|camminat|cyclette|mobilit/i,muscles:'Condizionamento · Mobilità generale',equipment:'Attrezzo cardio / mobilità',icon:'⚡',cue:'Progressione graduale del ritmo, tecnica fluida e intensità coerente col recupero.'}
+];
+function proInfo(name){
+ return PRO_EXERCISE_GROUPS.find(g=>g.test.test(String(name)))||{muscles:'Muscoli coinvolti da verificare',equipment:'Dipende dalla variante',icon:'🏋️',cue:'Usa un’esecuzione controllata, interrompi il movimento se compare dolore e adatta il carico.'};
+}
+function proEsc(s){return safe(String(s??''));}
+function proSetDetails(){
+ if(!workoutRunner)return [];
+ if(!Array.isArray(workoutRunner.setDetails))workoutRunner.setDetails=workoutRunner.exercises.map(()=>[]);
+ while(workoutRunner.setDetails.length<workoutRunner.exercises.length)workoutRunner.setDetails.push([]);
+ return workoutRunner.setDetails;
+}
+function proSuggestedReps(ex){
+ return Math.max(1,Math.min(200,Number(String(ex?.reps||'').match(/\d+/)?.[0])||10));
+}
+function proSuggestedLoad(ex){
+ const s=String(ex?.load||'');
+ const num=s.match(/-?\d+(?:[.,]\d+)?/);
+ return num?String(num[0].replace(',','.')):'';
+}
+function proMonthDate(s){
+ const v=new Date(String(s||'')+'T12:00:00');
+ return Number.isNaN(+v)?null:v;
+}
+function proWeekMonday(date){
+ const d=proMonthDate(date)||new Date(),day=(d.getDay()+6)%7;
+ d.setDate(d.getDate()-day);d.setHours(12,0,0,0);return d;
+}
+function proIso(d){
+ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function proWeeklySessions(weekDate){
+ const m=proWeekMonday(weekDate),start=proIso(m),endD=new Date(m);endD.setDate(endD.getDate()+7);const end=proIso(endD);
+ return state.sessions.filter(s=>String(s.date)>=start&&String(s.date)<end);
+}
+function proWeeklyGoal(){
+ const n=Number(state.settings.workoutWeeklyGoal);
+ return n>=1&&n<=7?n:4;
+}
+function proWeekProgress(){
+ const count=proWeeklySessions(inputDate()).length,goal=proWeeklyGoal();
+ return {count,goal,percent:Math.min(100,Math.round(count/goal*100))};
+}
+function proSessionCountedByDay(){
+ return new Set(proWeeklySessions(inputDate()).map(s=>s.date));
+}
+function proWeekStrip(){
+ const m=proWeekMonday(inputDate()),days=proSessionCountedByDay(),labels=['L','M','M','G','V','S','D'];
+ return '<div class="pro-week-strip">'+labels.map((label,i)=>{
+  const day=new Date(m);day.setDate(day.getDate()+i);const iso=proIso(day);
+  return '<div class="pro-week-day '+(days.has(iso)?'completed':'')+' '+(iso===inputDate()?'today':'')+'"><span>'+label+'</span><strong>'+(days.has(iso)?'✓':day.getDate())+'</strong></div>';
+ }).join('')+'</div>';
+}
+function proTemplateCard(t,i){
+ const exercises=(t.exercises||[]),isPool=/nuoto|piscina/i.test(t.kind+' '+t.name);
+ const info=isPool?{icon:'🏊',muscles:'Tecnica · Resistenza'}:proInfo(exercises.find(x=>!/(riscaldamento|mobilit|cyclette)/i.test(x.name))?.name||exercises[0]?.name||'');
+ return '<article class="card pro-program-card"><div class="pro-program-head"><div class="pro-program-icon">'+proEsc(t.icon||info.icon)+'</div><div><div class="pro-mini">PROGRAMMA '+String(i+1).padStart(2,'0')+'</div><h3>'+proEsc(t.name)+'</h3><p>'+proEsc(t.kind)+' · '+fmt(t.time)+' minuti · '+exercises.length+' esercizi</p></div></div>'+
+ '<div class="pro-program-list">'+exercises.slice(0,5).map((x,j)=>{
+  const fx=proInfo(x.name);
+  return '<button type="button" class="pro-program-exercise" data-act="proExerciseInfo" data-id="'+proEsc(t.id)+'" data-index="'+j+'"><span class="pro-exercise-symbol">'+fx.icon+'</span><span class="pro-exercise-copy"><strong>'+proEsc(x.name)+'</strong><small>'+proEsc(fx.muscles)+'</small></span><span class="pro-exercise-prescription">'+fmt(x.sets)+' × '+proEsc(x.reps)+'</span><span class="pro-chevron">›</span></button>';
+ }).join('')+(exercises.length>5?'<p class="caption">+'+(exercises.length-5)+' esercizi nella scheda completa</p>':'')+'</div>'+
+ '<div class="pro-program-actions"><button class="btn btn-primary" data-act="startWorkout" data-id="'+proEsc(t.id)+'">▶ Inizia</button><button class="btn btn-outline" data-act="editTemplate" data-id="'+proEsc(t.id)+'">Modifica</button></div></article>';
+}
+function renderWorkoutCardsPro(){
+ const p=proWeekProgress();
+ return '<section class="pro-training-intro"><div class="pro-training-intro-top"><div><div class="eyebrow">LA TUA SETTIMANA</div><h3>Allenati con un obiettivo</h3><p>Forza, lavoro ibrido e nuoto. Le attività contate qui sono le sessioni registrate in Ritmo Fit, non i duplicati importati da Salute.</p></div><div class="pro-goal-circle" style="--pro-fill:'+p.percent+'%"><strong>'+p.count+'/'+p.goal+'</strong><span>sedute</span></div></div><div class="pro-week-progress"><span style="width:'+p.percent+'%"></span></div>'+proWeekStrip()+'<div class="pro-goal-actions"><button class="btn btn-outline" data-act="proGoal">⚙ Obiettivo settimanale</button><button class="btn btn-outline" data-act="workoutPane" data-to="statistiche">📈 Vedi i progressi</button></div></section>'+
+ '<div class="section-head"><h2>Le tue schede</h2><span class="pill">'+state.templates.length+' programmi</span></div><div class="pro-program-grid">'+state.templates.map(proTemplateCard).join('')+'</div><div class="pro-bottom-actions"><button class="btn btn-outline" data-act="newTemplate">+ Crea scheda</button><button class="btn btn-outline" data-act="restoreProgram">↺ Schede consigliate</button></div>';
+}
+function renderTrainingTimerPro(){
+ const r=workoutRunner;
+ if(!r)return '<section class="card pro-start-panel"><div class="eyebrow">TIMER E SESSIONI</div><h3>Seleziona il tuo allenamento</h3><p>Segna ripetizioni e carichi reali di ogni serie e attiva il recupero automatico. Tutto si salva sul dispositivo fino a quando registri la sessione.</p><div class="pro-start-grid">'+state.templates.map(t=>'<button class="pro-start-template" data-act="startWorkout" data-id="'+proEsc(t.id)+'"><span>'+proEsc(t.icon)+'</span><strong>'+proEsc(t.name)+'</strong><small>'+t.exercises.length+' esercizi · '+fmt(t.time)+' min</small>›</button>').join('')+'</div><button class="btn btn-outline" data-act="startWorkout" data-id="__free__">⏱ Timer libero</button></section>';
+ const rows=proSetDetails(),idx=Number(r.exerciseIndex)||0,x=r.exercises[idx],completed=r.completed[idx]||0,t=r.timer||freshTimer(),sec=timerSeconds(t),tot=runnerProgress();
+ const pct=t.totalMs?Math.max(0,Math.min(100,100*(t.totalMs-sec*1000)/t.totalMs)):0;
+ const byRow=(r.exercises||[]).map((e,i)=>{
+  return '<button class="pro-exercise-jump '+(i===idx?'active':'')+'" data-act="proJump" data-index="'+i+'"><span class="pro-jump-index">'+(i+1)+'</span><span><strong>'+proEsc(e.name)+'</strong><small>'+proEsc(proInfo(e.name).muscles)+'</small></span><b>'+fmt(r.completed[i]||0)+'/'+fmt(e.sets)+'</b></button>';
+ }).join('');
+ return '<div class="pro-runner-layout"><section class="card pro-runner-primary"><div class="pro-runner-title"><div><div class="eyebrow">SESSIONE IN CORSO</div><h3>'+proEsc(r.title)+'</h3><span class="caption">'+tot.done+' di '+tot.total+' serie completate</span></div><button class="btn btn-outline" data-act="stopWorkout">Esci</button></div><div class="pro-runner-progress"><span style="width:'+(tot.total?Math.round(100*tot.done/tot.total):0)+'%"></span></div>'+
+ (x?'<div class="pro-active-exercise"><div class="pro-exercise-eyebrow">ESERCIZIO '+(idx+1)+' DI '+r.exercises.length+'</div><div class="pro-current-name"><div class="pro-current-icon">'+proInfo(x.name).icon+'</div><div><h2>'+proEsc(x.name)+'</h2><p>'+proEsc(proInfo(x.name).muscles)+'</p></div><button class="pro-info-btn" data-act="proActiveInfo" aria-label="Apri dettagli esercizio">ⓘ</button></div><div class="pro-prescription">'+fmt(x.sets)+' serie · '+proEsc(x.reps)+' ripetizioni · '+proEsc(x.rest||'—')+' recupero</div><div class="pro-set-dots">'+Array.from({length:Math.max(1,Number(x.sets)||1)},(_,j)=>'<span class="'+(j<completed?'done':j===completed?'now':'')+'">'+(j<completed?'✓':j+1)+'</span>').join('')+'</div>'+
+ '<div class="pro-actual-fields"><label><span>Ripetizioni effettuate</span><div class="pro-number-step"><button type="button" data-act="proAdjustReps" data-n="-1">−</button><input id="runnerActualReps" inputmode="numeric" type="number" min="0" max="200" step="1" value="'+proSuggestedReps(x)+'"><button type="button" data-act="proAdjustReps" data-n="1">+</button></div></label><label><span>Carico (kg)</span><div class="pro-number-step"><button type="button" data-act="proAdjustLoad" data-n="-2.5">−</button><input id="runnerActualLoad" inputmode="decimal" type="number" min="0" max="1000" step="0.5" placeholder="A corpo libero" value="'+proSuggestedLoad(x)+'"><button type="button" data-act="proAdjustLoad" data-n="2.5">+</button></div></label></div>'+
+ '<div class="pro-set-buttons"><button class="btn btn-primary pro-main-complete" data-act="proCompleteSet" '+(completed>=Math.max(1,Number(x.sets)||1)?'disabled':'')+'>✓ Serie completata</button><button class="btn btn-outline" data-act="proUndo" '+(!r.lastSetRef?'disabled':'')+'>↶ Annulla ultima</button></div><label class="runner-switch pro-runner-switch"><input id="runnerAutoRest" type="checkbox" '+(r.autoRest?'checked':'')+'> Recupero automatico dopo ogni serie</label><label class="pro-switch-exercise"><span>Cambia esercizio</span><select id="runnerExerciseJump">'+r.exercises.map((e,i)=>'<option value="'+i+'" '+(i===idx?'selected':'')+'>'+(i+1)+'. '+proEsc(e.name)+'</option>').join('')+'</select></label><label class="pro-switch-exercise"><span>Alternativa durante la sessione</span><select class="workout-run-alternative"><option value="">Scegli una variante…</option>'+trainingAlternatives(x.name).map(s=>'<option value="'+proEsc(s)+'">'+proEsc(s)+'</option>').join('')+'</select></label></div>':'<div class="pro-free-timer-notice">Timer libero: scegli la durata del recupero qui sotto.</div>')+
+ '<button class="btn btn-outline pro-finish" data-act="proFinish" '+(!x?'disabled':'')+'>💾 Riepilogo e salva allenamento</button></section>'+
+ '<aside class="pro-runner-side"><section class="card pro-timer-card"><div class="eyebrow">RECUPERO</div><div class="pro-timer-ring" id="proTimerRing" style="--ring-progress:'+pct+'%"><div><span>'+proEsc(t.phase==='prep'?'PARTENZA':t.phase==='rest'?'RECUPERO':'PRONTO')+'</span><strong id="restCountdown">'+toClock(sec)+'</strong><small>serie '+(completed+1)+' / '+(x?.sets||'—')+'</small></div></div><div class="timer-progress-track pro-time-hidden"><span id="workoutTimerProgress" style="width:'+pct+'%"></span></div><div class="pro-timer-presets">'+[45,60,75,90,120,180].map(n=>'<button class="timer-preset" data-act="timerStart" data-seconds="'+n+'">'+n+'s</button>').join('')+'</div><div class="pro-timer-controls"><button class="btn btn-outline" data-act="timerPause" '+(t.phase==='idle'?'disabled':'')+'>'+(t.running?'⏸ Pausa':'▶ Riprendi')+'</button><button class="btn btn-outline" data-act="timerAdjust" data-seconds="15" '+(t.phase==='idle'?'disabled':'')+'>+15s</button><button class="btn btn-outline" data-act="timerSkip" '+(t.phase==='idle'?'disabled':'')+'>Salta</button></div><button class="btn btn-outline pro-prep" data-act="timerStart" data-seconds="5" data-phase="prep">▶ Countdown partenza 5s</button><p class="caption">Su iPhone, con lo schermo bloccato, il suono non è garantito. Il tempo si riallinea all’apertura.</p></section>'+
+ (x?'<section class="card pro-navigation-card"><h3>Esercizi in programma</h3>'+byRow+'</section>':'')+'</aside></div>';
+}
+function proDetailHtml(x){
+ const meta=proInfo(x.name),alternatives=trainingAlternatives(x.name);
+ return '<div class="pro-exercise-modal"><div class="pro-detail-icon">'+meta.icon+'</div><div class="eyebrow">SCHEDA ESERCIZIO</div><h2>'+proEsc(x.name)+'</h2><div class="pro-detail-chips"><span>'+proEsc(meta.muscles)+'</span><span>'+proEsc(meta.equipment)+'</span></div><h3>Tecnica e attenzione</h3><p>'+proEsc(meta.cue)+'</p><div class="pro-detail-prescription"><strong>Programmazione</strong><span>'+fmt(x.sets)+' serie · '+proEsc(x.reps)+' rip. · '+proEsc(x.load||'Da regolare')+' · Recupero '+proEsc(x.rest||'—')+'</span></div><h3>Alternative possibili</h3><div class="pro-detail-alternatives">'+(alternatives.length?alternatives.map(n=>'<span>'+proEsc(n)+'</span>').join(''):'<p class="caption">Modifica la scheda per impostare una variante adeguata.</p>')+'</div><p class="caption">Indicazioni generali: non sostituiscono la supervisione di un allenatore o di un professionista sanitario.</p></div>';
+}
+function proExerciseInfo(id,index){
+ const template=state.templates.find(t=>t.id===id);const x=template?.exercises?.[index];if(!x)return;
+ openModal(proDetailHtml(x),async()=>{},'Chiudi');
+}
+function proSessionFinish(){
+ const r=workoutRunner;if(!r||!r.exercises.length)return;
+ const byEx=proSetDetails();
+ const done=runnerProgress(),duration=Math.max(1,Math.round((Date.now()-r.startedAt)/60000));
+ const report=byEx.map((sets,i)=>sets.length?'<div class="pro-summary-line"><strong>'+proEsc(r.exercises[i].name)+'</strong><span>'+sets.map((z,j)=>(j+1)+': '+z.reps+' × '+(z.load===null?'corpo libero':z.load+' kg')).join(' · ')+'</span></div>':'').join('');
+ openModal('<div class="pro-finish-modal"><h2>Riepilogo allenamento</h2><p>'+proEsc(r.title)+' · '+done.done+' / '+done.total+' serie completate</p><div class="pro-summary-list">'+(report||'<p>Non hai ancora completato serie.</p>')+'</div><div class="form-grid">'+field('Data','date',r.date,'date','required')+field('Durata (min)','duration',duration,'number','min="1"')+field('RPE (1–10)','rpe',7,'number','min="1" max="10" step="0.5"')+'<label class="field full"><span>Note</span><textarea name="notes" rows="3"></textarea></label></div></div>',async f=>{
+  if(!done.done)throw Error('Completa almeno una serie prima di registrare la seduta.');
+  const date=String(f.get('date')||r.date),duration=Math.max(1,Number(f.get('duration'))||1),rpe=Number(f.get('rpe'));
+  const session={id:'session-'+Date.now(),date,type:r.title,duration,rpe:rpe||null,notes:String(f.get('notes')||''),completedSets:structuredClone(r.completed),exercises:structuredClone(r.exercises),setDetails:structuredClone(proSetDetails()),source:'manual'};
+  state.sessions.push(session);
+  try{await persist('sessions');}catch(e){state.sessions.pop();throw e;}
+  workoutRunner=null;await saveWorkoutRunner();state.workoutPane='storico';toast('Allenamento registrato con le serie e i carichi reali.');
+ },'Salva allenamento');
+}
+async function proCompleteSet(){
+ const r=workoutRunner,x=runnerCurrent();if(!r||!x)return;
+ const idx=r.exerciseIndex;
+ const reps=Number(document.querySelector('#runnerActualReps')?.value);
+ const loadRaw=String(document.querySelector('#runnerActualLoad')?.value||'').replace(',','.');
+ const load=loadRaw===''?null:Number(loadRaw);
+ if(!Number.isInteger(reps)||reps<0||reps>200){toast('Inserisci ripetizioni valide (0–200).');return;}
+ if(load!==null&&(!Number.isFinite(load)||load<0||load>1000)){toast('Inserisci un carico valido.');return;}
+ const previous=proSetDetails()[idx].length;
+ if((r.completed[idx]||0)>=Math.max(1,Number(x.sets)||1))return;
+ r.setDetails[idx].push({reps,load,at:Date.now()});
+ r.lastSetRef={index:idx,offset:previous};
+ try{await runnerSetDone();}catch(e){r.setDetails[idx].pop();toast('Errore di salvataggio: '+e.message);}
+}
+async function proUndoSet(){
+ const r=workoutRunner,ref=r?.lastSetRef;if(!ref)return;
+ if(!r.completed?.[ref.index]||!proSetDetails()[ref.index]?.length)return;
+ r.completed[ref.index]--;
+ r.setDetails[ref.index].pop();
+ r.exerciseIndex=ref.index;
+ r.lastSetRef=null;
+ r.timer=freshTimer();
+ await saveWorkoutRunner();render();toast('Ultima serie annullata.');
+}
+async function handleWorkoutProAction(act,t){
+ switch(act){
+  case 'proCompleteSet':await proCompleteSet();return true;
+  case 'proUndo':await proUndoSet();return true;
+  case 'proFinish':proSessionFinish();return true;
+  case 'finishWorkout':proSessionFinish();return true;
+  case 'proGoal':{
+   const goal=proWeeklyGoal();
+   openModal('<h2>Obiettivo settimanale</h2><p>Quante sessioni vuoi registrare in una settimana?</p><label class="field"><span>Allenamenti a settimana</span><select name="goal">'+[1,2,3,4,5,6,7].map(n=>'<option value="'+n+'" '+(goal===n?'selected':'')+'>'+n+'</option>').join('')+'</select></label>',async f=>{state.settings.workoutWeeklyGoal=Math.max(1,Math.min(7,Number(f.get('goal'))||4));await persist('settings');toast('Obiettivo aggiornato.');});
+   return true;
+  }
+  case 'proExerciseInfo':proExerciseInfo(t.dataset.id,Number(t.dataset.index));return true;
+  case 'proActiveInfo':if(runnerCurrent())openModal(proDetailHtml(runnerCurrent()),async()=>{},'Chiudi');return true;
+  case 'proJump':{
+   if(!workoutRunner)return true;
+   const i=Number(t.dataset.index);
+   if(!Number.isInteger(i)||i<0||i>=workoutRunner.exercises.length)return true;
+   workoutRunner.exerciseIndex=i;await saveWorkoutRunner();render();return true;
+  }
+  case 'proAdjustReps':{
+   const field=document.querySelector('#runnerActualReps');if(field)field.value=String(Math.max(0,Math.min(200,(Number(field.value)||0)+Number(t.dataset.n||0))));return true;
+  }
+  case 'proAdjustLoad':{
+   const field=document.querySelector('#runnerActualLoad');if(field)field.value=String(Math.max(0,Math.min(1000,Math.round(((Number(field.value)||0)+Number(t.dataset.n||0))*2)/2)));return true;
+  }
+  case 'proSessionDetails':{
+   const obj=state.sessions.find(s=>s.id===t.dataset.id);if(!obj)return true;
+   const detail=Array.isArray(obj.setDetails)?obj.setDetails:[];
+   const html=detail.map((sets,i)=>sets.length?'<div class="pro-summary-line"><strong>'+proEsc(obj.exercises?.[i]?.name||'Esercizio')+'</strong><span>'+sets.map((z,j)=>(j+1)+': '+z.reps+' × '+(z.load===null?'corpo libero':z.load+' kg')).join(' · ')+'</span></div>':'').join('');
+   openModal('<h2>'+proEsc(obj.type||'Allenamento')+'</h2><p>'+proEsc(obj.date)+' · '+fmt(obj.duration)+' min · RPE '+proEsc(obj.rpe||'—')+'</p><div class="pro-summary-list">'+(html||'<p>Questa sessione è stata registrata prima del diario per serie.</p>')+'</div><p>'+proEsc(obj.notes||'')+'</p>',async()=>{},'Chiudi');
+   return true;
+  }
+ }
+ return false;
+}
+function renderWorkoutStatsPro(){
+ const p=proWeekProgress(),all=[...state.sessions].filter(x=>x.date).sort((a,b)=>String(a.date).localeCompare(String(b.date))),weeks=[];
+ const monday=proWeekMonday(inputDate());
+ for(let i=5;i>=0;i--){const day=new Date(monday);day.setDate(day.getDate()-7*i);const iso=proIso(day),count=proWeeklySessions(iso).length;weeks.push({start:iso,count});}
+ const highest=Math.max(proWeeklyGoal(),...weeks.map(x=>x.count),1);
+ const series=state.sessions.flatMap(session=>Array.isArray(session.setDetails)?session.setDetails.flatMap((sets,i)=>sets.map(item=>({name:session.exercises?.[i]?.name||'',date:session.date,reps:item.reps,load:item.load}))):[]);
+ const grouped=new Map();
+ for(const x of series){if(!x.name)continue;const vals=grouped.get(x.name)||[];vals.push(x);grouped.set(x.name,vals);}
+ const options=[...grouped.keys()].sort((a,b)=>a.localeCompare(b,'it'));
+ const selected=options.includes(state.proStatsExercise)?state.proStatsExercise:options[0];
+ const exercises=(grouped.get(selected)||[]).filter(x=>x.load!==null&&x.reps>0);
+ const byDay=new Map();
+ for(const s of exercises)byDay.set(s.date,Math.max(byDay.get(s.date)||0,s.load));
+ const points=[...byDay.entries()].slice(-8),best=points.length?Math.max(...points.map(x=>x[1])):0;
+ const bars=weeks.map(w=>'<div class="pro-chart-bar"><div class="pro-chart-track"><span style="height:'+Math.max(3,100*w.count/highest)+'%"></span></div><strong>'+w.count+'</strong><small>'+proEsc(w.start.slice(8,10))+'/'+proEsc(w.start.slice(5,7))+'</small></div>').join('');
+ const history=points.map(([day,kg])=>'<div class="pro-chart-bar"><div class="pro-chart-track"><span style="height:'+Math.max(3,100*kg/(best||1))+'%"></span></div><strong>'+fmt(kg,1)+'</strong><small>'+proEsc(day.slice(5))+'</small></div>').join('');
+ const totalSets=state.sessions.reduce((v,s)=>v+(Array.isArray(s.completedSets)?s.completedSets.reduce((a,b)=>a+(Number(b)||0),0):0),0);
+ return '<div class="pro-stats-page"><section class="pro-training-intro"><div class="eyebrow">I TUOI PROGRESSI</div><h3>Costanza, volume e progressione</h3><p>Statistiche calcolate solo dalle sessioni registrate nell’app, senza conteggiare due volte le importazioni Apple Salute.</p></section><div class="pro-stats-kpis"><div class="card"><small>Questa settimana</small><strong>'+p.count+' / '+p.goal+'</strong><span>sedute</span></div><div class="card"><small>Allenamenti registrati</small><strong>'+all.length+'</strong><span>totali</span></div><div class="card"><small>Serie completate</small><strong>'+totalSets+'</strong><span>registrate</span></div><div class="card"><small>Minuti allenamento</small><strong>'+all.reduce((n,s)=>n+(Number(s.duration)||0),0)+'</strong><span>totali</span></div></div><section class="card pro-chart-card"><h3>Allenamenti nelle ultime 6 settimane</h3><div class="pro-bars">'+bars+'</div></section><section class="card pro-chart-card"><h3>Progressione dei carichi</h3>'+(options.length?'<label class="field pro-stats-selector"><span>Esercizio</span><select id="proStatsExercise">'+options.map(name=>'<option '+(name===selected?'selected':'')+' value="'+proEsc(name)+'">'+proEsc(name)+'</option>').join('')+'</select></label>':'')+(history?'<p class="caption">Carico massimo registrato per data (kg)</p><div class="pro-bars">'+history+'</div>':'<p class="caption">Registra alcune serie con carichi numerici per vedere qui il grafico.</p>')+'</section></div>';
+}
+// Aggiorna l'anello anche mentre il timer scorre.
+setInterval(()=>{
+ const el=document.querySelector('#proTimerRing'),timer=workoutRunner?.timer;
+ if(!el||!timer)return;
+ const left=timerSeconds(timer),pct=timer.totalMs?Math.max(0,Math.min(100,100*(timer.totalMs-left*1000)/timer.totalMs)):0;
+ el.style.setProperty('--ring-progress',pct+'%');
+},600);
+document.addEventListener('change',e=>{
+ if(e.target?.id==='proStatsExercise'){state.proStatsExercise=e.target.value;render();}
+});
