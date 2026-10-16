@@ -11,20 +11,20 @@ def change(old,new,label):
 library=Path('overrides/exercise-image-map.js.txt').read_text(encoding='utf-8')
 change('function proTemplateCard(t,i){',library+'\nfunction proTemplateCard(t,i){','Inserimento libreria esercizi')
 change('exercises.slice(0,5).map((x,j)=>{','exercises.map((x,j)=>{','Mostra tutti gli esercizi in scheda')
-change("'<span class=\"pro-exercise-symbol\">'+fx.icon+'</span>'",
-       "'<span class=\"pro-exercise-symbol pro-illustration-slot\">'+proExerciseIllustration(x)+'</span>'",
+change('''<span class="pro-exercise-symbol">'+fx.icon+'</span><span class="pro-exercise-copy">''',
+       '''<span class="pro-exercise-symbol pro-illustration-slot">'+proExerciseIllustration(x)+'</span><span class="pro-exercise-copy">''',
        'Immagine miniature lista')
 change("+(exercises.length>5?'<p class=\"caption\">+'+(exercises.length-5)+' esercizi nella scheda completa</p>':'')",
        "",
        'Rimuovi contatore oltre prime cinque')
-change("'<div class=\"pro-current-icon\">'+proInfo(x.name).icon+'</div>'",
-       "'<div class=\"pro-current-icon pro-active-art\">'+proExerciseIllustration(x,1,'pro-current-image')+'</div>'",
+change('''<div class="pro-current-icon">'+proInfo(x.name).icon+'</div><div><h2>''',
+       '''<div class="pro-current-icon pro-active-art">'+proExerciseIllustration(x,1,'pro-current-image')+'</div><div><h2>''',
        'Immagine esercizio attivo')
-change("'<span class=\"pro-jump-index\">'+(i+1)+'</span>'",
-       "'<span class=\"pro-jump-index\">'+(i+1)+'</span><span class=\"pro-jump-art\">'+proExerciseIllustration(e,1,'pro-jump-image')+'</span>'",
+change('''<span class="pro-jump-index">'+(i+1)+'</span><span><strong>''',
+       '''<span class="pro-jump-index">'+(i+1)+'</span><span class="pro-jump-art">'+proExerciseIllustration(e,1,'pro-jump-image')+'</span><span><strong>''',
        'Immagine elenco esercizi sessione')
-change("'<div class=\"pro-detail-icon\">'+meta.icon+'</div>'",
-       "'<div class=\"pro-detail-art\">'+proExerciseIllustration(x,1,'pro-detail-image')+proExerciseIllustration(x,2,'pro-detail-image')+'</div>'",
+change('''<div class="pro-detail-icon">'+meta.icon+'</div><div class="eyebrow">''',
+       '''<div class="pro-detail-art">'+proExerciseIllustration(x,1,'pro-detail-image')+proExerciseIllustration(x,2,'pro-detail-image')+'</div><div class="eyebrow">''',
        'Immagini posizioni nella scheda tecnica')
 change("'<p class=\"caption\">Indicazioni generali: non sostituiscono la supervisione di un allenatore o di un professionista sanitario.</p></div>'",
        "'<p class=\"caption\">Indicazioni generali: non sostituiscono la supervisione di un allenatore o di un professionista sanitario.</p>'+PRO_EXERCISE_IMAGE_CREDITS+'</div>'",
