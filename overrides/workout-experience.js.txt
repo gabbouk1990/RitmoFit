@@ -23,9 +23,13 @@ function proSetDetails(){
 }
 function proIsDistance(ex){return /\b(?:m|metri)\b/i.test(String(ex?.reps||''));}
 function proSuggestedReps(ex){
- return Math.max(1,Math.min(proIsDistance(ex)?5000:200,Number(String(ex?.reps||'').match(/\d+/)?.[0])||10));
+ const idx=workoutRunner?.exerciseIndex,previous=workoutRunner?.setDetails?.[idx]?.at(-1);
+ const target=Number.isInteger(previous?.reps)?previous.reps:(Number(String(ex?.reps||'').match(/\d+/)?.[0])||10);
+ return Math.max(0,Math.min(proIsDistance(ex)?5000:200,target));
 }
 function proSuggestedLoad(ex){
+ const idx=workoutRunner?.exerciseIndex,previous=workoutRunner?.setDetails?.[idx]?.at(-1);
+ if(previous&&Object.prototype.hasOwnProperty.call(previous,'load'))return previous.load===null?'':String(previous.load);
  const s=String(ex?.load||'');
  const num=s.match(/-?\d+(?:[.,]\d+)?/);
  return num?String(num[0].replace(',','.')):'';
