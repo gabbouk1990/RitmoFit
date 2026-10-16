@@ -47,6 +47,7 @@ jobs:
           python3 overrides/patch_theme.py
           python3 overrides/patch_history_mobile.py
           python3 overrides/patch_training_experience.py
+          python3 overrides/patch_exercise_images.py
           node --check _site/app.js
           python3 - <<'PY'
           from pathlib import Path
@@ -64,7 +65,7 @@ jobs:
           assert "upgradeDefaultMeals()" in s
           assert "nutrition-disclaimer" in s
           assert "food-ingredient-row" in s
-          assert 'ritmo-fit-static-v9' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v10' in Path('_site/sw.js').read_text()
           assert 'function renderTrainingTimer()' in s
           assert 'function foodPlanCardV2' in s
           assert 'food-live-select' in s
@@ -104,7 +105,20 @@ jobs:
           assert "data-to=\"statistiche\"" in s
           assert "pro-timer-ring" in css
           print("Nuove funzioni Allenamenti e grafica: verificati")
+          assert 'function proImageSlug(name)' in s
+          assert 'proExerciseIllustration(x,2' in s
+          assert 'PRO_EXERCISE_IMAGE_CREDITS' in s
+          assert 'pro-illustration-slot' in css
+          print("Miniature e dettagli illustrati: verificati")
           PY
+
+      - name: Scarica immagini esercizi con licenza CC BY-SA
+        run: |
+          python3 overrides/download_exercise_images.py
+          test -f _site/assets/exercises/squat-1.png
+          test -f _site/assets/exercises/romanian-deadlift-2.png
+          test -f _site/assets/exercises/swimming-1.png
+          test -f _site/assets/exercises/ATTRIBUTION.txt
 
       - name: Configura GitHub Pages
         uses: actions/configure-pages@v5
