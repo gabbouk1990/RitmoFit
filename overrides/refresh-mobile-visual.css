@@ -1,0 +1,170 @@
+/* RitmoFit · Mobile visual refresh from the approved six-screen design.
+   Applied after all functional overrides. No storage/reset logic in this file. */
+:root{--rf6-bg:#071221;--rf6-surface:#101e33;--rf6-surface2:#162740;--rf6-line:rgba(123,163,214,.17);--rf6-blue:#1988ff;--rf6-blue2:#49a4ff;--rf6-green:#35d782;--rf6-text:#f2f7ff;--rf6-muted:#a0b5d1}
+body{background:radial-gradient(ellipse at 50% -180px,#122b49 0,#081626 36%,#06111e 100%)!important;color:var(--rf6-text)}
+body .main-column{background:transparent}
+body .sidebar{background:linear-gradient(180deg,#081322 0,#101d2e 100%);border-right:1px solid #8caed51b}
+body .brandmark,body .brand-mobile{background:linear-gradient(150deg,#257df1,#125bdf);color:#fff;box-shadow:0 8px 19px #1469e53b}
+body .brandtext span,body .brand-dot{color:#2d97ff}
+body .topbar{background:linear-gradient(180deg,#081524f5,#0a192ac9);border-bottom:1px solid #adcfef14;backdrop-filter:blur(13px);color:#f4f8ff}
+body .topbar h1{color:#f4faff}
+body .topbar small{color:#90abc7}
+body .avatar{background:#193557;border:1px solid #678cbd4d;color:#ebf5ff}
+body .icon-button{color:#bddfff;background:#102841;border:1px solid #789dcc2b}
+body .nav-btn{color:#aec2db}
+body .nav-btn.active{background:#173554;color:#fff;border:1px solid #397fbb3b;box-shadow:inset 3px 0 #2590ff}
+body .side-bottom{background:#0e243b;border:1px solid #7c9fc826}
+body .side-bottom strong{color:#f2f8ff}
+body #view{max-width:1400px}
+body .headline{color:#f7fbff}
+body .subtext,body .caption{color:#9bb1ce}
+body .card{border:1px solid #82a5c523;background:linear-gradient(155deg,#15273f,#0d1e32);color:#f3f8ff;box-shadow:0 12px 32px #0004}
+body .card h3{color:#f1f7ff}
+body .btn-primary{background:linear-gradient(170deg,#2b9bff,#1372f0)!important;color:white!important;border:1px solid #5eadff48!important;box-shadow:0 10px 24px #126be244;font-weight:800}
+body .btn-outline{color:#d8eaff;border:1px solid #669bca46;background:#16304b6c}
+body .btn-outline:hover{background:#1a4061}
+body .tab.active{background:#2388f8!important;color:#fff!important;box-shadow:0 6px 14px #1f7bff30}
+body .tabs{background:#11253c;border:1px solid #8bb0d91b}
+body .pill{background:#1b344f;color:#c9e5ff;border:1px solid #6c9aca25}
+body .data-table th{border-color:#ffffff14;color:#a1b6cf}
+body .data-table td{border-color:#ffffff10;color:#dfeeff}
+body .data-table td small{color:#a5bad1}
+body .field{color:#bfd2e8}
+body .field input,body .field select,body .field textarea{background:#10223a;color:#e5f4ff;border-color:#6385a641}
+body .field input:focus,body .field select:focus,body .field textarea:focus{border-color:#5dacf7;box-shadow:0 0 0 3px #288df42c}
+body .mobile-nav{background:linear-gradient(180deg,#0a192beF,#071422f9);border-top:1px solid #98baeb24;box-shadow:0 -12px 35px #0005;backdrop-filter:blur(16px)}
+body .mobile-nav button{color:#8daac9}
+body .mobile-nav button.active{color:#cde7ff}
+body .mobile-nav button.active .nav-icon{color:#2b91ff;filter:drop-shadow(0 0 4px #2384ff66)}
+/* Home: mountain cover, actual weekly activity and compact stat cards. */
+.rf6-home{width:100%;max-width:1000px;margin:0 auto;padding-bottom:70px}
+.rf6-mountain-hero{position:relative;overflow:hidden;min-height:205px;border-radius:19px 19px 6px 6px;padding:25px;background:
+ linear-gradient(92deg,rgba(6,15,28,.93) 0%,rgba(8,22,41,.50) 55%,rgba(5,16,32,.34)),
+ url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=85') center 45% / cover,
+ linear-gradient(135deg,#1d4167,#0e223e 50%,#071627);
+ border:1px solid #6d9bcd3c;border-bottom:0;isolation:isolate}
+.rf6-mountain-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#04132300 58%,#071625dd 100%);z-index:-1}
+.rf6-hero-heading{position:relative;z-index:1;max-width:500px}
+.rf6-wordmark{color:#fff;font-size:34px;line-height:1.1;font-weight:900;letter-spacing:-1.4px}
+.rf6-wordmark span{color:#2e9cff}
+.rf6-tagline{margin-top:6px;color:#c3d7ed;letter-spacing:.27em;font-size:9px;font-weight:800}
+.rf6-hero-heading h2{margin:28px 0 7px;font-size:clamp(22px,3vw,32px);letter-spacing:-.04em;color:#fff;line-height:1.14}
+.rf6-hero-heading p{margin:0;font-size:12px;color:#a8c4e5;letter-spacing:.08em}
+.rf6-overview{border-radius:0 0 19px 19px;border:1px solid #6d9bcd3c;border-top:0;background:linear-gradient(145deg,#13243a,#0a1b2f);padding:20px;box-shadow:0 17px 45px #0004}
+.rf6-progress-title{display:flex;justify-content:space-between;align-items:center;gap:13px;font-size:13px;color:#e7f2ff;font-weight:800}
+.rf6-progress-title strong{font-size:19px;color:#fcfdff}
+.rf6-overview .pro-week-strip{margin:11px 0 15px;gap:9px}
+.rf6-overview .pro-week-day{flex:1;min-width:0}
+.rf6-overview .pro-week-day span{font-size:10px;color:#9db7d3}
+.rf6-overview .pro-week-day strong{height:29px;min-height:29px;width:29px;margin:5px auto 0;background:#213752;border:1px solid #6983aa2b;color:#e9f3fe;font-size:11px;font-weight:750;border-radius:50%}
+.rf6-overview .pro-week-day.completed strong{background:linear-gradient(145deg,#3198ff,#1a6dcd);border-color:#5ac0ff;color:#fff;box-shadow:0 4px 9px #176de944}
+.rf6-overview .pro-week-day.today strong{border:2px solid #9bceff}
+.rf6-kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:9px 0 13px}
+.rf6-kpi{display:flex;flex-direction:column;align-items:flex-start;gap:5px;border-radius:14px;padding:14px;background:linear-gradient(145deg,#19304d,#0e223a);border:1px solid #82a9db1a;min-width:0}
+.rf6-kpi-icon{width:34px;height:34px;display:grid;place-items:center;background:#194230;border-radius:10px;font-size:23px;color:#57e994;margin-bottom:2px}
+.rf6-kpi-icon.purple{background:#34275c;color:#bc8fff}.rf6-kpi-icon.blue{background:#194374;color:#54b7ff}
+.rf6-kpi small{color:#c1d4e9;font-size:10px}
+.rf6-kpi strong{font-size:clamp(15px,2.3vw,24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.2;color:#fff}
+.rf6-goal-card{display:flex;justify-content:space-between;align-items:center;gap:13px;border-radius:13px;padding:15px;background:#101f34;border:1px solid #8eb2da25}
+.rf6-goal-copy{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+.rf6-goal-copy strong{font-size:13px;color:#ecf7ff}
+.rf6-goal-copy small{font-size:11px;color:#a9bfd6}
+.rf6-goal-copy em{font-size:10px;font-style:normal;color:#70b7ff}
+.rf6-goal-bar{height:7px;width:100%;max-width:250px;border-radius:20px;overflow:hidden;background:#2b405a;margin:5px 0 2px}
+.rf6-goal-bar span{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#1769f5,#4bb6ff)}
+.rf6-goal-ring{width:69px;height:69px;flex:0 0 69px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#298dff 0 var(--rf6-pct),#293c56 var(--rf6-pct) 100%);box-shadow:0 0 0 5px #3489ee0b}
+.rf6-goal-ring div{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#10213a;font-size:13px;font-weight:900;color:#f3faff}
+.rf6-section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:20px 0 11px}
+.rf6-section-title h3{margin:0;color:#f2f8ff;font-size:16px;letter-spacing:-.016em}
+.rf6-section-title>span{color:#92abc9;font-size:11px}
+.rf6-text-link{background:none!important;border:0!important;color:#80bafd!important;font-weight:780;font-size:11px;padding:6px 0;cursor:pointer}
+.rf6-recent-list{display:grid;gap:8px}
+.rf6-recent-row{display:flex;align-items:center;gap:12px;border:1px solid #7b9fc82a;border-radius:13px;padding:8px;background:linear-gradient(125deg,#192c47,#102036);min-height:75px}
+.rf6-recent-art{height:57px;width:62px;min-width:62px;border-radius:10px;background:linear-gradient(145deg,#25486d,#192c48);display:grid;place-items:center;overflow:hidden}
+.rf6-recent-pose{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 7px 7px #0006)}
+.rf6-recent-generic{color:#9bdcfb;font-weight:900;font-size:21px}
+.rf6-recent-text{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+.rf6-recent-text strong{font-size:12px;line-height:1.3;color:#f8faff}
+.rf6-recent-text small{font-size:10px;color:#9fb9d3}
+.rf6-recent-completed{display:grid;place-items:center;background:#1d6348;color:#85f4b0;font-size:12px;width:24px;height:24px;border-radius:50%;margin-right:5px}
+.rf6-empty{padding:17px;border:1px solid #7196b823;border-radius:12px;color:#9fb6d2;background:#11253a;font-size:12px;line-height:1.55}
+.rf6-dashboard-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:16px}
+.rf6-info-panel{padding:16px;background:linear-gradient(155deg,#172d47,#0e1f32);border:1px solid #7c9fca2b;border-radius:15px;min-width:0}
+.rf6-info-panel .rf6-section-title{margin:0 0 11px}
+.rf6-today-shift{display:flex;align-items:center;gap:10px;border:1px solid #709ac321;border-radius:12px;background:#11263e;padding:10px}
+.rf6-activity-icon{width:36px;height:36px;min-width:36px;display:grid;place-items:center;border-radius:11px;background:#204a6d;color:#bde7ff;font-size:22px}
+.rf6-today-shift>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.rf6-today-shift strong{color:#fff;font-size:12px}.rf6-today-shift small{color:#aac4df;font-size:10px}
+.rf6-shift-source{font-size:9px;color:#68cba9}
+.rf6-suggestion{margin:13px 0}
+.rf6-suggestion strong{font-size:12px;color:#fff}
+.rf6-suggestion p{margin:6px 0 0;font-size:11px;color:#a9c1d8;line-height:1.6}
+.rf6-meal-quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:11px 0}
+.rf6-meal-quick>div{padding:10px 8px;border-radius:10px;background:#10263e;border:1px solid #8aacd51b;display:flex;flex-direction:column;gap:5px}
+.rf6-meal-quick small{font-size:9px;color:#9fbad2}.rf6-meal-quick strong{font-size:16px;color:#f4faff}
+.rf6-home-action{margin-top:17px}
+.rf6-home-action .btn{display:flex;width:100%;min-height:51px;border-radius:13px}
+/* Exercise and program cards keep real custom data and real exercise thumbnails */
+body[data-tab="allenamenti"] .rf5-section-header h2{font-size:clamp(23px,3vw,28px);margin-bottom:5px;color:#f4f8ff}
+body[data-tab="allenamenti"] .rf5-activity-card{min-height:106px;background:linear-gradient(110deg,#1a2c46,#0d1b2e);border-radius:16px;border:1px solid #88b3e52b;padding:9px 11px 9px 9px;box-shadow:0 8px 22px #0003}
+body[data-tab="allenamenti"] .rf5-activity-photo{position:relative;width:123px;flex-basis:123px;height:91px;border:1px solid #ffffff0f;border-radius:11px;background:radial-gradient(circle at 40% 40%,#355e8b,#112a49);overflow:hidden}
+body[data-tab="allenamenti"] .rf5-activity-card.blue .rf5-activity-photo{background:linear-gradient(135deg,#14355f80,#0c1d36b8),url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=520&q=70') center/cover}
+body[data-tab="allenamenti"] .rf5-activity-card.coral .rf5-activity-photo{background:linear-gradient(135deg,#382a4580,#101c32be),url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=520&q=70') center/cover}
+body[data-tab="allenamenti"] .rf5-activity-card.purple .rf5-activity-photo{background:linear-gradient(135deg,#13395cb0,#0e2749b3),url('https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=520&q=70') center/cover}
+body[data-tab="allenamenti"] .rf5-activity-card.green .rf5-activity-photo{background:linear-gradient(135deg,#22514c91,#0e2943a8),url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=520&q=70') center/cover}
+body[data-tab="allenamenti"] .rf5-activity-photo img{position:absolute;right:-4px;bottom:0;width:75%;height:96%;object-fit:contain;filter:drop-shadow(0 8px 10px #0009)}
+body[data-tab="allenamenti"] .rf5-activity-badge{height:40px;width:40px;flex-basis:40px;border-radius:12px;background:#228bff;font-size:19px}
+body[data-tab="allenamenti"] .rf5-activity-copy strong{font-size:15px;color:#fff}
+body[data-tab="allenamenti"] .rf5-activity-copy em{color:#8ac1ff}
+body[data-tab="allenamenti"] .rf5-programs-banner,body[data-tab="allenamenti"] .rf5-template-banner{background:linear-gradient(120deg,#173452,#10223b);border-color:#91bbeb28;box-shadow:0 12px 35px #0003}
+body[data-tab="allenamenti"] .rf5-program-row{border-radius:14px;background:linear-gradient(115deg,#1b304b,#0e1e33);border-color:#8fb6df24}
+body[data-tab="allenamenti"] .rf5-program-image{background:linear-gradient(145deg,#3b5c7e,#16324c);border:1px solid #b5d3ea1a}
+body[data-tab="allenamenti"] .rf5-template-line{background:linear-gradient(110deg,#182c47,#0e1f35);min-height:77px;border-color:#8daed229}
+body[data-tab="allenamenti"] .rf5-template-thumb{background:linear-gradient(130deg,#254463,#162b45);border:1px solid #a3c9ea16}
+body[data-tab="allenamenti"] .rf5-template-index{box-shadow:0 4px 9px #0003}
+body[data-tab="allenamenti"] .rf5-template-cta .btn{min-height:52px;font-size:13px}
+body[data-tab="allenamenti"] .rf5-exercise .rf5-visual>div{background:radial-gradient(circle at 50% 35%,#305678,#172942 72%,#0d1b2f)!important}
+body[data-tab="allenamenti"] .rf5-custom{background:linear-gradient(155deg,#1a2d49,#0d2036);border-color:#7ea9d82c}
+body[data-tab="allenamenti"] .rf5-chip.active{background:linear-gradient(180deg,#2c98ff,#1068e7);border-color:#75c5ff}
+body[data-tab="allenamenti"] .rf5-save-buttons .btn-primary{background:linear-gradient(145deg,#2a9bff,#136ff4)}
+body[data-tab="allenamenti"] .rf4-timer-page .pro-timer-card{border:1px solid #6fa5dd28;background:linear-gradient(155deg,#182f4e,#0b1e32)!important;box-shadow:0 18px 45px #0004}
+body[data-tab="allenamenti"] .rf4-timer-page .pro-timer-ring{box-shadow:0 0 0 10px #166cdb14,0 15px 35px #0005}
+body[data-tab="allenamenti"] .rf4-stats .rf4-period-tabs button.active{background:#2188fa}
+body[data-tab="allenamenti"] .rf4-stats .rf4-stats-card{background:linear-gradient(160deg,#142943,#0c1c2f)}
+@media(min-width:950px){
+ body[data-tab="allenamenti"] .rf5-category-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+ body[data-tab="allenamenti"] .rf5-program-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+}
+@media(max-width:800px){
+ .rf6-dashboard-panels{grid-template-columns:1fr}
+ .rf6-mountain-hero{min-height:183px;padding:18px}
+ .rf6-wordmark{font-size:29px}
+ .rf6-hero-heading h2{font-size:24px;margin-top:23px}
+ .rf6-overview{padding:14px}
+ .rf6-kpi{padding:11px}
+ .rf6-kpi strong{font-size:16px}
+ body .mobile-nav{border-top:1px solid #70a8e22b}
+}
+@media(max-width:430px){
+ .rf6-home{padding-bottom:85px}
+ .rf6-tagline{font-size:8px;letter-spacing:.18em}
+ .rf6-hero-heading h2{font-size:22px}
+ .rf6-kpi-row{gap:6px}
+ .rf6-kpi{padding:9px 7px;border-radius:12px}
+ .rf6-kpi strong{font-size:14px}
+ .rf6-kpi small{font-size:10px}
+ .rf6-overview .pro-week-strip{gap:3px}
+ .rf6-overview .pro-week-day strong{width:25px;height:25px;min-height:25px;font-size:10px}
+ .rf6-progress-title strong{font-size:17px}
+ .rf6-recent-art{height:52px;width:52px;min-width:52px}
+ .rf6-goal-ring{height:63px;width:63px;flex-basis:63px}
+ .rf6-goal-ring div{height:47px;width:47px}
+ .rf6-meal-quick{gap:5px}
+ .rf6-meal-quick>div{padding:9px 5px}
+ .rf6-meal-quick strong{font-size:14px}
+ body[data-tab="allenamenti"] .rf5-activity-photo{width:86px;flex-basis:86px;height:81px}
+ body[data-tab="allenamenti"] .rf5-activity-badge{display:grid;height:29px;width:29px;flex-basis:29px;font-size:15px}
+ body[data-tab="allenamenti"] .rf5-activity-copy strong{font-size:13px}
+ body[data-tab="allenamenti"] .rf5-activity-card{gap:8px}
+}
+@media(prefers-reduced-motion:reduce){.rf5-activity-card{transition:none}}
