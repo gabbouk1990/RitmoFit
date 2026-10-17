@@ -1,0 +1,147 @@
+/* Ritmo Fit — Supershift-only turnistica. La sorgente è sempre il calendario cifrato. */
+body[data-tab="turni"] #view{min-width:0}
+.sup-shifts-page{--sup-blue:#3389f5;--sup-mint:#42d6aa;--sup-text:#eef6ff;--sup-muted:#9db3c9;--sup-card:#121f31;--sup-line:rgba(136,180,228,.16);max-width:1250px;width:100%;margin:0 auto;padding:0 0 80px;color:var(--sup-text)}
+.sup-shifts-page *{box-sizing:border-box}
+.sup-hero{display:flex;position:relative;overflow:hidden;align-items:center;justify-content:space-between;padding:26px 28px;margin:0 0 16px;background:linear-gradient(113deg,#1a2f4a,#152b49 58%,#10475f);border:1px solid #6b9ed02e;border-radius:22px;box-shadow:0 14px 30px #0003}
+.sup-hero:after{content:"";position:absolute;border:1px solid #9bc0ed12;width:220px;height:220px;border-radius:50%;right:-40px;top:-85px;box-shadow:0 0 0 45px #accafb08,0 0 0 90px #accafb06;pointer-events:none}
+.sup-hero-body{position:relative;z-index:1;max-width:680px}
+.sup-eyebrow{color:#8ab8fa;font-weight:850;letter-spacing:.13em;font-size:10px;line-height:1.5}
+.sup-eyebrow span{padding:0 5px;color:#47cda9}
+.sup-hero h2{color:#fff;font-size:clamp(25px,3vw,34px);letter-spacing:-.04em;line-height:1.1;margin:7px 0 9px}
+.sup-hero p{color:#bacde2;font-size:13px;line-height:1.6;margin:0 0 15px}
+.sup-hero-symbol{font-size:95px;line-height:1;font-weight:200;color:#6dc6ed50;margin-right:25px}
+.sup-source-pill{display:inline-flex;gap:8px;align-items:center;border-radius:12px;background:#1d395a;color:#d1e5fc;font-size:11px;letter-spacing:.01em;padding:9px 12px;border:1px solid #5990c028}
+.sup-source-dot{display:inline-block;width:8px;height:8px;min-width:8px;border-radius:50%;background:#46d7a5;box-shadow:0 0 0 3px #46d7a519}
+.sup-import-alert{display:flex;align-items:center;gap:13px;margin:13px 0;padding:14px 16px;border:1px solid #72beec54;border-radius:15px;background:#1b3852;color:#f6faff}
+.sup-import-alert-icon{font-size:25px}
+.sup-import-alert>div:nth-child(2){flex:1;min-width:0}
+.sup-import-alert strong{display:block;font-size:12px;line-height:1.5}
+.sup-import-alert p{font-size:11px;color:#b5d2e9;line-height:1.6;margin:5px 0 0}
+.sup-import-alert .btn{flex:none;min-height:42px}
+.sup-kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:15px 0 16px}
+.sup-kpi-card{display:flex;gap:12px;align-items:center;min-width:0;border-radius:16px;border:1px solid var(--sup-line);background:linear-gradient(165deg,#1b2b42,#111f32);padding:13px 14px;box-shadow:0 13px 28px #0002}
+.sup-kpi-icon{display:grid;place-items:center;flex:0 0 39px;height:39px;border-radius:12px;background:#254168;color:#cfecff;font-size:19px}
+.sup-kpi-card>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.sup-kpi-card small{color:#a6bbd4;font-size:10px;line-height:1.35}
+.sup-kpi-card strong{color:#f8faff;font-size:22px;letter-spacing:-.035em;line-height:1}
+.sup-kpi-card em{font-size:10px;color:#7998b9;line-height:1.4;font-style:normal}
+.sup-main-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr);gap:16px;align-items:start}
+.sup-main-card{min-width:0;background:linear-gradient(145deg,rgba(19,34,53,.97),rgba(12,24,38,.98));border:1px solid var(--sup-line);border-radius:19px;padding:20px;box-shadow:0 12px 32px #0003}
+.sup-card-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
+.sup-card-top h3,.sup-day-card h3{color:#f2f8ff;font-size:19px;letter-spacing:-.02em;line-height:1.25;margin:5px 0 0}
+.sup-month-nav{display:flex;align-items:center;gap:6px;flex:none}
+.sup-month-nav button{display:grid;place-items:center;min-width:36px;min-height:36px;background:#203653;border:1px solid #83b0f024;border-radius:11px;color:#def0ff;font-size:15px;padding:5px 9px}
+.sup-month-nav button:nth-child(2){font-size:11px;font-weight:700}
+.sup-month-nav button:disabled{opacity:.35;cursor:not-allowed}
+.sup-calendar-week,.sup-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.sup-calendar-week{margin:0 0 8px}
+.sup-calendar-week span{display:grid;place-items:center;height:25px;font-weight:700;font-size:11px;color:#8fa6bf}
+.sup-calendar-spacer{min-height:67px}
+.sup-calendar-day{display:flex;position:relative;flex-direction:column;align-items:center;justify-content:space-between;gap:8px;min-width:0;min-height:74px;padding:11px 3px 7px;border-radius:12px;border:1px solid #80a9d020;background:#1a2b40;color:#d3e5f8;cursor:pointer;transition:background .15s,border-color .15s}
+.sup-calendar-day:hover{border-color:#7eb8fc65;background:#213953}
+.sup-calendar-day.selected{border:2px solid #4ca8ff;background:#21466c;box-shadow:0 0 0 2px #4189d321;padding:10px 2px 6px}
+.sup-calendar-day.today .sup-calendar-number{color:#8ceac7}
+.sup-calendar-number{font-weight:800;font-size:12px;line-height:1}
+.sup-tag{display:inline-grid;place-items:center;min-width:31px;min-height:24px;font-size:10px;font-weight:850;letter-spacing:0;border-radius:8px;border:1px solid transparent;padding:3px 5px;line-height:1}
+.sup-tag.morning{background:#247e58;color:#e0ffec;border-color:#48b88b}
+.sup-tag.afternoon{background:#9a5c38;color:#ffebd5;border-color:#dc9a69}
+.sup-tag.night{background:#a95738;color:#fff4e9;border-color:#f59a74}
+.sup-tag.smonto{background:#325b91;color:#e2efff;border-color:#4f8fc9}
+.sup-tag.rest{background:#2b6972;color:#e1f8f7;border-color:#53acb8}
+.sup-tag.long{background:#62408d;color:#f1e6ff;border-color:#9571cb}
+.sup-tag.holiday{background:#1f8565;color:#e7fff3;border-color:#46c095}
+.sup-tag.special{background:#606881;color:#eff1ff;border-color:#939ab3}
+.sup-tag.formation{background:#476aa8;color:#eaf4ff;border-color:#7198e3}
+.sup-tag.illness{background:#8e4657;color:#ffe9ef;border-color:#ca6c83}
+.sup-empty-dot{font-size:16px;line-height:1;color:#637a92}
+.sup-calendar-foot{display:flex;gap:7px;align-items:center;margin-top:16px;color:#90a8c1;font-size:10px}
+.sup-foot-square{width:9px;height:9px;background:#348fe3;border-radius:3px}
+.sup-right-stack{display:grid;gap:13px;min-width:0}
+.sup-day-card h3{font-size:21px}
+.sup-day-weekday{text-transform:capitalize;color:#95adc7;margin:4px 0 17px;font-size:12px}
+.sup-day-feature{display:flex;align-items:center;gap:13px;border-radius:15px;background:linear-gradient(115deg,#1c3551,#162d47);padding:15px;border:1px solid #82b0e32b}
+.sup-day-feature.morning{background:linear-gradient(115deg,#1b564c,#173944)}
+.sup-day-feature.night{background:linear-gradient(115deg,#4c343c,#282943)}
+.sup-day-feature.long{background:linear-gradient(115deg,#443663,#222c50)}
+.sup-day-feature.holiday,.sup-day-feature.rest{background:linear-gradient(115deg,#255446,#1b3a43)}
+.sup-day-feature.illness{background:linear-gradient(115deg,#553142,#2a2b43)}
+.sup-day-symbol{width:65px;height:65px;flex:0 0 65px;display:grid;place-items:center;background:#182b42aa;border:1px solid #9bb1e529;border-radius:14px;color:#f3f9ff;font-weight:870;font-size:24px}
+.sup-day-feature>div{display:flex;flex-direction:column;gap:7px;min-width:0}
+.sup-day-feature strong{font-size:17px;color:#f6faff;line-height:1.2}
+.sup-day-feature small{font-size:12px;color:#c5d6eb;line-height:1.45}
+.sup-origin-line{display:flex;align-items:center;gap:9px;padding-top:14px;font-size:10px;color:#9eb9cc;line-height:1.5}
+.sup-training-card>.sup-card-top{margin-bottom:10px}
+.sup-training-icon{font-size:25px}
+.sup-training-card>strong{display:block;color:#e3efff;font-size:14px;margin:6px 0 7px}
+.sup-training-card>p{color:#a9c0d9;font-size:12px;line-height:1.6;margin:0 0 12px}
+.sup-training-card>small{display:block;border-top:1px solid #ffffff13;padding-top:10px;color:#819ab7;font-size:10px;line-height:1.5}
+.sup-source-card .sup-card-top{margin-bottom:7px}
+.sup-source-card p{color:#a8bfd5;font-size:11px;line-height:1.6}
+.sup-source-card .btn{min-height:42px;width:100%;margin-top:6px}
+.sup-legend-card{margin-top:16px}
+.sup-legend-count{color:#8fa9c9;font-size:11px;white-space:nowrap}
+.sup-shift-legend{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.sup-legend-item{display:flex;gap:9px;align-items:center;background:#1a2a41;border-radius:11px;border:1px solid #ffffff12;padding:8px 10px;min-width:0}
+.sup-legend-item .sup-tag{flex:0 0 34px}
+.sup-legend-item>span:last-child{font-size:11px;color:#d1e1f5;line-height:1.4;overflow-wrap:anywhere}
+.sup-shifts-page button:focus-visible{outline:3px solid #53bfff;outline-offset:3px}
+@media(min-width:1000px){
+ body[data-tab="allenamenti"] .rf4-programs-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+ body[data-tab="allenamenti"] .rf4-template-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+ body[data-tab="allenamenti"] .rf4-program-card{min-height:104px}
+ body[data-tab="allenamenti"] .rf4-template-row{min-height:91px}
+ body[data-tab="allenamenti"] .rf4-list-art{width:70px;height:69px;min-width:70px}
+}
+@media(max-width:1080px){
+ .sup-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sup-main-grid{grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr)}
+ .sup-main-card{padding:17px}
+ .sup-calendar-grid,.sup-calendar-week{gap:5px}
+ .sup-calendar-day{min-height:65px;gap:6px}
+ .sup-shift-legend{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:750px){
+ .sup-shifts-page{padding:0 0 98px}
+ .sup-hero{padding:18px;margin-bottom:12px;border-radius:16px}
+ .sup-hero h2{font-size:25px}
+ .sup-hero-symbol{display:none}
+ .sup-hero p{font-size:11px}
+ .sup-kpi-grid{gap:9px;margin-bottom:12px}
+ .sup-kpi-card{padding:11px;gap:10px;border-radius:13px}
+ .sup-kpi-icon{flex-basis:33px;height:33px;font-size:15px}
+ .sup-kpi-card strong{font-size:21px}
+ .sup-kpi-card small,.sup-kpi-card em{font-size:9px}
+ .sup-main-grid{grid-template-columns:minmax(0,1fr);gap:12px}
+ .sup-calendar-card{order:0}
+ .sup-right-stack{order:1}
+ .sup-day-card{order:0}
+ .sup-training-card{order:1}
+ .sup-source-card{order:2}
+ .sup-main-card{border-radius:16px;padding:14px}
+ .sup-calendar-day{min-height:65px}
+ .sup-calendar-week,.sup-calendar-grid{gap:4px}
+ .sup-shift-legend{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .sup-legend-card{margin-top:12px}
+ .sup-legend-item{padding:7px}
+ .sup-import-alert{flex-wrap:wrap}
+ .sup-import-alert .btn{width:100%}
+ body[data-tab="allenamenti"] .rf4-template-list,body[data-tab="allenamenti"] .rf4-programs-list{grid-template-columns:minmax(0,1fr)}
+ body[data-tab="allenamenti"] .rf4-template-row{gap:10px;min-height:78px}
+}
+@media(max-width:420px){
+ .sup-main-card{padding:11px}
+ .sup-calendar-week,.sup-calendar-grid{gap:3px}
+ .sup-calendar-day{min-height:56px;gap:3px;padding:8px 1px 5px;border-radius:10px}
+ .sup-calendar-day.selected{padding:7px 0 4px}
+ .sup-calendar-number{font-size:11px}
+ .sup-tag{min-width:25px;min-height:20px;padding:3px 4px;font-size:9px;border-radius:6px}
+ .sup-calendar-foot{font-size:9px}
+ .sup-day-symbol{width:56px;height:56px;flex-basis:56px;font-size:21px}
+ .sup-shift-legend{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .sup-legend-item .sup-tag{flex-basis:29px}
+ .sup-legend-item>span:last-child{font-size:10px}
+ .sup-month-nav button{min-width:31px;min-height:34px;padding:5px 7px}
+ .sup-card-top h3{font-size:17px}
+ .sup-source-pill{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.sup-calendar-day{transition:none}}
