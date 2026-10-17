@@ -52,7 +52,9 @@ jobs:
           python3 overrides/patch_third_pass.py
           python3 overrides/patch_fourth_pass.py
           python3 overrides/patch_food_latest.py
+          python3 overrides/patch_shift_mp_ferie.py
           node --check _site/app.js
+          node --check _site/ics.js
           python3 - <<'PY'
           from pathlib import Path
           s=Path('_site/app.js').read_text()
@@ -69,7 +71,7 @@ jobs:
           assert "upgradeDefaultMeals()" in s
           assert "nutrition-disclaimer" in s
           assert "food-ingredient-row" in s
-          assert 'ritmo-fit-static-v14' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v15' in Path('_site/sw.js').read_text()
           assert 'function renderTrainingTimer()' in s
           assert 'function foodPlanCardV2' in s
           assert 'food-live-select' in s
@@ -127,7 +129,7 @@ jobs:
           assert 'class=\"third-mobile-dock\"' in s
           assert '.third-mobile-dock' in css
           assert '.third-history-panel' in css
-          assert 'ritmo-fit-static-v14' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v15' in Path('_site/sw.js').read_text()
           print("Terza passata Allenamenti: controlli statici superati")
           assert 'function rf4ActivityScreen()' in s
           assert 'function rf4ProgramsScreen()' in s
@@ -144,7 +146,7 @@ jobs:
           assert ".rf4-template-row" in css
           assert ".rf4-exercise-hero-art" in css
           assert ".rf4-period-tabs" in css
-          assert "ritmo-fit-static-v14" in Path('_site/sw.js').read_text()
+          assert "ritmo-fit-static-v15" in Path('_site/sw.js').read_text()
           print("Quarta passata mobile dark: UI, viste e timer verificati")
           assert 'const RF_FOOD_LATEST_IDS=' in s
           assert "'tonno-affumicato-bernardini'" in s
@@ -155,9 +157,36 @@ jobs:
           assert "active==='recenti'" in s
           assert 'nutrition-recent-tab' in css
           assert 'nutrition-new-badge' in css
-          assert 'ritmo-fit-static-v14' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v15' in Path('_site/sw.js').read_text()
           print("Ultime 12 aggiunte alimentari: controlli statici superati")
+          assert 'case \'saveManualShift\':' in s
+          assert 'case \'removeManualShift\':' in s
+          assert "if(s?.type==='MP')return" in s
+          assert "if(s?.type==='Ferie')return" in s
+          assert "e.source==='manual'" in s
+          assert 'data-act="saveManualShift"' in s
+          assert 'data-act="removeManualShift"' in s
+          assert 'MP · 06:50–21:22' in s
+          assert 'F · Ferie' in s
+          assert '.calendar-tag.MP' in css
+          assert '.calendar-tag.Ferie' in css
+          assert 'ritmo-fit-static-v15' in Path('_site/sw.js').read_text()
+          print("Turni MP/F, editor giornaliero e riposo: verifiche statiche superate")
           PY
+
+      - name: Verifica riconoscimento MP e ferie da Supershift
+        run: |
+          node --input-type=module <<'JS'
+          import { readFileSync } from 'node:fs';
+          import assert from 'node:assert/strict';
+          const code=readFileSync('_site/ics.js','utf8');
+          const {classifyShift,parseICS}=await import('data:text/javascript;charset=utf-8,'+encodeURIComponent(code));
+          const cases={'MP':'MP','Turno MP':'MP','M/P':'MP','M+P':'MP','Mattina e Pomeriggio':'MP','06.50-21.22':'MP','F':'Ferie','Turno F':'Ferie','Ferie':'Ferie','M':'Mattina','P':'Pomeriggio','N':'Notte','Smonto':'Smonto','Riposo':'Riposo'};
+          for(const [label,expected] of Object.entries(cases))assert.equal(classifyShift(label),expected,label);
+          const sample='BEGIN:VCALENDAR\nBEGIN:VEVENT\nUID:mp1\nDTSTART;VALUE=DATE:20261021\nDTEND;VALUE=DATE:20261022\nSUMMARY:MP\nEND:VEVENT\nBEGIN:VEVENT\nUID:f1\nDTSTART;VALUE=DATE:20261022\nDTEND;VALUE=DATE:20261023\nSUMMARY:F\nEND:VEVENT\nEND:VCALENDAR';
+          assert.deepEqual(parseICS(sample).map(e=>e.type),['MP','Ferie']);
+          console.log('MP, F e rotazione tradizionale: classificazione OK');
+          JS
 
       - name: Scarica immagini esercizi con licenza CC BY-SA
         run: |
