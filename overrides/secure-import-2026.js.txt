@@ -1,0 +1,73 @@
+/* Supershift 2026: la pianificazione personale è pubblicata SOLO cifrata.
+ * La chiave di sblocco non è inclusa nel repository o nel sito.
+ * L'import avviene nel browser e scrive soltanto nell'IndexedDB locale.
+ */
+const SECURE_2026_CODES={
+ M:{type:'Mattina',label:'M',start:'06:50',end:'14:22'},
+ P:{type:'Pomeriggio',label:'P',start:'13:50',end:'21:22'},
+ N:{type:'Notte',label:'N',start:'20:50',end:'07:22'},
+ SM:{type:'Smonto',label:'SM'},
+ R:{type:'Riposo',label:'R'},
+ MP:{type:'MP',label:'MP',start:'06:50',end:'21:22'},
+ F:{type:'Ferie',label:'F'},
+ RP:{type:'RPre',label:'RP'},
+ CO:{type:'Congedo',label:'CO'},
+ Malattia:{type:'Malattia',label:'Malattia'},
+ Formazione:{type:'Formazione',label:'Formazione'}
+};
+function secure2026B64Bytes(value,urlSafe=false){
+ const normalized=String(value).replace(/[\s]/g,'').replace(/-/g,urlSafe?'+':'-').replace(/_/g,urlSafe?'/':'_');
+ const padded=normalized+'='.repeat((4-normalized.length%4)%4);
+ return Uint8Array.from(atob(padded),c=>c.charCodeAt(0));
+}
+async function secure2026Decrypt(code){
+ const encoded=String(code||'').replace(/\s/g,'').trim();
+ if(!/^[a-zA-Z0-9_-]{43}$/.test(encoded))throw Error('Codice non valido: copia la chiave privata di 43 caratteri dalla chat.');
+ if(!globalThis.crypto?.subtle)throw Error('La crittografia del browser non è disponibile: apri Ritmo Fit via HTTPS.');
+ const response=await fetch('./assets/secure/supershift-2026.enc.json',{cache:'no-store'});
+ if(!response.ok)throw Error('Calendario protetto non raggiungibile. Aggiorna Ritmo Fit e riprova.');
+ const payload=await response.json();
+ if(payload.version!==1||payload.alg!=='AES-256-GCM')throw Error('Formato del calendario cifrato non riconosciuto.');
+ let data;
+ try{
+  const raw=secure2026B64Bytes(encoded,true);
+  if(raw.byteLength!==32)throw Error('Chiave incompleta');
+  const key=await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['decrypt']);
+  const ad=new TextEncoder().encode('RitmoFit-Supershift-2026-v1');
+  const plaintext=await crypto.subtle.decrypt(
+   {name:'AES-GCM',iv:secure2026B64Bytes(payload.nonce),additionalData:ad,tagLength:128},
+   key,secure2026B64Bytes(payload.data));
+  data=JSON.parse(new TextDecoder().decode(plaintext));
+ }catch(e){
+  throw Error('Chiave non corretta oppure calendario protetto danneggiato. Copia nuovamente il codice privato.');
+ }
+ if(data.year!==2026||data.version!==1||!Array.isArray(data.codes)||data.codes.length!==365||
+    !data.codes.every(c=>Object.hasOwn(SECURE_2026_CODES,c)))
+  throw Error('Il calendario 2026 non ha superato la verifica di completezza.');
+ return data.codes.map((c,i)=>{
+  const v=SECURE_2026_CODES[c];
+  const date=new Date(Date.UTC(2026,0,1+i)).toISOString().slice(0,10);
+  return {id:'secure-supershift-2026-'+date,date,
+    type:v.type,label:v.label,source:'ics',
+    start:'',end:'',displayStart:v.start||'',displayEnd:v.end||''};
+ });
+}
+function secure2026ImportDialog(){
+ openModal(
+  '<h2>🔐 Carica i tuoi turni 2026</h2>'+
+  '<p>Ho preparato il calendario completo di Supershift: <strong>365 giorni</strong> inclusi MP, ferie, congedo, formazione e malattia.</p>'+
+  '<p>Per proteggere i tuoi turni, il calendario è cifrato. Incolla qui la chiave privata ricevuta in chat.</p>'+
+  '<label class="field"><span>Chiave privata del calendario</span>'+
+  '<input name="unlockCode" type="text" inputmode="text" autocapitalize="none" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Incolla il codice privato" required>'+
+  '</label>'+
+  '<div class="hint">La chiave non viene salvata né inviata a un server. I turni 2026 già importati verranno aggiornati, ma <strong>le correzioni manuali e tutti i dati di altri anni rimarranno intatti</strong>.</div>',
+  async form=>{
+   const items=await secure2026Decrypt(form.get('unlockCode'));
+   const prior=state.shifts;
+   const saved=prior.filter(x=>!String(x.date||'').startsWith('2026-')||x.source==='manual');
+   state.shifts=[...saved,...items];
+   try{await persist('shifts');}catch(err){state.shifts=prior;throw err;}
+   return ()=>toast('✅ Calendario Supershift 2026 importato: 365 giorni. Modifiche manuali conservate.');
+  },'Carica i 365 giorni'
+ );
+}
