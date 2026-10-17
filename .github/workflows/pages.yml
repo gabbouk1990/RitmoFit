@@ -43,6 +43,7 @@ jobs:
           python3 overrides/patch_workouts.py
           python3 overrides/patch_food.py
           python3 overrides/patch_interactive.py
+          python3 overrides/patch_food_latest.py
           python3 overrides/patch_session_delete.py
           python3 overrides/patch_theme.py
           python3 overrides/patch_history_mobile.py
@@ -68,7 +69,7 @@ jobs:
           assert "upgradeDefaultMeals()" in s
           assert "nutrition-disclaimer" in s
           assert "food-ingredient-row" in s
-          assert 'ritmo-fit-static-v13' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v14' in Path('_site/sw.js').read_text()
           assert 'function renderTrainingTimer()' in s
           assert 'function foodPlanCardV2' in s
           assert 'food-live-select' in s
@@ -126,7 +127,7 @@ jobs:
           assert 'class=\"third-mobile-dock\"' in s
           assert '.third-mobile-dock' in css
           assert '.third-history-panel' in css
-          assert 'ritmo-fit-static-v13' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v14' in Path('_site/sw.js').read_text()
           print("Terza passata Allenamenti: controlli statici superati")
           assert 'function rf4ActivityScreen()' in s
           assert 'function rf4ProgramsScreen()' in s
@@ -145,6 +146,17 @@ jobs:
           assert ".rf4-period-tabs" in css
           assert "ritmo-fit-static-v13" in Path('_site/sw.js').read_text()
           print("Quarta passata mobile dark: UI, viste e timer verificati")
+          assert 'const RF_FOOD_LATEST_IDS=' in s
+          assert "'tonno-affumicato-bernardini'" in s
+          assert "'salmone-aff-in'" in s
+          assert "'patate-precotte-tesori'" in s
+          assert "'cavolo-cappuccio'" in s
+          assert 'data-to="recenti"' in s
+          assert "active==='recenti'" in s
+          assert 'nutrition-recent-tab' in css
+          assert 'nutrition-new-badge' in css
+          assert 'ritmo-fit-static-v14' in Path('_site/sw.js').read_text()
+          print("Ultime 12 aggiunte alimentari: controlli statici superati")
           PY
 
       - name: Scarica immagini esercizi con licenza CC BY-SA
