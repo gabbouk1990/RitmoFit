@@ -62,6 +62,16 @@ case 'removeManualShift':{
 """
 once("case 'savePattern':{",manual+"case 'savePattern':{",'Comandi turni manuali')
 
+# 'Elimina eventi importati' elimina solo Supershift, non le correzioni manuali.
+once(
+ "case 'clearShifts':if(confirm('Eliminare gli eventi calendario importati?')){state.shifts=[];await persist('shifts');render();toast('Turni importati cancellati.');}break;",
+ "case 'clearShifts':if(confirm('Eliminare gli eventi calendario importati? Le modifiche manuali resteranno salvate.')){state.shifts=state.shifts.filter(e=>e.source==='manual');await persist('shifts');render();toast('Eventi importati cancellati; modifiche manuali conservate.');}break;",
+ 'Proteggi i turni inseriti manualmente durante la cancellazione dei soli eventi importati')
+once(
+ "function renderSettings(){const health=state.health,shiftCount=state.shifts.length;",
+ "function renderSettings(){const health=state.health,shiftCount=state.shifts.filter(e=>e.source==='ics').length;",
+ 'Conteggio reale di eventi importati nelle impostazioni')
+
 app.write_text(s,encoding='utf-8')
 
 ics=Path('_site/ics.js')
