@@ -1,0 +1,220 @@
+/* Ritmo Fit | Design 2026 approved visual: real UI, not a static mockup.
+   Preserves all local database schemas and existing workout handlers.
+*/
+let rf5Draft=null;
+function rf5Num(x,def=0){const n=Number(x);return Number.isFinite(n)?n:def;}
+function rf5Current(){
+ const t=rf4Program(rf4TemplateId);
+ const i=rf4ExerciseIndex;
+ return {t,i,ex:t?.exercises?.[i]||null};
+}
+function rf5Band(ex){return /elastic|band|resistance.?band/i.test(String(ex?.name||'')+' '+String(ex?.load||''));}
+function rf5Model(ex){
+ const text=String(ex?.reps||''),num=Number(text.match(/\d+/)?.[0])||10;
+ const original=String(ex?.load||'');
+ let color=/nero|black/i.test(original)?'nero':/ross|red/i.test(original)?'rosso':/giall|yellow/i.test(original)?'giallo':'nessuno';
+ const bareWeight=Number(original.replace(',','.').match(/\d+(?:\.\d+)?/)?.[0]);
+ return {
+  sets:Math.max(1,Math.min(12,Math.round(rf5Num(ex?.sets,3)))),
+  reps:Math.max(1,Math.min(proIsDistance(ex)?5000:200,num)),
+  rest:Math.max(0,Math.min(600,restSeconds(ex?.rest)||60)),
+  load:Number.isFinite(bareWeight)?bareWeight:0,
+  band:ex?.bandColor||color,
+  focus:ex?.focus||'standard',
+  originalLoad:original
+ };
+}
+function rf5DraftFor(){
+ const {t,i,ex}=rf5Current();
+ if(!t||!ex)return null;
+ const key=t.id+'::'+i;
+ if(!rf5Draft||rf5Draft.key!==key)rf5Draft={key,...rf5Model(ex),dirty:false};
+ return rf5Draft;
+}
+function rf5Options(ex,field,values){
+ const draft=rf5DraftFor();
+ return '<div class="rf5-choice-row" role="group" aria-label="'+(field==='band'?'Tipo elastico':'Focus esercizio')+'">'+values.map(([value,label,caption])=>
+ '<button type="button" class="rf5-chip '+(draft[field]===value?'active':'')+'" data-act="rf5Pick" data-field="'+field+'" data-value="'+value+'" aria-pressed="'+(draft[field]===value)+'">'+
+ '<strong>'+label+'</strong>'+(caption?'<small>'+caption+'</small>':'')+'</button>').join('')+'</div>';
+}
+function rf5Stepper(label,field,unit){
+ const d=rf5DraftFor();
+ const value=d[field];
+ return '<div class="rf5-step-row"><span>'+label+'</span><div class="rf5-step-controls">'+
+ '<button type="button" data-act="rf5Step" data-field="'+field+'" data-delta="-1" aria-label="Diminuisci '+label+'">−</button>'+
+ '<strong data-rf5-value="'+field+'">'+value+(unit?' '+unit:'')+'</strong>'+
+ '<button type="button" data-act="rf5Step" data-field="'+field+'" data-delta="1" aria-label="Aumenta '+label+'">+</button></div></div>';
+}
+function rf5ExerciseVisual(ex){
+ const info=proInfo(ex.name);
+ return '<div class="rf5-visual"><div class="rf5-visual-main">'+proExerciseIllustration(ex,1,'rf5-visual-frame')+
+ '<div class="rf5-visual-label">Movimento · fase 1</div></div><div class="rf5-visual-side">'+proExerciseIllustration(ex,2,'rf5-visual-frame')+
+ '<div class="rf5-visual-label">Movimento · fase 2</div></div></div>'+
+ '<div class="rf5-muscles"><div class="rf5-muscle-figure">'+proMuscleThumb(ex,'rf5-muscle-img')+'</div><div><div class="rf5-section-title">Muscoli coinvolti</div><strong>'+proEsc(info.muscles)+'</strong><small>Gruppi principali e secondari, evidenziati nella mappa anatomica.</small><button type="button" class="rf4-text-action" data-act="rf4ExerciseTab" data-tab="istruzioni">Visualizza mappa e tecnica →</button></div></div>';
+}
+function rf5CustomControls(ex){
+ const d=rf5DraftFor(),distance=proIsDistance(ex),band=rf5Band(ex);
+ return '<section class="rf5-custom"><div class="rf5-section-title">Personalizza esercizio</div>'+
+ (band?'<div class="rf5-field-caption">Tipo di elastico</div>'+rf5Options(ex,'band',[['nessuno','Nessuno','Senza'],['giallo','Giallo','Leggero'],['rosso','Rosso','Medio'],['nero','Nero','Forte']]):'<div class="rf5-field-caption">Attrezzatura: '+proEsc(proInfo(ex.name).equipment)+'</div>')+
+ '<div class="rf5-field-caption">Focus personale</div>'+rf5Options(ex,'focus',[['standard','Standard',''],['tecnica','Tecnica',''],['forza','Forza',''],['controllo','Controllo','']])+
+ '<div class="rf5-step-list">'+rf5Stepper('Serie','sets','')+
+ rf5Stepper(distance?'Distanza':'Ripetizioni','reps',distance?'m':'')+
+ (band?'':rf5Stepper('Carico','load','kg'))+
+ rf5Stepper('Recupero','rest','s')+'</div>'+
+ '<div class="rf5-save-buttons"><button type="button" class="btn btn-outline" data-act="rf5Save">Salva modifiche</button>'+
+ '<button type="button" class="btn btn-primary" data-act="rf5SaveStart">▶ Salva e inizia</button></div>'+
+ '<p class="rf5-fineprint">Le scelte sono salvate nella scheda. Il focus è una nota personale: non cambia i muscoli coinvolti dal movimento.</p></section>';
+}
+rf4ExerciseScreen=function(){
+ const {t,i,ex}=rf5Current();
+ if(!ex){rf4Stage='template';return rf4TemplateScreen();}
+ const meta=proInfo(ex.name),alts=trainingAlternatives(ex.name);
+ const tabs=[['esegui','Esegui'],['istruzioni','Istruzioni'],['storico','Storico']];
+ const tabsHtml='<div class="rf4-detail-tabs rf5-tabs" role="tablist">'+tabs.map(([key,title])=>
+ '<button type="button" role="tab" aria-selected="'+(rf4ExerciseTab===key)+'" class="'+(rf4ExerciseTab===key?'active':'')+
+ '" data-act="rf4ExerciseTab" data-tab="'+key+'">'+title+'</button>').join('')+'</div>';
+ let body='';
+ if(rf4ExerciseTab==='esegui')body=rf5ExerciseVisual(ex)+rf5CustomControls(ex);
+ else if(rf4ExerciseTab==='istruzioni')body='<div class="rf5-instructions"><section class="rf5-info-block"><h3>Tecnica di esecuzione</h3><p>'+proEsc(meta.cue)+'</p></section>'+proMuscleDetails(ex)+
+ '<section class="rf5-info-block"><h3>Alternative possibili</h3><div class="rf5-alternatives">'+(alts.length?alts.map(name=>'<span>'+proEsc(name)+'</span>').join(''):'<span>Puoi modificare la scheda per scegliere una variante adatta.</span>')+'</div></section></div>';
+ else body='<div class="rf5-history">'+thirdExerciseHistory(ex)+'</div>';
+ return '<div class="rf4-app rf4-exercise rf5-exercise">'+rf4Subnav(t.name)+
+ '<div class="rf5-exercise-head"><div class="rf4-kicker">ESERCIZIO '+(i+1)+' DI '+t.exercises.length+'</div><h2>'+proEsc(ex.name)+'</h2><p>'+proEsc(meta.muscles)+'</p></div>'+
+ tabsHtml+body+
+ '<div class="rf5-prev-next"><button type="button" class="btn btn-outline" data-act="rf4ExercisePrev" '+(i===0?'disabled':'')+'>← Precedente</button>'+
+ '<button type="button" class="btn btn-outline" data-act="rf4ExerciseNext" '+(i>=t.exercises.length-1?'disabled':'')+'>Successivo →</button></div>'+
+ PRO_EXERCISE_IMAGE_CREDITS+'</div>';
+};
+// Categories use only real existing workout programs; no invented sessions, cycling or running.
+const rf5CategoryImage={forza:'./assets/exercises/bench-press-1.png',hybrid:'./assets/exercises/goblet-squat-1.png',nuoto:'./assets/exercises/swimming-1.png',tutte:'./assets/exercises/lat-pulldown-1.png'};
+rf4ActivityScreen=function(){
+ const c=RF4_CATEGORIES;
+ const cards=c.map((cat,i)=>{
+  const cover=rf5CategoryImage[cat.id]||cat.image;
+  const number=rf4Programs(cat.id).length;
+  return '<button type="button" class="rf5-activity-card '+cat.tone+'" data-act="rf4Category" data-category="'+cat.id+'">'+
+   '<span class="rf5-activity-photo"><img src="'+cover+'" alt="" loading="lazy"></span>'+
+   '<span class="rf5-activity-badge">'+cat.icon+'</span><span class="rf5-activity-copy"><strong>'+proEsc(cat.title)+'</strong><small>'+proEsc(cat.sub)+'</small><em>'+number+' '+(number===1?'scheda':'schede')+'</em></span><span class="rf4-chevron">›</span></button>';
+ }).join('');
+ const resume=workoutRunner?'<button class="rf4-continue rf5-resume" data-act="rf4Resume"><span class="rf4-play-mini">▶</span><span><strong>Allenamento in corso</strong><small>'+proEsc(workoutRunner.title||'Seduta')+' · '+runnerProgress().done+' serie completate</small></span><span>›</span></button>':'';
+ return '<div class="rf4-app rf5-activities">'+
+ '<div class="rf5-section-header"><h2>Allenati</h2><p>Scegli il tuo percorso.</p></div>'+resume+
+ '<div class="rf5-week-card">'+rf4WeekPanelMarkup()+'</div>'+
+ '<div class="rf4-section-heading"><h3>Attività</h3><button class="rf4-text-action" data-act="workoutPane" data-to="statistiche">I tuoi progressi ›</button></div>'+
+ '<div class="rf5-category-stack">'+cards+'</div>'+
+ '<div class="rf4-secondary-actions"><button class="btn btn-outline" data-act="newTemplate">+ Nuova scheda</button><button class="btn btn-outline" data-act="restoreProgram">↺ Schede consigliate</button></div></div>';
+};
+function rf4WeekPanelMarkup(){return rf4WeekPanel();}
+rf4ProgramsScreen=function(){
+ const c=rf4CategoryInfo(rf4Category),programs=rf4Programs(rf4Category);
+ return '<div class="rf4-app rf5-programs">'+rf4Subnav('Allenati')+
+ '<header class="rf5-programs-banner"><div><div class="rf4-kicker">SCEGLI IL TUO PROGRAMMA</div><h2>'+proEsc(c.title)+'</h2><p>'+proEsc(c.sub)+'</p></div><img src="'+(rf5CategoryImage[c.id]||c.image)+'" alt="" loading="lazy"></header>'+
+ '<div class="rf5-program-list">'+(programs.map((t,i)=>{
+  const main=t.exercises?.[0]||{name:t.name};
+  const image=proExerciseIllustration(main,1,'rf5-program-picture');
+  const sub=(t.exercises||[]).length+' esercizi · '+fmt(t.time)+' min · '+proEsc(t.kind);
+  return '<button type="button" class="rf5-program-row" data-act="rf4OpenTemplate" data-id="'+proEsc(t.id)+'"><span class="rf5-program-image">'+image+'</span>'+
+   '<span><strong>'+proEsc(t.name)+'</strong><small>'+sub+'</small><em>Apri la scheda e personalizza gli esercizi</em></span><b>›</b></button>';
+ }).join('')||'<div class="card">Non ci sono schede in questa categoria. Puoi crearne una personalizzata.</div>')+'</div>'+
+ '<div class="rf4-secondary-actions"><button class="btn btn-outline" data-act="newTemplate">+ Aggiungi programma</button></div></div>';
+};
+rf4TemplateScreen=function(){
+ const t=rf4Program(rf4TemplateId);
+ if(!t){rf4Stage='programs';return rf4ProgramsScreen();}
+ const exercises=t.exercises||[],pool=rf4Kind(t)==='nuoto';
+ const cover=proExerciseIllustration(exercises[0]||{name:t.name},1,'rf5-template-banner-image');
+ const items=exercises.map((x,i)=>{
+  const meta=proInfo(x.name);
+  return '<button type="button" class="rf5-template-line" data-act="rf4OpenExercise" data-index="'+i+'">'+
+   '<span class="rf5-template-index '+['mint','blue','orange','purple','yellow','red'][i%6]+'">'+(i+1)+'</span>'+
+   '<span class="rf5-template-thumb">'+proExerciseIllustration(x,1,'rf5-template-thumb-image')+'</span>'+
+   '<span class="rf5-template-copy"><strong>'+proEsc(x.name)+'</strong><small>'+proEsc(meta.muscles)+'</small></span>'+
+   '<span class="rf5-template-sets">'+fmt(x.sets)+' × '+proEsc(x.reps)+'</span><span class="rf5-arrow">›</span></button>';
+ }).join('');
+ return '<div class="rf4-app rf5-template">'+rf4Subnav(rf4CategoryInfo(rf4Category).title)+
+ '<header class="rf5-template-header"><div><h2>'+proEsc(t.name)+'</h2><div class="rf5-template-subline">◷ '+fmt(t.time)+' minuti <span>•</span> '+exercises.length+' esercizi <span>•</span> '+proEsc(pool?'Piscina':'Forza e progressione')+'</div></div>'+
+ '<button type="button" class="rf5-play" data-act="startWorkout" data-id="'+proEsc(t.id)+'" aria-label="Inizia allenamento">▶</button></header>'+
+ '<section class="rf5-template-banner"><div><span class="rf4-kicker">IL TUO PROGRAMMA</span><p>'+proEsc(t.notes||'Scheda personalizzabile per costruire il tuo percorso.')+'</p></div>'+cover+'</section>'+
+ '<div class="rf4-section-heading"><h3>Lista esercizi</h3><button class="rf4-text-action" data-act="editTemplate" data-id="'+proEsc(t.id)+'">✎ Modifica scheda</button></div>'+
+ '<div class="rf5-template-items">'+items+'</div>'+
+ '<footer class="rf5-template-cta"><button type="button" class="btn btn-primary" data-act="startWorkout" data-id="'+proEsc(t.id)+'">▶ Inizia allenamento</button></footer></div>';
+};
+// The timer is still the existing tested timer; give it an app-like context and next-series preview.
+const rf5PreviousTimer=renderTrainingTimerPro;
+renderTrainingTimerPro=function(){
+ let html=rf5PreviousTimer();
+ const r=workoutRunner;if(!r||!r.exercises?.length)return html;
+ const i=r.exerciseIndex||0,x=r.exercises[i];
+ const completed=r.completed?.[i]||0;
+ const next=completed>=Number(x.sets||1)?r.exercises[i+1]:x;
+ const nextIndex=next===x?i:Math.min(i+1,r.exercises.length-1);
+ const nextSet=(r.completed?.[nextIndex]||0)+1;
+ const extras='<section class="rf5-next-series"><div class="rf4-kicker">PROSSIMA SERIE</div><div class="rf5-next-row">'+proExerciseIllustration(next,1,'rf5-next-illustration')+
+ '<div><strong>'+proEsc(next.name)+'</strong><small>Serie '+nextSet+' di '+fmt(next.sets)+' · '+proEsc(next.reps)+'</small></div>'+
+ '<button type="button" data-act="proJump" data-index="'+nextIndex+'" aria-label="Apri prossima serie">›</button></div></section>';
+ return html+extras;
+};
+// A home summary based on real manual sessions, not dummy volume, duration or percentages.
+const rf5OriginalToday=renderToday;
+renderToday=function(){
+ const base=rf5OriginalToday();
+ const progress=proWeekProgress(),sessions=proWeeklySessions(inputDate());
+ const minutes=sessions.reduce((sum,s)=>sum+(rf5Num(s.duration)),0);
+ const volume=sessions.reduce((a,s)=>a+(typeof thirdVolumeBySession==='function'?thirdVolumeBySession(s):0),0);
+ const hero='<div class="rf5-home-hero"><div class="rf4-kicker">RITMO FIT · OGGI</div><h2>Allenati al tuo ritmo</h2><p>Più forte · Più sano · Ogni giorno</p>'+
+ '<div class="rf5-home-week"><div><strong>Questa settimana</strong><span>'+progress.count+' / '+progress.goal+' sedute</span></div>'+proWeekStrip()+'</div>'+
+ '<div class="rf5-home-metrics"><div><small>Tempo</small><strong>'+Math.round(minutes/60*10)/10+' h</strong></div>'+
+ '<div><small>Volume</small><strong>'+Math.round(volume).toLocaleString('it-IT')+' kg</strong></div>'+
+ '<div><small>Allenamenti</small><strong>'+progress.count+'</strong></div></div>'+
+ '<button class="btn btn-primary" data-act="nav" data-tab="allenamenti">▶ Vai agli allenamenti</button></div>';
+ return '<div class="rf5-home">'+hero+base+'</div>';
+};
+async function rf5SaveDraft(start=false){
+ const {t,i,ex}=rf5Current(),draft=rf5DraftFor();
+ if(!t||!ex||!draft)return;
+ const original=structuredClone(ex);
+ const newReps=proIsDistance(ex)?draft.reps+' m':String(draft.reps);
+ const next={...ex,sets:draft.sets,reps:newReps,rest:draft.rest+' s',focus:draft.focus};
+ if(rf5Band(ex)){
+  next.bandColor=draft.band;
+  next.load=draft.band==='nessuno'?'Corpo libero':'Elastico '+{giallo:'giallo leggero',rosso:'rosso medio',nero:'nero forte'}[draft.band];
+ }else if(Number.isFinite(draft.load)){
+  // Retain descriptive non-weight loads (e.g. bodyweight, technique, elastic).
+  if(/kg|\d/.test(draft.originalLoad)||draft.load>0)next.load=draft.load>0?draft.load+' kg':'Corpo libero';
+ }
+ t.exercises[i]=next;
+ try{await persist('templates');}
+ catch(e){t.exercises[i]=original;toast('Impossibile salvare la scheda: '+e.message);return;}
+ draft.dirty=false;
+ if(start){await startWorkout(t.id);}
+ else{toast('Esercizio aggiornato nella scheda.');render();}
+}
+// Extend existing delegated dispatch without replacing old timer, diary or shifts handlers.
+const rf5OldHandle=handleWorkoutProAction;
+handleWorkoutProAction=async function(act,t){
+ if(act==='rf5Step'){
+  const d=rf5DraftFor();if(!d)return true;
+  const field=t.dataset.field,dir=Number(t.dataset.delta);
+  const steps={sets:1,reps:proIsDistance(rf5Current().ex)?25:1,rest:15,load:2.5};
+  if(!Object.hasOwn(steps,field)||![1,-1].includes(dir))return true;
+  const low=field==='sets'||field==='reps'?1:0,max={sets:12,reps:proIsDistance(rf5Current().ex)?5000:200,rest:600,load:1000}[field];
+  d[field]=Math.max(low,Math.min(max,Math.round((d[field]+steps[field]*dir)*10)/10));
+  d.dirty=true;
+  const box=document.querySelector('[data-rf5-value="'+field+'"]');
+  if(box)box.textContent=d[field]+(field==='rest'?' s':field==='load'?' kg':field==='reps'&&proIsDistance(rf5Current().ex)?' m':'');
+  return true;
+ }
+ if(act==='rf5Pick'){
+  const d=rf5DraftFor(),field=t.dataset.field,value=t.dataset.value;if(!d)return true;
+  if(field==='band'&&['nessuno','giallo','rosso','nero'].includes(value))d.band=value;
+  else if(field==='focus'&&['standard','tecnica','forza','controllo'].includes(value))d.focus=value;
+  else return true;
+  d.dirty=true;
+  const container=t.closest('.rf5-choice-row');
+  container?.querySelectorAll('.rf5-chip').forEach(b=>{const on=b.dataset.value===value;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
+  return true;
+ }
+ if(act==='rf5Save'||act==='rf5SaveStart'){await rf5SaveDraft(act==='rf5SaveStart');return true;}
+ if(act==='rf4OpenExercise'||act==='rf4ExerciseNext'||act==='rf4ExercisePrev'){rf5Draft=null;}
+ return rf5OldHandle(act,t);
+};
