@@ -1,0 +1,191 @@
+/* APPROVED VISUAL 2026 / Real Ritmo Fit web app */
+/* Color and spacing inspired by the approved 6-screen visual. Original workout data remains unchanged. */
+:root{--rf5-deep:#071322;--rf5-layer:#0c1d32;--rf5-panel:#12243d;--rf5-line:rgba(131,179,236,.16);--rf5-blue:#1684ff;--rf5-text:#f2f7ff;--rf5-muted:#9eb8d3}
+body[data-tab="allenamenti"] #view{--rf4-blue:#1684ff;--rf4-blue2:#4da5ff;background:transparent}
+body[data-tab="allenamenti"] .rf4-app{color:var(--rf5-text);width:100%;max-width:1040px}
+body[data-tab="allenamenti"] .rf4-screen-head h2{letter-spacing:-.04em}
+body[data-tab="allenamenti"] .rf4-section-heading h3{font-size:18px;letter-spacing:-.02em}
+.rf5-section-header{margin:15px 0 20px;text-align:center}
+.rf5-section-header h2{color:#f7fbff;font-size:clamp(23px,4vw,30px);margin:3px 0 4px;letter-spacing:-.035em}
+.rf5-section-header p{color:#9fb7d0;font-size:12px;margin:0}
+.rf5-resume{border:1px solid #459cfc6a}
+.rf5-week-card{margin-bottom:20px}
+.rf5-week-card .rf4-week-panel,.rf5-week-card .rf4-week-panel{box-shadow:0 18px 45px #0003;border-radius:19px;background:linear-gradient(155deg,#183251,#101e33)}
+.rf5-category-stack{display:flex;flex-direction:column;gap:11px}
+.rf5-activity-card{display:flex;align-items:center;gap:12px;min-height:112px;width:100%;padding:9px 14px 9px 9px;text-align:left;border:1px solid var(--rf5-line);border-radius:17px;background:linear-gradient(110deg,#1b2d47,#0f1d32);color:#f5f9ff;box-shadow:0 12px 28px #0002;overflow:hidden;transition:transform .16s,border-color .16s}
+.rf5-activity-card:hover{border-color:#489efa80;transform:translateY(-1px)}
+.rf5-activity-photo{position:relative;display:grid;place-items:center;flex:0 0 130px;height:96px;border-radius:12px;overflow:hidden;background:radial-gradient(circle at 45% 0%,#486c9f,#1a304b 58%,#102239)}
+.rf5-activity-photo:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,#0e1d2c0b,#0713225a)}
+.rf5-activity-photo img{z-index:1;position:relative;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 9px 12px #030a12a0)}
+.rf5-activity-card.coral .rf5-activity-photo{background:linear-gradient(120deg,#6d3f42,#1a2f4d)}
+.rf5-activity-card.purple .rf5-activity-photo{background:linear-gradient(120deg,#2e5a87,#18274c)}
+.rf5-activity-card.green .rf5-activity-photo{background:linear-gradient(120deg,#2d685b,#112a45)}
+.rf5-activity-badge{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;background:#2087f7;border-radius:12px;font-size:21px;box-shadow:0 5px 17px #0b346b55}
+.rf5-activity-card.coral .rf5-activity-badge{background:#db643e}
+.rf5-activity-card.purple .rf5-activity-badge{background:#6655d4}
+.rf5-activity-card.green .rf5-activity-badge{background:#1baa78}
+.rf5-activity-copy{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.rf5-activity-copy strong{font-size:16px;letter-spacing:-.015em;line-height:1.25;color:#fcfdff}
+.rf5-activity-copy small{font-size:11px;color:#bacce0;line-height:1.35}
+.rf5-activity-copy em{font-size:10px;color:#78b3fc;font-weight:700;font-style:normal}
+.rf5-activity-card .rf4-chevron{color:#adceee}
+.rf5-programs{padding-bottom:75px}
+.rf5-programs-banner{position:relative;display:flex;align-items:center;min-height:170px;border:1px solid #5a80b252;border-radius:19px;overflow:hidden;padding:20px;background:linear-gradient(110deg,#1c3455,#13253d);margin-bottom:13px}
+.rf5-programs-banner:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(9,22,38,.62),transparent 88%);pointer-events:none}
+.rf5-programs-banner>div{z-index:1;position:relative;width:68%}
+.rf5-programs-banner h2{font-size:clamp(22px,3vw,31px);line-height:1.2;color:#fff;margin:6px 0}
+.rf5-programs-banner p{font-size:12px;line-height:1.5;color:#c6d7ed;margin:0}
+.rf5-programs-banner>img{position:absolute;right:0;top:0;bottom:0;width:49%;height:100%;object-fit:contain;filter:drop-shadow(0 12px 20px #0006)}
+.rf5-program-list{display:grid;gap:10px}
+.rf5-program-row{display:flex;align-items:center;gap:12px;min-height:100px;width:100%;text-align:left;border:1px solid #739acc30;background:linear-gradient(100deg,#192b44,#111d31);border-radius:16px;padding:9px 14px 9px 9px;color:#f8fbff;box-shadow:0 10px 23px #0002}
+.rf5-program-image{display:grid;place-items:center;width:108px;height:82px;flex:0 0 108px;overflow:hidden;background:linear-gradient(125deg,#325579,#1a324f);border-radius:11px}
+.rf5-program-picture{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 9px #0006)}
+.rf5-program-row>span:nth-child(2){display:flex;flex-direction:column;gap:5px;min-width:0;flex:1}
+.rf5-program-row strong{font-size:15px;line-height:1.26;color:#f5faff}
+.rf5-program-row small{font-size:11px;color:#c0d2e4;line-height:1.35}
+.rf5-program-row em{font-style:normal;font-size:10px;color:#84b6ef;line-height:1.35}
+.rf5-program-row>b{font-size:23px;color:#a6c3df}
+.rf5-template{max-width:780px!important;padding-bottom:95px!important}
+.rf5-template-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 2px 17px}
+.rf5-template-header h2{font-size:clamp(22px,4vw,30px);line-height:1.14;color:#fff;letter-spacing:-.035em;margin:0 0 9px}
+.rf5-template-subline{font-size:11px;color:#a3bfdb;display:flex;flex-wrap:wrap;gap:7px}
+.rf5-template-subline span{color:#5298ef}
+.rf5-play{display:grid;place-items:center;flex:0 0 51px;width:51px;height:51px;border:0;border-radius:50%;background:#37c875;color:#fff;font-size:20px;box-shadow:0 8px 22px #26956666}
+.rf5-template-banner{display:flex;align-items:center;min-height:136px;border-radius:16px;padding:16px;background:linear-gradient(110deg,#203c5c,#10233c);position:relative;overflow:hidden;border:1px solid #608bb844}
+.rf5-template-banner:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0e223b9c,transparent 95%);pointer-events:none}
+.rf5-template-banner>div{z-index:1;position:relative;flex:1;max-width:65%}
+.rf5-template-banner p{margin:6px 0 0;font-size:12px;color:#d2e2f4;line-height:1.55}
+.rf5-template-banner-image{position:relative;z-index:1;width:37%;height:145px;object-fit:contain;filter:drop-shadow(0 9px 15px #071320aa)}
+.rf5-template-items{display:flex;flex-direction:column;gap:8px}
+.rf5-template-line{display:flex;align-items:center;gap:11px;min-height:83px;width:100%;border:1px solid #79a1cf2b;background:linear-gradient(100deg,#1a2b43,#112035);border-radius:13px;padding:9px;color:#f6fbff;text-align:left}
+.rf5-template-index{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border-radius:50%;font-size:11px;font-weight:850;background:#2585f6;color:#fff}
+.rf5-template-index.mint{background:#20aa73}.rf5-template-index.orange{background:#d67937}.rf5-template-index.purple{background:#7958dd}.rf5-template-index.yellow{background:#d7a038}.rf5-template-index.red{background:#c9525c}
+.rf5-template-thumb{display:grid;place-items:center;flex:0 0 68px;width:68px;height:64px;overflow:hidden;border-radius:10px;background:#203a59}
+.rf5-template-thumb-image{display:block;width:100%;height:100%;object-fit:contain}
+.rf5-template-copy{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+.rf5-template-copy strong{font-size:13px;line-height:1.3;color:#f4faff}
+.rf5-template-copy small{font-size:10px;color:#a6bfd5;line-height:1.4;overflow-wrap:anywhere}
+.rf5-template-sets{font-size:11px;color:#c9dafa;white-space:nowrap;flex:none}
+.rf5-arrow{font-size:20px;color:#94b4d8}
+.rf5-template-cta{position:sticky;bottom:88px;z-index:10;padding:10px;border:1px solid #437fcb44;border-radius:16px;background:#0c1c31ee;box-shadow:0 11px 36px #0008;backdrop-filter:blur(14px);margin-top:16px}
+.rf5-template-cta>.btn{display:block;width:100%;min-height:52px;border-radius:13px;font-weight:850;letter-spacing:.01em;background:linear-gradient(110deg,#2489ff,#1468ee)}
+.rf5-exercise{max-width:680px!important;padding-bottom:90px!important}
+.rf5-exercise-head{display:flex;flex-direction:column;gap:5px;margin:4px 0 14px}
+.rf5-exercise-head h2{font-size:clamp(23px,4vw,30px);letter-spacing:-.04em;line-height:1.17;color:#fff;margin:3px 0}
+.rf5-exercise-head p{font-size:12px;color:#aac5e1;margin:0}
+.rf5-tabs{margin:10px 0 14px}
+.rf5-tabs button.active{background:#268aff!important}
+.rf5-visual{display:grid;grid-template-columns:1.35fr .9fr;gap:10px;margin-bottom:12px}
+.rf5-visual>div{display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;position:relative;min-height:210px;background:radial-gradient(circle at 55% 20%,#355a7b,#172840 75%,#0f1d30);border:1px solid #89b4eb2a;border-radius:15px}
+.rf5-visual-frame{width:100%;height:225px;object-fit:contain;filter:drop-shadow(0 10px 19px #0007)}
+.rf5-visual-side .rf5-visual-frame{height:190px}
+.rf5-visual-label{position:absolute;bottom:0;left:0;right:0;padding:8px 10px;text-align:center;background:#071625ba;color:#bed5ea;font-size:10px;backdrop-filter:blur(4px)}
+.rf5-muscles{display:flex;align-items:center;gap:13px;border:1px solid #75a2cc33;border-radius:16px;background:linear-gradient(115deg,#192d47,#14243a);padding:12px;margin-bottom:13px}
+.rf5-muscle-figure{display:grid;place-items:center;flex:0 0 99px;width:99px;height:110px;border-radius:10px;background:#0c1d31;border:1px solid #ffffff10}
+.rf5-muscle-img{width:100%;height:100%;object-fit:contain}
+.rf5-muscles>div:nth-child(2){display:flex;flex-direction:column;gap:5px;min-width:0}
+.rf5-section-title{font-size:14px;line-height:1.3;color:#f1f8ff;font-weight:850}
+.rf5-muscles strong{font-size:12px;color:#daecff;line-height:1.35}
+.rf5-muscles small{font-size:10px;color:#a4bad4;line-height:1.4}
+.rf5-muscles .rf4-text-action{align-self:flex-start}
+.rf5-custom{padding:18px 16px;border-radius:17px;background:linear-gradient(165deg,#192b44,#101e32);border:1px solid #86a8d12c;box-shadow:0 12px 35px #0002}
+.rf5-custom>.rf5-section-title{margin-bottom:13px}
+.rf5-field-caption{font-size:11px;color:#c9daf0;font-weight:700;margin:14px 0 8px}
+.rf5-choice-row{display:flex;gap:8px;flex-wrap:wrap}
+.rf5-chip{display:flex;flex:1 1 70px;flex-direction:column;gap:3px;align-items:center;justify-content:center;min-height:46px;padding:8px 7px;border-radius:11px;border:1px solid #5f779544;background:#101f34;color:#cbdff6;cursor:pointer}
+.rf5-chip strong{font-size:11px;line-height:1.2;color:inherit}
+.rf5-chip small{font-size:9px;color:#93a8c1}
+.rf5-chip.active{background:linear-gradient(160deg,#167efd,#145bd2);border-color:#64b9ff;color:#fff;box-shadow:0 6px 15px #126bf344}
+.rf5-chip.active small{color:#def0ff}
+.rf5-step-list{margin:17px 0 10px;display:flex;flex-direction:column;gap:2px;border-top:1px solid #81a4d126}
+.rf5-step-row{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:57px;border-bottom:1px solid #81a4d123}
+.rf5-step-row>span{color:#dbe9fc;font-size:12px;font-weight:740}
+.rf5-step-controls{display:flex;align-items:center;gap:7px}
+.rf5-step-controls button{width:41px;height:39px;flex:none;border:1px solid #688db847;border-radius:10px;background:#223a56;color:#e6f5ff;font-size:20px;font-weight:730}
+.rf5-step-controls strong{display:grid;place-items:center;min-width:75px;padding:0 5px;font-size:16px;font-weight:900;font-variant-numeric:tabular-nums;color:#f9fcff;text-align:center}
+.rf5-save-buttons{display:flex;gap:10px;margin-top:17px}
+.rf5-save-buttons>.btn{flex:1;min-height:48px;line-height:1.25}
+.rf5-save-buttons>.btn-primary{background:linear-gradient(110deg,#2388ff,#1767eb);box-shadow:0 8px 21px #1c62da44}
+.rf5-fineprint{margin:11px 0 0;font-size:10px;color:#8faec9;line-height:1.6}
+.rf5-prev-next{display:flex;gap:10px;margin:16px 0}
+.rf5-prev-next>.btn{flex:1;min-height:43px}
+.rf5-info-block{background:#15253b;border:1px solid #709ac52b;border-radius:15px;padding:16px;margin:11px 0}
+.rf5-info-block h3{font-size:14px;color:#f4f9ff;margin:0 0 10px}
+.rf5-info-block p{font-size:12px;color:#bbcee2;line-height:1.68}
+.rf5-alternatives{display:flex;flex-wrap:wrap;gap:7px}
+.rf5-alternatives>span{display:inline-flex;border:1px solid #6891b84b;border-radius:10px;padding:8px;background:#233a55;color:#cfebff;font-size:10px}
+.rf5-next-series{max-width:740px;margin:15px auto;border:1px solid #6c9dca32;background:linear-gradient(130deg,#1a2b44,#101c30);border-radius:17px;padding:15px}
+.rf5-next-row{display:flex;align-items:center;gap:11px;margin-top:9px}
+.rf5-next-illustration{width:62px;height:60px;flex:0 0 62px;object-fit:contain;border-radius:11px;background:#203954}
+.rf5-next-row>div{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.rf5-next-row strong{font-size:13px;color:#f5faff}
+.rf5-next-row small{font-size:11px;color:#a4c2df}
+.rf5-next-row>button{border:1px solid #6e95ba3b;border-radius:9px;background:#223853;color:#fff;font-size:22px;width:38px;height:38px}
+.rf4-timer-page .pro-timer-card{padding:20px;border-radius:20px;background:linear-gradient(155deg,#142840,#0b1b2d)!important}
+.rf4-timer-page .pro-timer-ring{box-shadow:0 0 0 13px #143d6e18,0 17px 40px #0005}
+.rf4-timer-page .pro-timer-ring:before{filter:drop-shadow(0 7px 11px #147bf544)}
+.rf4-timer-page .pro-timer-presets button.active{background:#2189ff!important}
+.rf4-stats .rf4-stats-card,.rf4-stats .rf4-stat-grid>div{background:linear-gradient(155deg,#192d48,#0f2035);box-shadow:0 14px 30px #0002}
+.rf4-stats .rf4-period-tabs button.active{background:#2589ff}
+.rf5-home{width:100%;min-width:0}
+.rf5-home-hero{position:relative;overflow:hidden;min-height:240px;border-radius:21px;border:1px solid #608dc454;padding:22px;margin-bottom:20px;background:linear-gradient(110deg,#0a1e35ed,#0f2341bb),url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1300&q=75') center/cover,linear-gradient(130deg,#23466a,#0c213e);box-shadow:0 20px 50px #0003}
+.rf5-home-hero:after{content:"";position:absolute;right:-35px;top:-42px;width:210px;height:210px;border-radius:50%;border:1px solid #acd9ff16;box-shadow:0 0 0 45px #acd9ff0b,0 0 0 95px #acd9ff09;pointer-events:none}
+.rf5-home-hero>h2{color:#fff;font-size:clamp(24px,4vw,34px);margin:8px 0 3px;letter-spacing:-.035em}
+.rf5-home-hero>p{color:#c7dcec;font-size:12px;margin:0 0 17px}
+.rf5-home-week{position:relative;border-radius:13px;background:#06172885;backdrop-filter:blur(10px);border:1px solid #97c6ef20;padding:12px 13px;margin-bottom:12px;max-width:610px}
+.rf5-home-week>div:first-child{display:flex;justify-content:space-between;gap:10px;color:#fff;font-size:12px}
+.rf5-home-week>div:first-child span{color:#a8d1ff}
+.rf5-home-week .pro-week-strip{margin:10px 0 0;gap:7px}
+.rf5-home-week .pro-week-day{flex:1}
+.rf5-home-week .pro-week-day strong{background:#203c5c;border-color:#4c82b533;color:#e5f3ff}
+.rf5-home-week .pro-week-day.completed strong{background:#1b7f65;border-color:#39bb91}
+.rf5-home-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px;max-width:610px}
+.rf5-home-metrics>div{display:flex;flex-direction:column;gap:5px;border:1px solid #99bcdf21;background:#0a2136b8;border-radius:11px;padding:12px}
+.rf5-home-metrics small{font-size:10px;color:#acbfda}
+.rf5-home-metrics strong{color:#f6fbff;font-size:clamp(16px,2.5vw,23px)}
+.rf5-home-hero>.btn{position:relative;min-height:43px}
+body[data-tab="allenamenti"] .mobile-nav{background:linear-gradient(165deg,#132740,#071829)!important;border-color:#739aca21!important}
+body[data-tab="allenamenti"] .mobile-nav button.active{background:linear-gradient(155deg,#1c74df,#144a9b)!important;color:#fff!important}
+@media(min-width:920px){
+ .rf5-category-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .rf5-program-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .rf5-template-items{display:flex;flex-direction:column}
+}
+@media(max-width:740px){
+ .rf5-section-header{margin-top:9px}
+ .rf5-activity-card{padding:8px 10px 8px 8px;min-height:102px}
+ .rf5-activity-photo{flex-basis:96px;height:85px}
+ .rf5-activity-badge{width:36px;height:36px;flex-basis:36px;font-size:17px}
+ .rf5-activity-copy strong{font-size:14px}
+ .rf5-template-cta{bottom:87px}
+ .rf5-visual{grid-template-columns:1.2fr 1fr}
+ .rf5-visual>div{min-height:172px}
+ .rf5-visual-frame{height:192px}
+ .rf5-visual-side .rf5-visual-frame{height:182px}
+ .rf5-exercise{padding-bottom:125px!important}
+ .rf5-save-buttons{flex-direction:column}
+ .rf5-save-buttons>.btn{width:100%;min-height:48px}
+ .rf5-home-hero{padding:16px}
+ .rf5-home-week .pro-week-strip{gap:4px}
+}
+@media(max-width:430px){
+ .rf5-activity-photo{flex-basis:83px;height:81px}
+ .rf5-activity-badge{display:none}
+ .rf5-activity-copy{gap:4px}
+ .rf5-template-line{gap:7px;padding:7px;min-height:76px}
+ .rf5-template-index{width:24px;flex-basis:24px;height:24px;font-size:10px}
+ .rf5-template-thumb{width:52px;flex-basis:52px;height:56px}
+ .rf5-template-copy strong{font-size:11px}
+ .rf5-template-copy small{font-size:9px}
+ .rf5-template-sets{font-size:10px}
+ .rf5-visual>div{min-height:142px}
+ .rf5-visual-frame,.rf5-visual-side .rf5-visual-frame{height:161px}
+ .rf5-visual-label{font-size:9px}
+ .rf5-muscle-figure{flex-basis:78px;width:78px;height:91px}
+ .rf5-muscles{gap:9px;padding:9px}
+ .rf5-step-controls strong{min-width:58px;font-size:14px}
+ .rf5-step-controls button{width:35px;height:37px}
+ .rf5-home-metrics>div{padding:9px}
+ .rf5-home-metrics strong{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){.rf5-activity-card{transition:none}}
