@@ -2,9 +2,9 @@ function renderShifts(){
  const [year,month]=state.month.split('-').map(Number);
  const cal=getMonthDays(year,month);
  const cells=[...Array(cal.blank).fill(null),...Array.from({length:cal.days},(_,i)=>`${year}-${String(month).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`)];
- const s=shiftFor(state.date),count=state.shifts.length;
- const short={Mattina:'M',Pomeriggio:'P',Notte:'N',Smonto:'SM',Riposo:'R',Ferie:'F',Altro:'•'};
- const shiftClass=x=>['Mattina','Pomeriggio','Notte','Smonto','Riposo','Ferie'].includes(x)?x:'Altro';
+ const s=shiftFor(state.date),count=state.shifts.filter(e=>e.source==='ics').length,manualCount=state.shifts.filter(e=>e.source==='manual').length;
+ const short={Mattina:'M',Pomeriggio:'P',Notte:'N',Smonto:'SM',Riposo:'R',MP:'MP',Ferie:'F',Altro:'•'};
+ const shiftClass=x=>['Mattina','Pomeriggio','Notte','Smonto','Riposo','MP','Ferie'].includes(x)?x:'Altro';
  const dayCells=cells.map(d=>{
   if(!d)return '<div class="calendar-day empty-day" aria-hidden="true"></div>';
   const sh=shiftFor(d),type=sh?.type||'';
@@ -12,12 +12,12 @@ function renderShifts(){
   const selected=d===state.date;
   return `<button type="button" class="calendar-day ${selected?'selected':''} ${d===inputDate()?'today':''}" data-act="selectDay" data-date="${d}" aria-label="${safe(dateFmt(d))}: ${safe(type||'nessun turno')}" aria-pressed="${selected}"><span class="calendar-date">${Number(d.slice(8))}</span>${tag}</button>`;
  }).join('');
- const info=s?.source==='ics'?'Evento importato dal file .ics. Per aggiornare eventuali variazioni, importa nuovamente il calendario.':s?.source==='pattern'?'Turno stimato dalla rotazione. Controlla scambi e ferie sul calendario originale.':'Importa il calendario di Supershift oppure attiva la rotazione di riferimento.';
+ const info=s?.source==='manual'?'Modifica inserita manualmente: prevale sul calendario importato e sulla rotazione. Puoi rimuoverla e tornare al dato originale.':s?.source==='ics'?'Evento importato dal file .ics. Per aggiornare eventuali variazioni, importa nuovamente il calendario.':s?.source==='pattern'?'Turno stimato dalla rotazione. Controlla scambi e ferie sul calendario originale.':'Importa Supershift, inserisci un singolo turno oppure attiva la rotazione di riferimento.';
  const weekdays=['Lun','Mar','Mer','Gio','Ven','Sab','Dom'];
  return `<div class="shifts-page">
  ${head('CALENDARIO','La tua turnistica','Consulta i turni e organizza gli allenamenti in base ai giorni di servizio.')}
  <div class="shift-toolbar">
-  <div class="inline-actions"><span class="pill ${count?'green':'orange'}">${count?`${count} eventi importati`:'Calendario da importare'}</span>${state.settings.patternEnabled?'<span class="pill blue">Rotazione attiva</span>':''}</div>
+  <div class="inline-actions"><span class="pill ${count?'green':'orange'}">${count?`${count} eventi importati`:'Calendario da importare'}</span>${manualCount?`<span class="pill blue">${manualCount} correzioni manuali</span>`:''}${state.settings.patternEnabled?'<span class="pill blue">Rotazione attiva</span>':''}</div>
   <button class="btn btn-primary shift-import" data-act="icsImport">⇪ Importa calendario .ics</button>
  </div>
  <div class="shift-grid">
@@ -29,7 +29,7 @@ function renderShifts(){
    </div>
    <div class="calendar-week">${weekdays.map(d=>`<span>${d}</span>`).join('')}</div>
    <div class="calendar-days">${dayCells}</div>
-   <div class="shift-legend" aria-label="Legenda turni">${['Mattina','Pomeriggio','Notte','Smonto','Riposo'].map(x=>`<span class="shift-legend-item"><span class="calendar-tag ${x}">${short[x]}</span>${x}</span>`).join('')}</div>
+   <div class="shift-legend" aria-label="Legenda turni">${['Mattina','Pomeriggio','Notte','Smonto','Riposo','MP','Ferie'].map(x=>`<span class="shift-legend-item"><span class="calendar-tag ${x}">${short[x]}</span>${x==='MP'?'MP · 06:50–21:22':x==='Ferie'?'F · Ferie':x}</span>`).join('')}</div>
   </section>
   <section class="card shift-detail" aria-label="Dettaglio giorno selezionato">
    <div class="eyebrow">GIORNO SELEZIONATO</div>
@@ -37,7 +37,15 @@ function renderShifts(){
    <span class="pill ${s?.source==='ics'?'green':'blue'} shift-current-status">${safe(s?.type||'Turno non impostato')}</span>
    <p class="shift-time">${s?safe(s.label||s.type)+' '+safe(shiftTime(s)):'Nessun turno per questo giorno.'}</p>
    <div class="hint shift-info">${info}</div>
-   <div class="shift-suggestion"><strong>Allenamento suggerito</strong><span class="pill">${safe(recommended(state.date).name)}</span></div>
+   <div class="shift-suggestion"><strong>Allenamento suggerito</strong><span class="pill">${safe(recommended(state.date).name)}</span><p class="shift-training-note">${safe(recommended(state.date).why)}</p></div>
+   <div class="shift-manual-editor"><h4>Assegna o correggi questo giorno</h4>
+    <label class="field"><span>Tipo di turno</span><select id="manualShiftType" aria-label="Turno per il giorno selezionato">
+     <option value="" disabled ${s?'':'selected'}>Seleziona un turno…</option>
+     ${[['Mattina','M · Mattina'],['Pomeriggio','P · Pomeriggio'],['Notte','N · Notte'],['Smonto','SM · Smonto'],['Riposo','R · Riposo'],['MP','MP · 06:50–21:22'],['Ferie','F · Ferie / libero']].map(([v,l])=>'<option value="'+v+'" '+(s?.type===v?'selected':'')+'>'+l+'</option>').join('')}
+    </select></label>
+    <div class="shift-manual-actions"><button class="btn btn-primary" data-act="saveManualShift">Salva giorno</button>${state.shifts.some(e=>e.date===state.date&&e.source==='manual')?'<button class="btn btn-outline" data-act="removeManualShift">Rimuovi modifica</button>':''}</div>
+    <p class="caption">MP: riposo dagli allenamenti. F: ferie, allenamento facoltativo. Le modifiche manuali prevalgono, senza eliminare gli eventi importati.</p>
+   </div>
   </section>
  </div>
  ${section('Integrazione con Supershift Pro')}
