@@ -3,8 +3,8 @@ function renderShifts(){
  const cal=getMonthDays(year,month);
  const cells=[...Array(cal.blank).fill(null),...Array.from({length:cal.days},(_,i)=>`${year}-${String(month).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`)];
  const s=shiftFor(state.date),count=state.shifts.filter(e=>e.source==='ics').length,manualCount=state.shifts.filter(e=>e.source==='manual').length;
- const short={Mattina:'M',Pomeriggio:'P',Notte:'N',Smonto:'SM',Riposo:'R',MP:'MP',Ferie:'F',Altro:'•'};
- const shiftClass=x=>['Mattina','Pomeriggio','Notte','Smonto','Riposo','MP','Ferie'].includes(x)?x:'Altro';
+ const short={Mattina:'M',Pomeriggio:'P',Notte:'N',Smonto:'SM',Riposo:'R',MP:'MP',Ferie:'F',RPre:'RP',Congedo:'CO',Formazione:'FO',Malattia:'MA',Altro:'•'};
+ const shiftClass=x=>['Mattina','Pomeriggio','Notte','Smonto','Riposo','MP','Ferie','RPre','Congedo','Formazione','Malattia'].includes(x)?x:'Altro';
  const dayCells=cells.map(d=>{
   if(!d)return '<div class="calendar-day empty-day" aria-hidden="true"></div>';
   const sh=shiftFor(d),type=sh?.type||'';
@@ -18,8 +18,9 @@ function renderShifts(){
  ${head('CALENDARIO','La tua turnistica','Consulta i turni e organizza gli allenamenti in base ai giorni di servizio.')}
  <div class="shift-toolbar">
   <div class="inline-actions"><span class="pill ${count?'green':'orange'}">${count?`${count} eventi importati`:'Calendario da importare'}</span>${manualCount?`<span class="pill blue">${manualCount} correzioni manuali</span>`:''}${state.settings.patternEnabled?'<span class="pill blue">Rotazione attiva</span>':''}</div>
-  <button class="btn btn-primary shift-import" data-act="icsImport">⇪ Importa calendario .ics</button>
+  <div class="shift-import-options"><button class="btn btn-primary shift-import" data-act="secure2026Import">🔒 Carica turni 2026</button><button class="btn btn-outline shift-import" data-act="icsImport">⇪ Importa .ics</button></div>
  </div>
+ <p class="shift-secure-info">Il tuo calendario 2026 è disponibile in formato protetto: premi “Carica turni 2026” e incolla la chiave privata. I turni si salvano sul tuo dispositivo.</p>
  <div class="shift-grid">
   <section class="card shift-calendar-panel" aria-label="Calendario dei turni">
    <div class="calendar-header">
@@ -29,7 +30,7 @@ function renderShifts(){
    </div>
    <div class="calendar-week">${weekdays.map(d=>`<span>${d}</span>`).join('')}</div>
    <div class="calendar-days">${dayCells}</div>
-   <div class="shift-legend" aria-label="Legenda turni">${['Mattina','Pomeriggio','Notte','Smonto','Riposo','MP','Ferie'].map(x=>`<span class="shift-legend-item"><span class="calendar-tag ${x}">${short[x]}</span>${x==='MP'?'MP · 06:50–21:22':x==='Ferie'?'F · Ferie':x}</span>`).join('')}</div>
+   <div class="shift-legend" aria-label="Legenda turni">${['Mattina','Pomeriggio','Notte','Smonto','Riposo','MP','Ferie','RPre','Congedo','Formazione','Malattia'].map(x=>`<span class="shift-legend-item"><span class="calendar-tag ${x}">${short[x]}</span>${x==='MP'?'MP · 06:50–21:22':x==='Ferie'?'F · Ferie':x}</span>`).join('')}</div>
   </section>
   <section class="card shift-detail" aria-label="Dettaglio giorno selezionato">
    <div class="eyebrow">GIORNO SELEZIONATO</div>
