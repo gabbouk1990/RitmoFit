@@ -147,7 +147,7 @@ jobs:
           assert ".rf4-template-row" in css
           assert ".rf4-exercise-hero-art" in css
           assert ".rf4-period-tabs" in css
-          assert "ritmo-fit-static-v15" in Path('_site/sw.js').read_text()
+          assert "ritmo-fit-static-v16" in Path('_site/sw.js').read_text()
           print("Quarta passata mobile dark: UI, viste e timer verificati")
           assert 'const RF_FOOD_LATEST_IDS=' in s
           assert "'tonno-affumicato-bernardini'" in s
