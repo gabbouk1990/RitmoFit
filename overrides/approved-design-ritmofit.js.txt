@@ -28,7 +28,7 @@ function rf5DraftFor(){
  const {t,i,ex}=rf5Current();
  if(!t||!ex)return null;
  const key=t.id+'::'+i;
- if(!rf5Draft||rf5Draft.key!==key)rf5Draft={key,...rf5Model(ex),dirty:false};
+ if(!rf5Draft||rf5Draft.key!==key)rf5Draft={key,...rf5Model(ex),dirty:false,changed:new Set()};
  return rf5Draft;
 }
 function rf5Options(ex,field,values){
@@ -166,7 +166,7 @@ renderToday=function(){
  '<div class="rf5-home-metrics"><div><small>Tempo</small><strong>'+Math.round(minutes/60*10)/10+' h</strong></div>'+
  '<div><small>Volume</small><strong>'+Math.round(volume).toLocaleString('it-IT')+' kg</strong></div>'+
  '<div><small>Allenamenti</small><strong>'+progress.count+'</strong></div></div>'+
- '<button class="btn btn-primary" data-act="nav" data-tab="allenamenti">▶ Vai agli allenamenti</button></div>';
+ '<button class="btn btn-primary" data-act="rf5GoWorkouts">▶ Vai agli allenamenti</button></div>';
  return '<div class="rf5-home">'+hero+base+'</div>';
 };
 async function rf5SaveDraft(start=false){
@@ -174,24 +174,29 @@ async function rf5SaveDraft(start=false){
  if(!t||!ex||!draft)return;
  const original=structuredClone(ex);
  const newReps=proIsDistance(ex)?draft.reps+' m':String(draft.reps);
- const next={...ex,sets:draft.sets,reps:newReps,rest:draft.rest+' s',focus:draft.focus};
- if(rf5Band(ex)){
+ const next={...ex};
+ if(draft.changed.has('sets'))next.sets=draft.sets;
+ if(draft.changed.has('reps'))next.reps=newReps;
+ if(draft.changed.has('rest'))next.rest=draft.rest+' s';
+ if(draft.changed.has('focus'))next.focus=draft.focus;
+ if(rf5Band(ex)&&draft.changed.has('band')){
   next.bandColor=draft.band;
   next.load=draft.band==='nessuno'?'Corpo libero':'Elastico '+{giallo:'giallo leggero',rosso:'rosso medio',nero:'nero forte'}[draft.band];
- }else if(Number.isFinite(draft.load)){
+ }else if(draft.changed.has('load')&&Number.isFinite(draft.load)){
   // Retain descriptive non-weight loads (e.g. bodyweight, technique, elastic).
   if(/kg|\d/.test(draft.originalLoad)||draft.load>0)next.load=draft.load>0?draft.load+' kg':'Corpo libero';
  }
  t.exercises[i]=next;
  try{await persist('templates');}
  catch(e){t.exercises[i]=original;toast('Impossibile salvare la scheda: '+e.message);return;}
- draft.dirty=false;
+ draft.dirty=false;draft.changed.clear();
  if(start){await startWorkout(t.id);}
  else{toast('Esercizio aggiornato nella scheda.');render();}
 }
 // Extend existing delegated dispatch without replacing old timer, diary or shifts handlers.
 const rf5OldHandle=handleWorkoutProAction;
 handleWorkoutProAction=async function(act,t){
+ if(act==='rf5GoWorkouts'){state.tab='allenamenti';state.workoutPane='schede';rf4Stage='activities';render();return true;}
  if(act==='rf5Step'){
   const d=rf5DraftFor();if(!d)return true;
   const field=t.dataset.field,dir=Number(t.dataset.delta);
@@ -199,7 +204,7 @@ handleWorkoutProAction=async function(act,t){
   if(!Object.hasOwn(steps,field)||![1,-1].includes(dir))return true;
   const low=field==='sets'||field==='reps'?1:0,max={sets:12,reps:proIsDistance(rf5Current().ex)?5000:200,rest:600,load:1000}[field];
   d[field]=Math.max(low,Math.min(max,Math.round((d[field]+steps[field]*dir)*10)/10));
-  d.dirty=true;
+  d.dirty=true;d.changed.add(field);
   const box=document.querySelector('[data-rf5-value="'+field+'"]');
   if(box)box.textContent=d[field]+(field==='rest'?' s':field==='load'?' kg':field==='reps'&&proIsDistance(rf5Current().ex)?' m':'');
   return true;
@@ -209,7 +214,7 @@ handleWorkoutProAction=async function(act,t){
   if(field==='band'&&['nessuno','giallo','rosso','nero'].includes(value))d.band=value;
   else if(field==='focus'&&['standard','tecnica','forza','controllo'].includes(value))d.focus=value;
   else return true;
-  d.dirty=true;
+  d.dirty=true;d.changed.add(field);
   const container=t.closest('.rf5-choice-row');
   container?.querySelectorAll('.rf5-chip').forEach(b=>{const on=b.dataset.value===value;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on));});
   return true;
