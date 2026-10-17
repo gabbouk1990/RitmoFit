@@ -1,0 +1,119 @@
+/* Calendario Supershift 2026: unica fonte del dato lavorativo.
+   Nessuna interpolazione, rotazione o correzione manuale applicata alla UI.
+   Il PDF originale è già stato verificato giorno per giorno (365/365).
+*/
+const SUP2026_LABELS={
+ Mattina:{code:'M',label:'Mattina',time:'06:50–14:22',tone:'morning',group:'service'},
+ Pomeriggio:{code:'P',label:'Pomeriggio',time:'13:50–21:22',tone:'afternoon',group:'service'},
+ Notte:{code:'N',label:'Notte',time:'20:50–07:22',tone:'night',group:'service'},
+ Smonto:{code:'SM',label:'Smonto',time:'Dopo il turno di notte',tone:'smonto',group:'free'},
+ Riposo:{code:'R',label:'Riposo',time:'Giornata di riposo',tone:'rest',group:'free'},
+ MP:{code:'MP',label:'Lunga (MP)',time:'06:50–21:22',tone:'long',group:'service'},
+ Ferie:{code:'F',label:'Ferie',time:'Giornata libera',tone:'holiday',group:'free'},
+ RPre:{code:'RP',label:'RPre',time:'Come riportato da Supershift',tone:'special',group:'special'},
+ Congedo:{code:'CO',label:'Congedo',time:'Come riportato da Supershift',tone:'special',group:'special'},
+ Formazione:{code:'FO',label:'Formazione',time:'Come riportato da Supershift',tone:'formation',group:'special'},
+ Malattia:{code:'MA',label:'Malattia',time:'Come riportato da Supershift',tone:'illness',group:'special'}
+};
+function sup2026Source(d){
+ if(typeof d!=='string'||!/^2026-\d{2}-\d{2}$/.test(d))return null;
+ return (state.shifts||[]).find(x=>x.date===d&&x.id==='secure-supershift-2026-'+d&&x.source==='ics')||null;
+}
+// Unica sorgente condivisa anche da Home, prossimi turni e allenamento suggerito.
+shiftFor=function(d){return sup2026Source(d);};
+const sup2026OriginalRecommended=recommended;
+recommended=function(d){
+ if(!sup2026Source(d))return {name:'Nessuna sessione proposta',why:'Giorno senza turno verificato nel calendario Supershift. Non viene applicata alcuna rotazione automatica.',key:null,icon:'📅'};
+ return sup2026OriginalRecommended(d);
+};
+function sup2026MonthInfo(year,month){
+ const max=new Date(year,month,0).getDate(),days=[];
+ for(let i=1;i<=max;i++){const date=year+'-'+String(month).padStart(2,'0')+'-'+String(i).padStart(2,'0');const sh=sup2026Source(date);days.push({date,sh,info:SUP2026_LABELS[sh?.type]||null});}
+ return days;
+}
+function sup2026Stat(label,value,description,icon){
+ return '<div class="sup-kpi-card"><span class="sup-kpi-icon" aria-hidden="true">'+icon+'</span><div><small>'+label+'</small><strong>'+value+'</strong><em>'+description+'</em></div></div>';
+}
+function sup2026Legend(){
+ return '<div class="sup-shift-legend">'+Object.values(SUP2026_LABELS).map(item=>
+  '<div class="sup-legend-item"><span class="sup-tag '+item.tone+'">'+item.code+'</span><span>'+item.label+'</span></div>').join('')+'</div>';
+}
+function renderSupershift2026(){
+ const isoMonth=(String(state.month||'').startsWith('2026-')&&Number(state.month.slice(5))>=1&&Number(state.month.slice(5))<=12)?state.month:'2026-10';
+ const month=Number(isoMonth.slice(5)),year=2026,cal=getMonthDays(year,month);
+ const monthDays=sup2026MonthInfo(year,month);
+ const chosen=String(state.date||'').startsWith(isoMonth)?state.date:isoMonth+'-01';
+ const event=sup2026Source(chosen),info=event?SUP2026_LABELS[event.type]:null;
+ const total=new Set((state.shifts||[]).filter(s=>s.source==='ics'&&s.id==='secure-supershift-2026-'+s.date&&String(s.date).startsWith('2026-')).map(s=>s.date)).size;
+ const service=monthDays.filter(s=>s.info?.group==='service').length;
+ const free=monthDays.filter(s=>s.info?.group==='free').length;
+ const other=monthDays.filter(s=>s.info?.group==='special').length;
+ const importedMonth=monthDays.filter(x=>x.sh).length;
+ const days=[...Array(cal.blank).fill(null),...monthDays].map(row=>{
+  if(!row)return '<div class="sup-calendar-spacer" aria-hidden="true"></div>';
+  const label=row.info,selected=row.date===chosen,today=row.date===inputDate();
+  return '<button type="button" class="sup-calendar-day '+(selected?'selected ':'')+(today?'today ':'')+(label?label.tone:'no-data')+'" data-act="supDay" data-date="'+row.date+'" aria-label="'+safe(dateFmt(row.date))+': '+safe(label?.label||'non presente')+'" aria-pressed="'+selected+'">'+
+   '<span class="sup-calendar-number">'+Number(row.date.slice(8))+'</span>'+(label?'<span class="sup-tag '+label.tone+'">'+label.code+'</span>':'<span class="sup-empty-dot">·</span>')+'</button>';
+ }).join('');
+ const rec=recommended(chosen);
+ const monthName=new Date(year,month-1,1).toLocaleDateString('it-IT',{month:'long',year:'numeric'});
+ const dayWeek=new Date(chosen+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long'});
+ const yearComplete=total===365;
+ const banner=!yearComplete?'<div class="sup-import-alert"><div class="sup-import-alert-icon">🔐</div><div><strong>Per visualizzare i turni, attiva il calendario privato 2026.</strong><p>Il PDF Supershift è già stato verificato (365/365). Non mostro date ricostruite o la rotazione teorica: usa il pulsante di sblocco.</p></div><button type="button" class="btn btn-primary" data-act="secure2026Import">Carica turni 2026</button></div>':'';
+ const displayTime=info?.time||'Il calendario Supershift non contiene un turno per questa data.';
+ return '<div class="sup-shifts-page">'+
+ '<header class="sup-hero"><div class="sup-hero-body"><div class="sup-eyebrow">RITMO FIT <span>•</span> TURNISTICA</div><h2>La tua turnistica</h2><p>Solo turni del calendario originale Supershift 2026, senza rotazione stimata.</p><div class="sup-source-pill"><span class="sup-source-dot"></span> Supershift 2026 · '+total+'/365 giorni caricati</div></div><div class="sup-hero-symbol" aria-hidden="true">▦</div></header>'+
+ banner+
+ '<div class="sup-kpi-grid">'+
+ sup2026Stat('Servizio',service,'turni nel mese','🩺')+
+ sup2026Stat('Smonto / riposo / ferie',free,'giorni nel mese','☀️')+
+ sup2026Stat('Altre causali',other,'CO, RP, formazione, malattia','◈')+
+ sup2026Stat('Dati verificati',importedMonth+'/'+cal.days,'giorni presenti nel mese','✓')+
+ '</div>'+
+ '<div class="sup-main-grid">'+
+ '<section class="sup-main-card sup-calendar-card" aria-label="Calendario mensile Supershift">'+
+ '<div class="sup-card-top"><div><span class="sup-eyebrow">CALENDARIO ORIGINALE</span><h3>'+safe(monthName)+'</h3></div><div class="sup-month-nav"><button type="button" data-act="supMonth" data-n="-1" aria-label="Mese precedente" '+(month===1?'disabled':'')+'>←</button><button type="button" data-act="supToday" aria-label="Vai a oggi">Oggi</button><button type="button" data-act="supMonth" data-n="1" aria-label="Mese successivo" '+(month===12?'disabled':'')+'>→</button></div></div>'+
+ '<div class="sup-calendar-week">'+['L','M','M','G','V','S','D'].map(x=>'<span>'+x+'</span>').join('')+'</div>'+
+ '<div class="sup-calendar-grid">'+days+'</div>'+
+ '<div class="sup-calendar-foot"><span class="sup-foot-square"></span> Seleziona un giorno per vedere turno e orari</div>'+
+ '</section>'+
+ '<div class="sup-right-stack">'+
+ '<section class="sup-main-card sup-day-card" aria-label="Turno del giorno selezionato">'+
+ '<div class="sup-eyebrow">GIORNO SELEZIONATO</div><h3>'+safe(dateFmt(chosen))+'</h3><p class="sup-day-weekday">'+safe(dayWeek)+'</p>'+
+ '<div class="sup-day-feature '+(info?.tone||'no-data')+'"><span class="sup-day-symbol">'+(info?.code||'—')+'</span><div><strong>'+safe(info?.label||'Turno non disponibile')+'</strong><small>'+safe(displayTime)+'</small></div></div>'+
+ '<div class="sup-origin-line"><span class="sup-source-dot"></span>'+(event?'Confermato da Supershift 2026':'Dato non disponibile dal calendario caricato')+'</div>'+
+ '</section>'+
+ '<section class="sup-main-card sup-training-card" aria-label="Indicazioni allenamento"><div class="sup-card-top"><div><span class="sup-eyebrow">ALLENAMENTO</span><h3>Come organizzarti</h3></div><span class="sup-training-icon">'+safe(rec.icon||'🏋️')+'</span></div>'+
+ '<strong>'+safe(rec.name)+'</strong><p>'+safe(rec.why)+'</p>'+
+ '<small>Il consiglio non modifica i turni e non registra allenamenti automaticamente.</small></section>'+
+ '<section class="sup-main-card sup-source-card"><div class="sup-card-top"><div><span class="sup-eyebrow">SORGENTE UNICA</span><h3>Supershift 2026</h3></div><span>🔐</span></div>'+
+ '<p>Calendario estratto dal tuo PDF. Gli eventi restano salvati solo sul dispositivo; altre importazioni e correzioni manuali non cambiano questi turni.</p>'+
+ '<button class="btn btn-outline" data-act="secure2026Import">↻ '+(yearComplete?'Ricarica i turni':'Attiva il calendario')+'</button></section>'+
+ '</div></div>'+
+ '<section class="sup-main-card sup-legend-card"><div class="sup-card-top"><div><span class="sup-eyebrow">CODICI SUPERSHIFT</span><h3>Legenda completa</h3></div><span class="sup-legend-count">11 tipologie</span></div>'+sup2026Legend()+'</section>'+
+ '</div>';
+}
+// Navigation kept in existing delegated click handler (no new global listener).
+const supPreviousWorkoutAction=handleWorkoutProAction;
+handleWorkoutProAction=async function(act,t){
+ if(act==='supDay'){
+  if(!/^2026-\d{2}-\d{2}$/.test(t.dataset.date||''))return true;
+  state.date=t.dataset.date;state.month=state.date.slice(0,7);render();return true;
+ }
+ if(act==='supMonth'){
+  const n=Number(t.dataset.n)||0;
+  const current=String(state.month||'2026-10').startsWith('2026-')?Number(state.month.slice(5)):10;
+  const next=Math.max(1,Math.min(12,current+n));
+  state.month='2026-'+String(next).padStart(2,'0');
+  state.date=state.month+'-'+String(Math.min(Number(String(state.date||'').slice(8))||1,new Date(2026,next,0).getDate())).padStart(2,'0');
+  render();return true;
+ }
+ if(act==='supToday'){
+  const today=inputDate();
+  state.date=today.startsWith('2026-')?today:'2026-10-17';
+  state.month=state.date.slice(0,7);
+  render();return true;
+ }
+ return supPreviousWorkoutAction(act,t);
+};
+renderShifts=renderSupershift2026;
