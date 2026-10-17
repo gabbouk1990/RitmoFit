@@ -43,7 +43,6 @@ jobs:
           python3 overrides/patch_workouts.py
           python3 overrides/patch_food.py
           python3 overrides/patch_interactive.py
-          python3 overrides/patch_food_latest.py
           python3 overrides/patch_session_delete.py
           python3 overrides/patch_theme.py
           python3 overrides/patch_history_mobile.py
@@ -52,6 +51,7 @@ jobs:
           python3 overrides/patch_muscle_visuals.py
           python3 overrides/patch_third_pass.py
           python3 overrides/patch_fourth_pass.py
+          python3 overrides/patch_food_latest.py
           node --check _site/app.js
           python3 - <<'PY'
           from pathlib import Path
@@ -144,7 +144,7 @@ jobs:
           assert ".rf4-template-row" in css
           assert ".rf4-exercise-hero-art" in css
           assert ".rf4-period-tabs" in css
-          assert "ritmo-fit-static-v13" in Path('_site/sw.js').read_text()
+          assert "ritmo-fit-static-v14" in Path('_site/sw.js').read_text()
           print("Quarta passata mobile dark: UI, viste e timer verificati")
           assert 'const RF_FOOD_LATEST_IDS=' in s
           assert "'tonno-affumicato-bernardini'" in s
