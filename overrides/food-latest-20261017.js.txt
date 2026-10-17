@@ -1,0 +1,25 @@
+/* Alimentazione – aggiornamento 17/10/2026.
+   Le porzioni sono esempi modificabili. Nutrienti riferiti a 100 g.
+   I prodotti senza etichetta verificata sono STIME, non valori certificati.
+   Mantieni gli ID precedenti, per non alterare i pasti già salvati. */
+const RF_FOOD_LATEST_IDS=[
+ 'tonno-affumicato-bernardini','salmone-aff-in','pane-segale-in',
+ 'cavolo-cappuccio','patate-precotte-tesori','macinato-val-tenera',
+ 'pane-multicereali-in','pomodorini-pachino','rucola',
+ 'salsa-yogurt','wasa-sesamo','burger-vegetale-no-soia'
+];
+FOOD_CATALOG_ROWS.push(
+ ['tonno-affumicato-bernardini','proteine','Tonno affumicato a fette (tipo Bernardini)','Porzione 100 g · 151 kcal, P 29 g, G 3,9 g e sale circa 3,1 g/100 g. Valori indicativi: conferma etichetta specifica.',100,151,29,0,3.9],
+ ['salmone-aff-in','proteine','Salmone affumicato scozzese IN’s','Confezione 100 g · riferimenti discussi: 148 kcal, P 20 g, G 7,6 g, sale circa 3 g/100 g. Verifica la confezione.',100,148,20,0,7.6],
+ ['pane-segale-in','carboidrati','Pane di segale IN’s (stima)','Porzione tipica 120 g · peso del pane pronto. Valori provvisori, NON verificati sulla confezione.',120,260,8,49,3],
+ ['cavolo-cappuccio','verdure','Cavolo cappuccio crudo','Contorno 200 g · peso edibile, senza condimenti. Valori medi indicativi.',200,25,1.3,5.8,0.1],
+ ['patate-precotte-tesori','carboidrati','Patate precotte I Tesori del Campo (stima)','Porzione discussa 300 g · ipotesi SENZA olio aggiunto; se precondite cambiano molto i valori. Controlla etichetta.',300,86,2,20,0.1],
+ ['macinato-val-tenera','proteine','Macinato bovino Val Tenera (stima)','Hamburger casalingo 180–200 g · peso a crudo; grassi ed energia dipendono dal taglio. Verifica confezione.',190,180,20,0,11],
+ ['pane-multicereali-in','carboidrati','Pane multicereali IN’s (stima)','Porzione discussa 110–120 g. Prodotto preciso non confermato; utilizza valori etichetta.',115,260,9,48,4],
+ ['pomodorini-pachino','verdure','Pomodorini Pachino','Porzione 150–200 g · peso crudo, senza olio. Valori medi.',180,20,1,4,0.2],
+ ['rucola','verdure','Rucola fresca','Peso edibile · valori medi senza condimento.',50,25,2.6,3.7,0.7],
+ ['salsa-yogurt','latticini','Salsa yogurt leggera (stima)','Porzione circa 20 g · ricetta variabile; verifica yogurt, olio e altri ingredienti.',20,65,5,5,2],
+ ['wasa-sesamo','carboidrati','Cracker tipo Wasa al sesamo (stima)','Porzione 2–4 fette; pesa il totale e controlla l’etichetta specifica.',35,370,11,65,6],
+ ['burger-vegetale-no-soia','legumi','Burger vegetale senza soia né seitan (stima)','Solo se effettivamente privo di soia e seitan. Ingredienti/valori molto variabili secondo la marca.',100,180,10,22,6]
+);
+// Nuovi prodotti non devono mai cambiare retroattivamente le ricette o il diario.
