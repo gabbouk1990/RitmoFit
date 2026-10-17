@@ -1,0 +1,70 @@
+/* Ritmo Fit: production-safe mobile look matching approved design.
+ * Uses the live IndexedDB-backed data. Never reconstructs food/shifts/sessions.
+ */
+function rf6DisplayDuration(mins){
+ const m=Math.max(0,Math.round(Number(mins)||0));
+ return m>=60?Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m':m+' min';
+}
+function rf6SessionPicture(session){
+ const name=String(session?.type||session?.name||'');
+ const t=(state.templates||[]).find(t=>String(t.name).toLowerCase()===name.toLowerCase()||String(t.kind).toLowerCase()===name.toLowerCase());
+ const x=t?.exercises?.[0];
+ return x?proExerciseIllustration(x,1,'rf6-recent-pose'):'<span class="rf6-recent-generic">✓</span>';
+}
+function rf6TodayShift(){
+ const d=inputDate(),s=shiftFor(d),rec=recommended(d);
+ const source=s?'Supershift':'Turno non disponibile';
+ return '<div class="rf6-today-shift"><span class="rf6-activity-icon">▦</span><div><strong>'+(s?proEsc(s.label||s.type):'Oggi')+'</strong><small>'+(s?proEsc(shiftTime(s)):'Consulta la turnistica')+'</small></div><span class="rf6-shift-source">'+source+'</span></div>'+
+ '<div class="rf6-suggestion"><strong>'+proEsc(rec.name)+'</strong><p>'+proEsc(rec.why)+'</p></div>'+
+ '<button class="rf6-text-link" type="button" data-act="nav" data-to="turni">Vai alla turnistica →</button>';
+}
+renderToday=function(){
+ const progress=proWeekProgress();
+ const weekly=proWeeklySessions(inputDate());
+ const duration=weekly.reduce((sum,x)=>sum+(Number(x.duration)||0),0);
+ const volume=weekly.reduce((sum,x)=>sum+(typeof thirdVolumeBySession==='function'?thirdVolumeBySession(x):0),0);
+ const records=(state.sessions||[]).slice().filter(s=>s?.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,3);
+ const health=(state.health?.workouts||[]).slice().filter(x=>x?.date).sort((a,b)=>String(b.date).localeCompare(String(a.date))).slice(0,3);
+ const recent=records.length?records:health;
+ const date=inputDate(),logs=mealDaily(date),sum=calcMacros(logs);
+ const goalPct=Math.max(0,Math.min(100,progress.percent));
+ const recentCards=recent.map(s=>
+  '<div class="rf6-recent-row"><div class="rf6-recent-art">'+rf6SessionPicture(s)+'</div>'+
+  '<div class="rf6-recent-text"><strong>'+proEsc(s.type||s.name||'Allenamento')+'</strong><small>'+proEsc(String(s.date).slice(0,10))+' · '+rf6DisplayDuration(s.duration)+'</small></div>'+
+  '<span class="rf6-recent-completed">✓</span></div>'
+ ).join('');
+ return '<div class="rf6-home rf4-app">'+
+ '<header class="rf6-mountain-hero"><div class="rf6-hero-heading"><div class="rf6-wordmark">Ritmo<span>Fit</span></div><div class="rf6-tagline">ALLENATI AL TUO RITMO</div>'+
+ '<h2>Il tuo allenamento,<br>sempre con te.</h2><p>Più forte · Più sano · Ogni giorno</p></div></header>'+
+ '<section class="rf6-overview">'+
+ '<div class="rf6-progress-title"><span>Questa settimana</span><strong>'+progress.count+'/'+progress.goal+'</strong></div>'+
+ proWeekStrip()+
+ '<div class="rf6-kpi-row">'+
+ '<div class="rf6-kpi"><div class="rf6-kpi-icon green">◷</div><small>Tempo</small><strong>'+rf6DisplayDuration(duration)+'</strong></div>'+
+ '<div class="rf6-kpi"><div class="rf6-kpi-icon purple">▥</div><small>Volume</small><strong>'+fmt(volume)+' kg</strong></div>'+
+ '<div class="rf6-kpi"><div class="rf6-kpi-icon blue">▮</div><small>Allenamenti</small><strong>'+progress.count+'</strong></div>'+
+ '</div>'+
+ '<div class="rf6-goal-card"><div class="rf6-goal-copy"><strong>Obiettivo settimanale</strong><small>'+progress.goal+' sessioni programmate</small>'+
+ '<div class="rf6-goal-bar"><span style="width:'+goalPct+'%"></span></div><em>'+progress.count+' di '+progress.goal+' completati</em></div>'+
+ '<div class="rf6-goal-ring" style="--rf6-pct:'+goalPct+'%"><div>'+goalPct+'%</div></div></div></section>'+
+ '<div class="rf6-section-title"><h3>Attività recenti</h3><button type="button" class="rf6-text-link" data-act="rf5GoWorkouts">Vedi tutte ›</button></div>'+
+ '<section class="rf6-recent-list">'+(recentCards||'<div class="rf6-empty">Nessuna seduta registrata: troverai qui i tuoi prossimi allenamenti.</div>')+'</section>'+
+ '<div class="rf6-dashboard-panels"><section class="rf6-info-panel"><div class="rf6-section-title"><h3>Il tuo turno</h3><span>Oggi</span></div>'+
+ rf6TodayShift()+'</section>'+
+ '<section class="rf6-info-panel"><div class="rf6-section-title"><h3>Alimentazione</h3><span>Diario di oggi</span></div>'+
+ '<div class="rf6-meal-quick"><div><small>Pasti registrati</small><strong>'+logs.length+'</strong></div><div><small>Proteine</small><strong>'+fmt(sum.p)+' g</strong></div><div><small>Energia</small><strong>'+fmt(sum.kcal)+' kcal</strong></div></div>'+
+ '<button type="button" class="rf6-text-link" data-act="nav" data-to="alimentazione">Apri diario alimentare →</button></section></div>'+
+ '<div class="rf6-home-action"><button class="btn btn-primary" type="button" data-act="rf5GoWorkouts">▶ Inizia un allenamento</button></div></div>';
+};
+// Keep existing tabs and handlers; change only text labels in the navigation for a native-app feel.
+const rf6PreviousRenderNav=renderNav;
+renderNav=function(){
+ rf6PreviousRenderNav();
+ const labels={oggi:'Home',allenamenti:'Allenati',alimentazione:'Diario',progressi:'Statistiche',turni:'Turni'};
+ const nav=document.querySelector('#mobileNav');
+ if(nav)nav.querySelectorAll('button[data-to]').forEach(button=>{
+  const label=labels[button.dataset.to];
+  if(!label)return;
+  for(const node of button.childNodes)if(node.nodeType===3)node.textContent=label;
+ });
+};
