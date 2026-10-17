@@ -1,0 +1,8 @@
+.shift-import-options{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.shift-import-options .shift-import{min-height:44px}
+.shift-secure-info{margin:0 0 16px;border-left:3px solid #43bfa4;padding:8px 12px;background:rgba(50,151,126,.11);border-radius:0 9px 9px 0;color:#b6d2d7;font-size:11px;line-height:1.55}
+.shifts-page .calendar-tag.Congedo{background:#805eab!important;color:white!important}
+.shifts-page .calendar-tag.Malattia{background:#bb5962!important;color:white!important}
+.shifts-page .calendar-tag.Formazione{background:#547bc0!important;color:white!important}
+.shifts-page .calendar-tag.RPre{background:#768696!important;color:white!important}
+@media(max-width:740px){.shift-import-options{width:100%;flex-direction:column}.shift-import-options .shift-import{width:100%}.shift-secure-info{margin:0 0 12px}}
