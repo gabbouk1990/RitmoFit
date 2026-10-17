@@ -16,9 +16,9 @@ assert 'renderNav=function()' in overlay
 assert "rf6TodayShift()" in overlay
 assert "proWeekProgress()" in overlay
 assert "proWeeklySessions(inputDate())" in overlay
-assert "data-act=\\"rf5GoWorkouts\\"" in overlay
-assert "data-act=\\"nav\\" data-to=\\"alimentazione\\"" in overlay
-assert "data-act=\\"nav\\" data-to=\\"turni\\"" in overlay
+assert 'data-act="rf5GoWorkouts"' in overlay
+assert 'data-act="nav" data-to="alimentazione"' in overlay
+assert 'data-act="nav" data-to="turni"' in overlay
 js=js.replace(anchor,overlay+'\n'+anchor,1)
 app.write_text(js,encoding='utf-8')
 
