@@ -54,6 +54,7 @@ jobs:
           python3 overrides/patch_food_latest.py
           python3 overrides/patch_shift_mp_ferie.py
           python3 overrides/patch_secure_calendar_2026.py
+          python3 overrides/patch_supershift_only.py
           node --check _site/app.js
           node --check _site/ics.js
           python3 - <<'PY'
@@ -72,7 +73,7 @@ jobs:
           assert "upgradeDefaultMeals()" in s
           assert "nutrition-disclaimer" in s
           assert "food-ingredient-row" in s
-          assert 'ritmo-fit-static-v16' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v17' in Path('_site/sw.js').read_text()
           assert 'function renderTrainingTimer()' in s
           assert 'function foodPlanCardV2' in s
           assert 'food-live-select' in s
@@ -130,7 +131,7 @@ jobs:
           assert 'class=\"third-mobile-dock\"' in s
           assert '.third-mobile-dock' in css
           assert '.third-history-panel' in css
-          assert 'ritmo-fit-static-v16' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v17' in Path('_site/sw.js').read_text()
           print("Terza passata Allenamenti: controlli statici superati")
           assert 'function rf4ActivityScreen()' in s
           assert 'function rf4ProgramsScreen()' in s
@@ -147,7 +148,7 @@ jobs:
           assert ".rf4-template-row" in css
           assert ".rf4-exercise-hero-art" in css
           assert ".rf4-period-tabs" in css
-          assert "ritmo-fit-static-v16" in Path('_site/sw.js').read_text()
+          assert "ritmo-fit-static-v17" in Path('_site/sw.js').read_text()
           print("Quarta passata mobile dark: UI, viste e timer verificati")
           assert 'const RF_FOOD_LATEST_IDS=' in s
           assert "'tonno-affumicato-bernardini'" in s
@@ -158,7 +159,7 @@ jobs:
           assert "active==='recenti'" in s
           assert 'nutrition-recent-tab' in css
           assert 'nutrition-new-badge' in css
-          assert 'ritmo-fit-static-v16' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v17' in Path('_site/sw.js').read_text()
           print("Ultime 12 aggiunte alimentari: controlli statici superati")
           assert 'case \'saveManualShift\':' in s
           assert 'case \'removeManualShift\':' in s
@@ -171,7 +172,7 @@ jobs:
           assert 'F · Ferie' in s
           assert '.calendar-tag.MP' in css
           assert '.calendar-tag.Ferie' in css
-          assert 'ritmo-fit-static-v16' in Path('_site/sw.js').read_text()
+          assert 'ritmo-fit-static-v17' in Path('_site/sw.js').read_text()
           print("Turni MP/F, editor giornaliero e riposo: verifiche statiche superate")
           assert "case 'secure2026Import':secure2026ImportDialog()" in s
           assert "async function secure2026Decrypt(code)" in s
@@ -183,8 +184,20 @@ jobs:
           encrypted=Path('_site/assets/secure/supershift-2026.enc.json').read_text()
           assert '"AES-256-GCM"' in encrypted and '"nonce"' in encrypted
           assert "secure-supershift-2026-" in s
-          assert "ritmo-fit-static-v16" in Path('_site/sw.js').read_text()
+          assert "ritmo-fit-static-v17" in Path('_site/sw.js').read_text()
           print("Calendario 2026 cifrato e import locale: controlli statici superati")
+          assert "function sup2026Source(d)" in s
+          assert "shiftFor=function(d){return sup2026Source(d);};" in s
+          assert "renderShifts=renderSupershift2026;" in s
+          assert "data-act=\"supDay\"" in s
+          assert "data-act=\"supMonth\"" in s
+          assert "data-act=\"secure2026Import\"" in s
+          assert "Altre causali" in s and "CALENDARIO ORIGINALE" in s
+          assert ".sup-shifts-page" in css
+          assert ".sup-main-grid" in css
+          assert "body[data-tab=\"allenamenti\"] .rf4-template-list" in css
+          assert "ritmo-fit-static-v17" in Path('_site/sw.js').read_text()
+          print("Supershift unica fonte e nuove schede responsive: verifiche statiche superate")
           PY
 
       - name: Verifica riconoscimento MP e ferie da Supershift
