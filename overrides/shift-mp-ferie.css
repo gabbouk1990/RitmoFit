@@ -1,0 +1,21 @@
+/* MP / Ferie · leggibile con il tema chiaro e con il tema dark */
+.shifts-page .calendar-tag.MP{background:#563881!important;color:#fff!important;border:1px solid #9770e6!important;font-size:10px!important;font-weight:900!important;min-width:27px!important}
+.shifts-page .calendar-tag.Ferie{background:#197a60!important;color:#e0ffed!important;border:1px solid #4ccb9a!important;font-weight:900!important}
+.shifts-page .shift-legend{border-top-color:rgba(169,198,225,.17)}
+.shifts-page .shift-legend-item{color:#a8bdd1}
+.shifts-page .shift-training-note{flex-basis:100%;font-size:11px;line-height:1.55;color:#a5bbcf;margin:3px 0 0}
+.shifts-page .shift-manual-editor{width:100%;margin-top:13px;padding:15px;background:rgba(34,70,97,.20);border:1px solid rgba(134,183,224,.19);border-radius:14px}
+.shifts-page .shift-manual-editor h4{margin:0 0 13px;font-size:14px;color:#e8f3ff}
+.shifts-page .shift-manual-editor .field{width:100%;display:flex;flex-direction:column;gap:8px}
+.shifts-page #manualShiftType{width:100%;min-height:45px;border-radius:10px;background:#182d42;color:#ecf8ff;border:1px solid rgba(141,182,215,.32);padding:11px;font-size:13px}
+.shifts-page #manualShiftType:focus-visible{outline:3px solid #63b6ff;outline-offset:1px}
+.shifts-page .shift-manual-actions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0 8px}
+.shifts-page .shift-manual-actions .btn{min-height:43px;flex:1 1 120px}
+.shifts-page .shift-manual-editor>.caption{font-size:11px;line-height:1.6;color:#aac1d7!important;margin:8px 0 0}
+.shifts-page .shift-detail .shift-time{color:#c4d9eb!important}
+@media(max-width:740px){
+ .shifts-page .calendar-day .calendar-tag.MP{min-width:24px!important;max-width:100%;font-size:9px!important;padding:2px 3px}
+ .shifts-page .shift-legend-item{white-space:normal}
+ .shifts-page .shift-manual-editor{padding:12px}
+ .shifts-page .shift-manual-actions .btn{flex:1 1 100%}
+}
